@@ -1,0 +1,10 @@
+{
+    "extends": "../../tsconfig.common.json",
+    "include": ["src"],
+    "compilerOptions": {
+      "types": ["node","bun-types"],
+      "outDir": "_build/src",
+      "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+      "rootDir": "src"
+    }
+  }

@@ -1,0 +1,6 @@
+telemetry = false
+preload = ["./scripts/bun/yamlPlugin.ts", "./scripts/bun/mdxPlugin.ts"]
+jsx = "react"
+jsxFactory = "h"
+jsxFragment = "Fragment"
+jsxImportSource = "react"

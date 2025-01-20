@@ -1,0 +1,29 @@
+[repo.sharedContent]
+monorepoFolderPath = "../content" # @TODO make relative to the root
+
+[repo.sharedAssets]
+monorepoFolderPath = "../assets"
+
+[repo.googleApis]
+tokenJsonPath = "/[secrets]/google-scripts-api.token.json"
+clientConfigurationJsonPath = "/[secrets]/google-scripts-api.client-configuration.json"
+[repo.prepared]
+folderPath = "/[prepared]"
+sectionsOutputPath = "content/docs"
+cachedRawMdDocPrefix = "cached-collection-from-google."
+
+[namespace]
+validCollectionLabels = ['tiles']
+
+[googleDrive.sources.prod]
+tiles = '1_XOX'
+
+[googleDrive.sources.test]
+tiles = '1XOX'
+
+[googleDrive.parsing]
+sectionLabelerMatchPattern = ['{#section:', '}']
+
+[googleScript]
+scriptId = '1XOX'
+functionName = 'getMdofDocument'

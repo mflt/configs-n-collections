@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "composite": true,  // diff from Y24
+    "esModuleInterop": false, // @TODO set to true in the landing app
+    "useDefineForClassFields": false, // see reactive props in lit; migrating to the upcoming standard version of class fields
+    "experimentalDecorators": true,
+    "isolatedModules": true,
+    "importHelpers": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    // "nodenext" does not work with spectrum-react
+    // "types": ["bun-types"],
+    // "noEmit": true,
+    // "noEmitOnError": true,
+    // "allowImportingTsExtensions": true,
+    "moduleDetection": "force", // * suggested by bun
+    "strict": true, // * explicitly set in the init-ed version by tsc itself
+    "forceConsistentCasingInFileNames": true, // * explicitly set in the init-ed version by tsc itself
+    "skipLibCheck": true, // * explicitly set in the init-ed version by tsc itself
+    // "composite": true, * depends on the sub-project
+    // "downlevelIteration": true,  * default already
+    // "allowSyntheticDefaultImports": true, // otherwise import * as React from "react"
+    // do not define files, include or exclude here
+    // "downlevelIteration": true,
+    // "sourceMap": true,
+    // "noImplicitAny": true,
+    // "noImplicitReturns": true
+    // "allowJs": false, One stack
+    "plugins": [{ "name": "typescript-plugin-toml" }]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "@mfe/gc-collections",
+  "private": true,
+  "version": "1000.0.0",
+  "type": "module",
+  "module": "index.ts",
+  "exports": {
+    "./ge-collections": {}
+  },
+  "scripts": {
+    "build": "pnpm build-esm && pnpm build-annotate && pnpm build-cjs && build-utils pack-v2",
+    "build-esm": "tsc -b tsconfig.build.json",
+    "build-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",
+    "build-annotate": "babel build/esm --plugins annotate-pure-calls --out-dir build/esm --source-maps",
+    "dtslint": "dtslint dtslint",
+    "check": "tsc -b tsconfig.json"
+  },
+  "dependencies": {
+    "rehype-katex": "latest",
+    "remark": "latest",
+    "remark-gfm": "latest",
+    "remark-math": "latest",
+    "remark-mdx": "latest",
+    "remark-rehype": "latest",
+    "remark-stringify": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@google-cloud/local-auth": "latest",
+    "@types/bun": "latest",
+    "@types/mdast": "latest",
+    "@types/mdx": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "googleapis": "latest",
+    "mdast-normalize-headings": "latest",
+    "mdast-util-from-markdown": "latest",
+    "mdast-util-frontmatter": "latest",
+    "mdast-util-heading-range": "latest",
+    "mdast-util-mdx": "latest",
+    "mdast-util-to-markdown": "latest",
+    "micromark-extension-frontmatter": "latest",
+    "tailwindcss": "latest",
+    "typescript": "beta"
+  }
+}
