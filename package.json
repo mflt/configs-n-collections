@@ -3,7 +3,8 @@
   "private": true,
   "version": "1000.0.0",
   "#": {
-    "jsr": "yarn dlx jsr add @std/xox"
+    "jsr/yarn": "yarn dlx jsr add @std/xox",
+    "jsr/bun": "bunx jsr add @std/xox"
   },
   "workspaces": [
     "./packages/**/*"
@@ -21,12 +22,12 @@
     }
   },
   "scripts": {
-    "build:ts": "bun tsc --build --pretty",
-    "dev:link-deps": "bun link fe3 festrand",
-    "dev:unlink-deps": "bun unlink fe3 festrand",
-    "dev:publish-link": "bun link",
-    "dev:publish-unlink": "bun unlink",
-    "postinstall": "patch-package",
+    "xxbuild:ts": "bun tsc --build --pretty",
+    "xxdev:link-deps": "bun link fe3 festrand",
+    "xxdev:unlink-deps": "bun unlink fe3 festrand",
+    "xxdev:publish-link": "bun link",
+    "xxdev:publish-unlink": "bun unlink",
+    "xxpostinstall": "patch-package",
     "std": "ts-standard",
     "purge:node-modules-alt": "npm exec --workspaces -- npx rimraf node_modules && npx rimraf node_modules",
     "purge:yarn-state": "npx rimraf .yarn/cache yarn.lock",
@@ -34,10 +35,8 @@
     "purge-node-modules": "find . -type d -name \"node_modules\" -prune -exec rm -rf '{}' +"
   },
   "dependencies": {
-    "@std/toml": "npm:@jsr/std__toml@^1.0.2",
+    "@std/toml": "npm:@jsr/std__toml",
     "effect": "3.x",
-    "expo": "latest",
-    "expo-crypto": "latest",
     "fast-safe-stringify": "2.x",
     "fnv1a": "1.1.1",
     "h3": "1.13.0",
@@ -68,6 +67,7 @@
     "@types/node": "latest",
     "browserslist": "4.x",
     "bun": "latest",
+    "bun-plugin-dts": "latest",
     "bun-types": "latest",
     "dotenv-cli": "^7.4.4",
     "esbuild": "latest",
@@ -77,41 +77,27 @@
     "fs-extra": "latest",
     "jsr": "latest",
     "npm-run-all": "latest",
-    "one": "latest",
-    "patch-package": "latest",
     "picocolors": "latest",
     "rimraf": "latest",
     "tailwindcss": "next",
     "ts-standard": "latest",
     "tsc-alias": "latest",
     "tslib": "latest",
-    "turbo": "latest",
     "type-fest": "latest",
     "typescript": "beta",
     "typescript-plugin-toml": "latest",
-    "ultra-runner": "latest",
-    "vite": "6.0.3",
+    "vite": "^6.0.3",
     "vite-plugin-inspect": "^0.10.3",
     "vite-plugin-toml": "latest",
     "vite-tsconfig-paths": "latest"
   },
   "resolutions": {
-    "@react-three/fiber": "9.0.0-alpha.6",
     "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-native-reanimated": "npm:react-native-reanimated@3.13.0-rc.1"
+    "react-dom": "19.0.0"
   },
   "peerDependencies": {
     "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-native-reanimated": "*"
-  },
-  "profile": {
-    "//": "run 'yarn profile x' to toggle it on/off",
-    "xox": {
-      "applied": false,
-      "resolutions": {}
-    }
+    "react-dom": "19.0.0"
   },
   "overrides": {
     "vite": "6.0.7"

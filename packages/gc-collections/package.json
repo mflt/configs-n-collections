@@ -3,17 +3,30 @@
   "private": true,
   "version": "1000.0.0",
   "type": "module",
-  "module": "index.ts",
+  "module": "./_lib/index.js",
+  "main": "./_lib/index.cjs",
+  "types": "./_lib/index.d.ts",
+  "description": "",
   "exports": {
-    "./ge-collections": {}
+    "types": "./_lib/index.d.ts",
+    "import": "./_lib/index.js",
+    "require": "./_lib/index.cjs"
+  },
+  "files": [
+    "_lib"
+  ],
+  "#": {
+
   },
   "scripts": {
-    "build": "pnpm build-esm && pnpm build-annotate && pnpm build-cjs && build-utils pack-v2",
-    "build-esm": "tsc -b tsconfig.build.json",
-    "build-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",
-    "build-annotate": "babel build/esm --plugins annotate-pure-calls --out-dir build/esm --source-maps",
-    "dtslint": "dtslint dtslint",
-    "check": "tsc -b tsconfig.json"
+    "build": "bun run ../../scripts/bun/build.ts",
+    "prepublishOnly": "bun run build",
+    "xxbuild": "pnpm build-esm && pnpm build-annotate && pnpm build-cjs && build-utils pack-v2",
+    "xxbuild-esm": "tsc -b tsconfig.build.json",
+    "xxbuild-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",
+    "xxbuild-annotate": "babel build/esm --plugins annotate-pure-calls --out-dir build/esm --source-maps",
+    "xxdtslint": "dtslint dtslint",
+    "xxcheck": "tsc -b tsconfig.json"
   },
   "dependencies": {
     "rehype-katex": "latest",

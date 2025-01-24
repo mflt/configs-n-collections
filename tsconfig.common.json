@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "es2020",
     "target": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
@@ -31,6 +31,14 @@
     // "noImplicitAny": true,
     // "noImplicitReturns": true
     // "allowJs": false, One stack
-    "plugins": [{ "name": "typescript-plugin-toml" }]
+    "plugins": [{ "name": "typescript-plugin-toml" }],
+    // bun-build diff:
+    // "esModuleInterop": true,
+    // "moduleResolution": "node",
+    // "noUnusedLocals": true,
+    // "noImplicitAny": true,
+    // "noEmit": true,
+    // "outDir": "dist",
+
   }
 }

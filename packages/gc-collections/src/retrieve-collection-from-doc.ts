@@ -94,7 +94,7 @@ async function retrieveRawMdDocsAndSave <
             // });
           }
         }
-      } catch (err) {
+      } catch (err: any) {  // @TODO not any
         prompt.log.error(codeTag + ': '+ erratStep + '\n' +
           color.bgYellow(color.black((err?.message || '')))
         )
@@ -170,6 +170,7 @@ async function authorizedAuthClient (
   } catch (err) {
     throw new Error('Could not authenticate with Google Apis.\n' + err)
   }
+  // @ts-ignore @TODO
   if (googleApisAuthClient?.credentials != null) {
     try {
       await saveGoogleCredentials(googleApisAuthClient, config)
