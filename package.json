@@ -22,6 +22,8 @@
     }
   },
   "scripts": {
+    "init": "yarn dlx jsr add @std/toml",
+    "build": "vite build",
     "xxbuild:ts": "bun tsc --build --pretty",
     "xxdev:link-deps": "bun link fe3 festrand",
     "xxdev:unlink-deps": "bun unlink fe3 festrand",
@@ -35,7 +37,7 @@
     "purge-node-modules": "find . -type d -name \"node_modules\" -prune -exec rm -rf '{}' +"
   },
   "dependencies": {
-    "@std/toml": "npm:@jsr/std__toml",
+    "@std/toml": "npm:@jsr/std__toml@^1.0.2",
     "effect": "3.x",
     "fast-safe-stringify": "2.x",
     "fnv1a": "1.1.1",
