@@ -4,10 +4,13 @@ import { defineConfig, /* searchForWorkspaceRoot */ } from 'vite'
 // import { tamaguiExtractPlugin } from '@tamagui/vite-plugin'
 import { fileURLToPath, URL } from 'node:url'
 import * as prompt from '@clack/prompts'
-import { commonConfig, type CommonConfigProps } from '../../../scripts/vite/vite.config-common'
+import { commonConfig, type CommonConfigProps } from '../../shared.config/vite.config-common'
 // import localConfig from './config/app.static-config.toml'
 // import { getAppConfig } from './helpers/config/getAppConfig'
 import { _feIsObject } from '../../shared.linked-packages/@mfe/fe3/src'
+import type { LibBuildConfig } from '../../shared.config/build-config'
+import packageJson, { buildConfig } from './package.json'
+import { PackageJson } from 'type-fest'
 
 const PROD = process.env.NODE_ENV === 'production'
 // globalThis.mfe_site = process.env.MFT_SITE || 'eza'
@@ -26,20 +29,28 @@ export default defineConfig(async ({ mode }) => {
 
   prompt.intro(`vite lib config started with mode set to '${mode}'`)
 
+  if (!_feIsObject(buildConfig) || !buildConfig.libName) {
+    console.log('Package.json buildConfig is not proper') // @TODO prompt with try
+  }
+
   // const _mfe_site = globalThis.mfe_site
 
   const _commonConfig = await commonConfig({
     mode,
-    // localConfig: getAppConfig(),
+    config: buildConfig as LibBuildConfig,
+    packageJson: packageJson as PackageJson,
     meta: import.meta,
     resolve
   })
 
   if (_feIsObject(_commonConfig.build)) {
     _commonConfig.build!.lib = {
-      entry: path.resolve(__dirname, 'lib/main.js'),
-      name: 'YOUR_LIBRARY_NAME',
-      fileName: (format) => `YOUR_LIBRARY_NAME.${format}.js`
+      entry: fileURLToPath(new URL(
+        packageJson.module, import.meta.url
+      )),
+      name: buildConfig.libName,
+      formats: ['es'], // @TODO
+      fileName: format => `${buildConfig.libName}.${format}.js`
     }
   }
 

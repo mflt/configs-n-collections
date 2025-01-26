@@ -1,12 +1,14 @@
 import type { UserConfig, PluginOption, Plugin /* UserConfigExport, searchForWorkspaceRoot */ } from 'vite'
 import { ViteToml as tomlPlugin } from 'vite-plugin-toml'
-import contentCollectionsPlugin from '@content-collections/vite'
-import { fileURLToPath, URL } from 'node:url'
+// import contentCollectionsPlugin from '@content-collections/vite'
+// import { fileURLToPath, URL } from 'node:url'
 // import fs from 'node:fs'
 import * as prompt from '@clack/prompts'
 // import { getSharedConfig } from '../shared.lib/getSharedConfig'
 // import type { SharedAssetsPaths } from './types/shared-assets-and-content'  // pending support with ${configDir}
 // import type { _getAppConfig } from './helpers/config/_getAppConfig'
+import type { LibBuildConfig } from './build-config'
+import { PackageJson } from 'type-fest'
 
 Error.stackTraceLimit = Number.POSITIVE_INFINITY
 
@@ -16,13 +18,12 @@ if (!import.meta.dirname) {
   throw new Error(`Not on proper node version (like 23+)`)
 }
 
-// const rootConfig = await getSharedConfig('root')
-
 // const optimizeInterop = ['expo-splash-screen', '@react-navigation/elements']
 
 export type CommonConfigProps = {
   mode: any,
-  // localConfig: ReturnType<typeof _getAppConfig>,
+  config: LibBuildConfig,
+  packageJson: PackageJson,
   meta: {
     dirname: string,
     url: string
@@ -32,7 +33,7 @@ export type CommonConfigProps = {
 
 export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig> => {
 
-  prompt.intro(`vite common config started`)
+  prompt.log.step(`vite common config started`)
 
   // const sharedAssetsConfig = props?.localConfig?.sharedAssets
   // const sharedContentConfig = props?.localConfig?.sharedContent
@@ -44,6 +45,8 @@ export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig
   // ) as SharedAssetsPaths
   // @TODO with with: vite fails
   // @TODO check the result if proper
+
+  console.log("ALALAL", props.packageJson.peerDependencies)
 
   const baseOptions: UserConfig = {
 
@@ -73,6 +76,8 @@ export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig
       // },
       rollupOptions: {
         external: [
+          ...(Object.keys(props.packageJson?.peerDependencies || {}) || []),
+          ...((props.config?.vite?.rollupOptions?.external as string[]) || []),
           // 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/react/+esm',
           // fileURLToPath(new URL(
           //   'scripts/prep.shared-assets-and-content.ts', props.meta.url
@@ -100,7 +105,7 @@ export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig
       ],
       // needsInterop: optimizeInterop,
       esbuildOptions: {
-        loader: { '.js': 'jsx', },
+        // loader: { '.js': 'jsx', },
         // loader:{ ".json5": "file" }
         //   plugins: [
         //     commonjsPlugin(['jsdom']),
@@ -124,7 +129,7 @@ export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig
     // }),
   ]
 
-  prompt.outro('vite common config returns')
+  prompt.log.step('vite common config returns')
 
   return {
     ...baseOptions,

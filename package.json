@@ -2,12 +2,14 @@
   "name": "@mflt/gc-collections",
   "private": true,
   "version": "1000.0.0",
-  "#": {
-    "jsr/yarn": "yarn dlx jsr add @std/xox",
-    "jsr/bun": "bunx jsr add @std/xox"
-  },
+  "#": [
+    "yarn dlx jsr add @std/xox",
+    "bunx jsr add @std/xox"
+  ],
   "workspaces": [
-    "./packages/**/*"
+    "./code/packages/**/*",
+    "./code/shared.linked-packages/**/*",
+    "./code/shared.config/*"
   ],
   "main": "_build/index.js",
   "types": "_build/index.d.ts",
@@ -23,7 +25,7 @@
   },
   "scripts": {
     "init": "yarn dlx jsr add @std/toml",
-    "build": "vite build",
+    "// build": "vite build",
     "xxbuild:ts": "bun tsc --build --pretty",
     "xxdev:link-deps": "bun link fe3 festrand",
     "xxdev:unlink-deps": "bun unlink fe3 festrand",
@@ -49,10 +51,6 @@
     "mustache": "latest",
     "nanoid": "5.x",
     "nanostores": "latest",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-is": "19.0.0",
-    "use-debounce": "latest",
     "zod": "latest"
   },
   "devDependencies": {
@@ -93,17 +91,6 @@
     "vite-plugin-toml": "latest",
     "vite-tsconfig-paths": "latest"
   },
-  "resolutions": {
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
-  },
-  "peerDependencies": {
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
-  },
-  "overrides": {
-    "vite": "6.0.7"
-  },
   "browserslist": [
     "defaults and fully supports es6-module",
     "maintained node versions"
@@ -113,6 +100,6 @@
   ],
   "packageManager": "yarn@4.5.3",
   "engines": {
-    "node": ">= 22.0.0"
+    "node": ">= 23.0.0"
   }
 }

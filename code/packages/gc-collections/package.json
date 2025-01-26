@@ -3,24 +3,25 @@
   "private": true,
   "version": "1000.0.0",
   "type": "module",
-  "module": "./_lib/index.js",
-  "main": "./_lib/index.cjs",
-  "types": "./_lib/index.d.ts",
+  "module": "./_lib/esm/index.js",
+  "main": "./_lib/cjs/index.cjs",
+  "types": "./_lib/dts/index.d.ts",
   "description": "",
   "exports": {
-    "types": "./_lib/index.d.ts",
-    "import": "./_lib/index.js",
-    "require": "./_lib/index.cjs"
+    "types": "./_lib/dts/index.d.ts",
+    "import": "./_lib/esm/index.js",
+    "require": "./_lib/esm/index.cjs"
   },
   "files": [
     "_lib"
   ],
-  "#": {
-
-  },
+  "#": [
+    "peerDependencies also become excluded from the bundle"
+  ],
   "scripts": {
-    "build": "bun run ../../scripts/bun/build.ts",
-    "prepublishOnly": "bun run build",
+    "build": "tsc -b tsconfig.build.json && vite build",
+    "//build": "bun run ../../scripts/bun/build.ts",
+    "//prepublishOnly": "bun run build",
     "xxbuild": "pnpm build-esm && pnpm build-annotate && pnpm build-cjs && build-utils pack-v2",
     "xxbuild-esm": "tsc -b tsconfig.build.json",
     "xxbuild-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",
@@ -38,14 +39,18 @@
     "remark-stringify": "latest",
     "zod": "latest"
   },
+  "peerDependencies": {
+    "@clack/prompts": "latest",
+    "@google-cloud/local-auth": "latest",
+    "fast-safe-stringify": "latest",
+    "googleapis": "latest"
+  },
   "devDependencies": {
     "@google-cloud/local-auth": "latest",
     "@types/bun": "latest",
     "@types/mdast": "latest",
     "@types/mdx": "latest",
     "@types/node": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
     "googleapis": "latest",
     "mdast-normalize-headings": "latest",
     "mdast-util-from-markdown": "latest",
@@ -56,5 +61,12 @@
     "micromark-extension-frontmatter": "latest",
     "tailwindcss": "latest",
     "typescript": "beta"
+  },
+  "buildConfig": {
+    "libName": "gc-collections",
+    "vite": {
+      "rollupOptions": {
+      }
+    }
   }
 }

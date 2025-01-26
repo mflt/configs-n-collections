@@ -12,6 +12,6 @@
   },
   "include": [],
   "references": [
-    { "path": "packages/gc-collections" }
+    { "path": "code/packages/gc-collections" }
   ]
 }

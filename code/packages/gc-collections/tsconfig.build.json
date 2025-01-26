@@ -4,7 +4,7 @@
       "types": ["node","bun","bun-types"],
       "tsBuildInfoFile": ".tsbuildinfo/build.tsbuildinfo",
       "outDir": "_lib/esm",
-      "declarationDir": "_build/dts",
+      "declarationDir": "_lib/dts",
       "stripInternal": true,
     }
   }

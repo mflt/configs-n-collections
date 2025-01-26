@@ -55,3 +55,7 @@ patches/*
 \[prepared\]
 
 .secrets
+
+_lib
+dist
+.tsbuildinfo

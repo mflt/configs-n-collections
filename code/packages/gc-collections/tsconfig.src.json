@@ -1,10 +1,10 @@
 {
-    "extends": "../../tsconfig.common.json",
-    "include": ["../../code/packages/gc-collections/src"],
+    "extends": "../../../tsconfig.common.json",
+    "include": ["src"],
     "compilerOptions": {
-      "types": ["node","bun-types"],
-      "outDir": "../../code/packages/gc-collections/_lib/src",
-      "tsBuildInfoFile": "../../code/packages/gc-collections/.tsbuildinfo/src.tsbuildinfo",
-      "rootDir": "../../code/packages/gc-collections/src"
+      "types": ["node", "bun-types"],
+      "outDir": "./_lib/src",
+      "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+      "rootDir": "src"
     }
   }
