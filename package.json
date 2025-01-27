@@ -1,28 +1,11 @@
 {
-  "name": "@mflt/gc-collections",
-  "private": true,
-  "version": "1000.0.0",
-  "#": [
-    "yarn dlx jsr add @std/xox",
-    "bunx jsr add @std/xox"
-  ],
+  "name": "@mflt/configs-n-collections",
   "workspaces": [
-    "./code/packages/**/*",
+    "./code/packages/gc-collections/*",
+    "./code/packages/config-helpers/*",
     "./code/shared.linked-packages/**/*",
     "./code/shared.config/*"
   ],
-  "main": "_build/index.js",
-  "types": "_build/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./_build/index.d.ts",
-      "import": "./_build/index.js"
-    },
-    "./gc-collections": {
-      "types": "./_build/gc-collections/index.d.ts",
-      "import": "./_build/gc-collections/index.js"
-    }
-  },
   "scripts": {
     "init": "yarn dlx jsr add @std/toml",
     "// build": "vite build",

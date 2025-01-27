@@ -1,6 +1,6 @@
 {
   "name": "@mfe/gc-collections",
-  "private": true,
+  "private": false,
   "version": "1000.0.0",
   "type": "module",
   "module": "./[dist]/esm/index.js",
@@ -19,9 +19,7 @@
     "peerDependencies also become excluded from the bundle"
   ],
   "scripts": {
-    "build": "tsc -b tsconfig.build.json && vite build",
-    "//build": "bun run ../../scripts/bun/build.ts",
-    "//prepublishOnly": "bun run build",
+    "build": "bun run ../../shared.config/build.ts",
     "xxbuild": "pnpm build-esm && pnpm build-annotate && pnpm build-cjs && build-utils pack-v2",
     "xxbuild-esm": "tsc -b tsconfig.build.json",
     "xxbuild-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",

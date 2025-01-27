@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.common.json",
+  "include": ["${configDir}/src"],
+  "compilerOptions": {
+    "types": ["node","bun","bun-types"],
+    "rootDir": "${configDir}/src",
+    "outDir": "${configDir}/[dist]/esm",
+    "declarationDir": "${configDir}/[dist]/dts",
+    "tsBuildInfoFile": "${configDir}/.tsbuildinfo/src.tsbuildinfo",
+    "stripInternal": true,
+  }
+}
