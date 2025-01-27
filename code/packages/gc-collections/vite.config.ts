@@ -43,6 +43,8 @@ export default defineConfig(async ({ mode }) => {
     resolve
   })
 
+  _commonConfig.build ??= {}
+
   if (_feIsObject(_commonConfig.build)) {
     _commonConfig.build!.lib = {
       entry: fileURLToPath(new URL(

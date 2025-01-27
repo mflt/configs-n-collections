@@ -46,8 +46,6 @@ export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig
   // @TODO with with: vite fails
   // @TODO check the result if proper
 
-  console.log("ALALAL", props.packageJson.peerDependencies)
-
   const baseOptions: UserConfig = {
 
     define: {
@@ -68,12 +66,9 @@ export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig
     // },
 
     build: {
+      outDir: './[build]',
       cssTarget: 'safari15',
       target: 'esnext',
-      // commonjsOptions: {
-      //   // include: ['whatwg-mimetype'],
-      //   // transformMixedEsModules: true
-      // },
       rollupOptions: {
         external: [
           ...(Object.keys(props.packageJson?.peerDependencies || {}) || []),
@@ -83,6 +78,10 @@ export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig
           //   'scripts/prep.shared-assets-and-content.ts', props.meta.url
           // )),
         ],
+        output: {
+          assetFileNames: 'assets/[name][extname]',
+          entryFileNames: '[name].js',
+        }
       //   input: [ // breaks build if present
       //     // 'prepared/.local/content/collection.people.json5',
       //     // ...sharedAssetsPaths.graphics,

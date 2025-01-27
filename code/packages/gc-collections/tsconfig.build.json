@@ -3,8 +3,8 @@
     "compilerOptions": {
       "types": ["node","bun","bun-types"],
       "tsBuildInfoFile": ".tsbuildinfo/build.tsbuildinfo",
-      "outDir": "_lib/esm",
-      "declarationDir": "_lib/dts",
+      "outDir": "[dist]/esm",
+      "declarationDir": "[dist]/dts",
       "stripInternal": true,
     }
   }

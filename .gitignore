@@ -56,6 +56,6 @@ patches/*
 
 .secrets
 
-_lib
-dist
+\[build\]
+\[dist\]
 .tsbuildinfo

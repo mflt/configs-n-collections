@@ -3,17 +3,17 @@
   "private": true,
   "version": "1000.0.0",
   "type": "module",
-  "module": "./_lib/esm/index.js",
-  "main": "./_lib/cjs/index.cjs",
-  "types": "./_lib/dts/index.d.ts",
+  "module": "./[dist]/esm/index.js",
+  "main": "./[dist]/cjs/index.cjs",
+  "types": "./[dist]/dts/index.d.ts",
   "description": "",
   "exports": {
-    "types": "./_lib/dts/index.d.ts",
-    "import": "./_lib/esm/index.js",
-    "require": "./_lib/esm/index.cjs"
+    "types": "./[dist]/dts/index.d.ts",
+    "import": "./[dist]/esm/index.js",
+    "require": "./[dist]/esm/index.cjs"
   },
   "files": [
-    "_lib"
+    "[dist]"
   ],
   "#": [
     "peerDependencies also become excluded from the bundle"
