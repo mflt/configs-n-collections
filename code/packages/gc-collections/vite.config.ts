@@ -15,7 +15,6 @@ import { PackageJson } from 'type-fest'
 const PROD = process.env.NODE_ENV === 'production'
 // globalThis.mfe_site = process.env.MFT_SITE || 'eza'
 
-
 const resolve = (path: string) => {
   const resolved = import.meta.resolve?.(path)
   if (!resolved) {
@@ -25,15 +24,15 @@ const resolve = (path: string) => {
 }
 
 
-export default defineConfig(async ({ mode }) => {
-
-  prompt.intro(`vite lib config started with mode set to '${mode}'`)
+export async function viteConfig ({ mode }) {
 
   if (!_feIsObject(buildConfig) || !buildConfig.libName) {
     console.log('Package.json buildConfig is not proper') // @TODO prompt with try
   }
 
   // const _mfe_site = globalThis.mfe_site
+
+  // console.log('&&&&&',globalThis.globalTest)
 
   const _commonConfig = await commonConfig({
     mode,
@@ -79,11 +78,9 @@ export default defineConfig(async ({ mode }) => {
   const plugins = _commonConfig.plugins as UserConfig['plugins']
   plugins?.push(...selfPlugins)
 
-  prompt.outro('vite lib config returns')
-
   return {
     ..._commonConfig,
     plugins
   }
 
-})
+}
