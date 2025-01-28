@@ -59,12 +59,5 @@
     "micromark-extension-frontmatter": "latest",
     "tailwindcss": "latest",
     "typescript": "beta"
-  },
-  "buildConfig": {
-    "libName": "gc-collections",
-    "vite": {
-      "rollupOptions": {
-      }
-    }
   }
 }

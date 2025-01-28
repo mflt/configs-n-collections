@@ -1,0 +1,6 @@
+libName = 'gc-collections'
+
+[vite]
+[[mfe]]
+addPeerDependenciestoExternals = true
+[[rollupOptions]]

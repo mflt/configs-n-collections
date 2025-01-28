@@ -31,6 +31,7 @@
     "js-yaml": "latest",
     "lit": "latest",
     "mdx-bundler": "latest",
+    "mergician": "latest",
     "mustache": "latest",
     "nanoid": "5.x",
     "nanostores": "latest",

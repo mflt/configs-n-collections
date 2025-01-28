@@ -7,31 +7,9 @@ import * as prompt from '@clack/prompts'
 // import { getSharedConfig } from '../shared.lib/getSharedConfig'
 // import type { SharedAssetsPaths } from './types/shared-assets-and-content'  // pending support with ${configDir}
 // import type { _getAppConfig } from './helpers/config/_getAppConfig'
-import type { LibBuildConfig } from './build-config'
-import { PackageJson } from 'type-fest'
+import type { ViteCommonConfigProps } from './build-config'
 
-Error.stackTraceLimit = Number.POSITIVE_INFINITY
-
-const PROD = process.env.NODE_ENV === 'production'
-
-if (!import.meta.dirname) {
-  throw new Error(`Not on proper node version (like 23+)`)
-}
-
-// const optimizeInterop = ['expo-splash-screen', '@react-navigation/elements']
-
-export type CommonConfigProps = {
-  mode: any,
-  config: LibBuildConfig,
-  packageJson: PackageJson,
-  meta: {
-    dirname: string,
-    url: string
-  },
-  resolve: (path: string) => any
-}
-
-export const commonConfig = async (props: CommonConfigProps): Promise<UserConfig> => {
+export const viteCommonConfigGen = async (props: ViteCommonConfigProps): Promise<UserConfig> => {
 
   prompt.log.step(`vite common config started`)
 

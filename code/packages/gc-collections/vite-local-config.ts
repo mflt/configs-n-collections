@@ -1,46 +1,14 @@
 import type { UserConfig, PluginOption, Plugin /* UserConfigExport */ } from 'vite'
 import tsconfigPathsPlugin from 'vite-tsconfig-paths'
-import { defineConfig, /* searchForWorkspaceRoot */ } from 'vite'
-// import { tamaguiExtractPlugin } from '@tamagui/vite-plugin'
 import { fileURLToPath, URL } from 'node:url'
-import * as prompt from '@clack/prompts'
-import { commonConfig, type CommonConfigProps } from '../../shared.config/vite.config-common'
+import { commonConfig, type CommonConfigProps } from '../../shared.config/vite.common-config'
 // import localConfig from './config/app.static-config.toml'
 // import { getAppConfig } from './helpers/config/getAppConfig'
 import { _feIsObject } from '../../shared.linked-packages/@mfe/fe3/src'
-import type { LibBuildConfig } from '../../shared.config/build-config'
-import packageJson, { buildConfig } from './package.json'
-import { PackageJson } from 'type-fest'
-
-const PROD = process.env.NODE_ENV === 'production'
-// globalThis.mfe_site = process.env.MFT_SITE || 'eza'
-
-const resolve = (path: string) => {
-  const resolved = import.meta.resolve?.(path)
-  if (!resolved) {
-    throw new Error(`Not found: ${path}, maybe on wrong node version`)
-  }
-  return resolved.replace('file:/', '')
-}
 
 
 export async function viteConfig ({ mode }) {
 
-  if (!_feIsObject(buildConfig) || !buildConfig.libName) {
-    console.log('Package.json buildConfig is not proper') // @TODO prompt with try
-  }
-
-  // const _mfe_site = globalThis.mfe_site
-
-  // console.log('&&&&&',globalThis.globalTest)
-
-  const _commonConfig = await commonConfig({
-    mode,
-    config: buildConfig as LibBuildConfig,
-    packageJson: packageJson as PackageJson,
-    meta: import.meta,
-    resolve
-  })
 
   _commonConfig.build ??= {}
 
