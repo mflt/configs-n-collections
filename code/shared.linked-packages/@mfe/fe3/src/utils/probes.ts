@@ -7,7 +7,7 @@ export const _feIsArray = <T>(that: unknown): that is Array<T> => that instanceo
 export const _feIsSet = <T>(that: unknown): that is Set<T> => that instanceof Set;
 export const _feIsObject = (that: unknown): that is Object => that instanceof Object;
 export const _feIsFunction = (that: unknown): that is Function => that instanceof Function; // @TODO all to unknown
-export const _feIsAsyncFunction = (that: unknown): that is ()=>Promise<unknown> => that?.constructor?.name === 'AsyncFunction'; // @TODO return type
+export const _feIsAsyncFunction = <P = unknown>(that: unknown): that is ()=>Promise<P> => that?.constructor?.name === 'AsyncFunction'; // @TODO return type ? probably done
 
 export const _feIsIterable = <T>(that: unknown): that is Iterable<T> => (
   !!that
