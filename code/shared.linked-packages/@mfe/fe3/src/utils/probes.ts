@@ -3,9 +3,9 @@ export const _feIsNumber = (num: number): num is number => +num === +num;
 export const _feIsString = (that: unknown): that is string|String => typeof that === 'string' || that instanceof String;
 export const _feIsMap = <K, V> (that: unknown): that is Map<K, V> => that instanceof Map;
 export const _feIsWeakMap = <K extends Object, V> (that: unknown): that is WeakMap<K, V> => that instanceof WeakMap;
-export const _feIsArray = <T> (that: unknown): that is Array<T> => that instanceof Array;
+export const _feIsArray = <T> (that: unknown): that is Array<T> => Array.isArray(that);
 export const _feIsSet = <T> (that: unknown): that is Set<T> => that instanceof Set;
-export const _feIsObject = (that: unknown): that is Object => that instanceof Object;
+export const _feIsObject = (that: unknown): that is Object => that instanceof Object && !Array.isArray(that);
 export const _feIsFunction = (that: unknown): that is Function => that instanceof Function; // @TODO all to unknown
 export const _feIsAsyncFunction = <
   P = unknown,
