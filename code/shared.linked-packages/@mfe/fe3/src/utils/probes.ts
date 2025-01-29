@@ -38,24 +38,56 @@ export const _feIsIterableTest = <T>(that: unknown): that is Iterable<T> => {
 
 // With Assertion
 
+type MessageinProps = {message: string}
+type LabelOrMessage = string|MessageinProps
+
 export function _feAssertIsDefined <T> (
   val: T,
-  label?: string
+  labelOrMessage?: LabelOrMessage
 ): asserts val is NonNullable<T> {
   if (val === undefined || val === null) {
     throw new TypeError(
-      `Expected ${label || 'value'} to be defined, but received ${val}`  // @TODO add stringify
+      (labelOrMessage as MessageinProps)?.message ||
+      `Expected ${labelOrMessage || 'value'} to be defined, but received ${val}`  // @TODO add stringify
     );
   }
 }
 
 export function _feAssertIsString (
   val: unknown,
-  label?: string
+  labelOrMessage?: string|{message: string}
 ): asserts val is string|String {
   if (!_feIsString(val)) {
     throw new TypeError(
-      `Expected ${label || 'value'} to be a string, but received ${val}`
+      (labelOrMessage as MessageinProps)?.message ||
+      `Expected ${labelOrMessage || 'value'} to be a string, but received ${val}`
+    );
+  }
+}
+
+export function _feAssertIsObject (
+  that: unknown,
+  labelOrMessage?: string|{message: string}
+): asserts that is Object {
+  if (!(that instanceof Object) || Array.isArray(that)) {
+    throw new TypeError(
+      (labelOrMessage as MessageinProps)?.message ||
+      `Expected ${labelOrMessage || 'label'} to be an object, but received ${Array.isArray(that)? 'an array' : that}`
+    );
+  }
+}
+
+export function _feAssertIsAsyncFunction <
+  P = unknown,
+  Args extends any[] = any[]
+> (
+  that: unknown,
+  labelOrMessage?: string|{message: string}
+): asserts that is (...args: Args)=>Promise<P> {
+  if (that?.constructor?.name !== 'AsyncFunction') {
+    throw new TypeError(
+      (labelOrMessage as MessageinProps)?.message ||
+      `Expected ${labelOrMessage || 'label'} to be an async funciton, but received ${that}`
     );
   }
 }
