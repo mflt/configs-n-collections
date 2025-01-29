@@ -3,15 +3,14 @@ import { ViteToml as tomlPlugin } from 'vite-plugin-toml'
 // import contentCollectionsPlugin from '@content-collections/vite'
 // import { fileURLToPath, URL } from 'node:url'
 // import fs from 'node:fs'
-import * as prompt from '@clack/prompts'
 // import { getSharedConfig } from '../shared.lib/getSharedConfig'
 // import type { SharedAssetsPaths } from './types/shared-assets-and-content'  // pending support with ${configDir}
 // import type { _getAppConfig } from './helpers/config/_getAppConfig'
-import type { ViteCommonConfigProps } from './build-config'
+import type { ViteCommonConfigFnProps } from '../shared.linked-packages/@mfe/buildmfe/bunvite/src/types'
 
-export const viteCommonConfigGen = async (props: ViteCommonConfigProps): Promise<UserConfig> => {
+export const viteCommonConfigFn = async (props: ViteCommonConfigFnProps): Promise<UserConfig> => {
 
-  prompt.log.step(`vite common config started`)
+  props.prompt?.log.step(`vite common config started`)
 
   // const sharedAssetsConfig = props?.localConfig?.sharedAssets
   // const sharedContentConfig = props?.localConfig?.sharedContent
@@ -106,7 +105,7 @@ export const viteCommonConfigGen = async (props: ViteCommonConfigProps): Promise
     // }),
   ]
 
-  prompt.log.step('vite common config returns')
+  props.prompt?.log.step('vite common config returns')
 
   return {
     ...baseOptions,
