@@ -1,6 +1,6 @@
 
 export const _feIsNumber = (num: number): num is number => +num === +num;
-export const _feIsString = (that: unknown): that is string|String => typeof that === 'string' || that instanceof String;
+export const _feIsString = (val: unknown): val is string|String => typeof val === 'string' || val instanceof String;
 export const _feIsMap = <K, V> (that: unknown): that is Map<K, V> => that instanceof Map;
 export const _feIsWeakMap = <K extends Object, V> (that: unknown): that is WeakMap<K, V> => that instanceof WeakMap;
 export const _feIsArray = <T> (that: unknown): that is Array<T> => Array.isArray(that);
@@ -35,3 +35,27 @@ export const _feIsIterableTest = <T>(that: unknown): that is Iterable<T> => {
   }
   return false;
 };
+
+// With Assertion
+
+export function _feAssertIsDefined <T> (
+  val: T,
+  label?: string
+): asserts val is NonNullable<T> {
+  if (val === undefined || val === null) {
+    throw new TypeError(
+      `Expected ${label || 'value'} to be defined, but received ${val}`  // @TODO add stringify
+    );
+  }
+}
+
+export function _feAssertIsString (
+  val: unknown,
+  label?: string
+): asserts val is string|String {
+  if (!_feIsString(val)) {
+    throw new TypeError(
+      `Expected ${label || 'value'} to be a string, but received ${val}`
+    );
+  }
+}
