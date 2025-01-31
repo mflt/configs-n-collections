@@ -1,28 +1,29 @@
 {
-  "name": "@mflt-pseudo/std",
-  "version": "1000",
+  "name": "@depjam.kits/xstd.brave",
+  "version": "1.2502.1",
   "scripts": {
-    "init-jsr": "yarn dlx jsr add @std/toml"
+    "initkit": "yarn dlx jsr add @std/toml",
+    "updkit": ""
   },
   "dependencies": {
     "@std/toml": "npm:@jsr/std__toml@^1.0.2",
-    "effect": "3.x",
-    "fast-safe-stringify": "2.x",
+    "effect": "^3",
+    "fast-safe-stringify": "^2",
     "fnv1a": "1.1.1",
     "mergician": "latest",
     "mustache": "latest",
-    "nanoid": "5.x",
+    "nanoid": "^5",
     "nanostores": "latest",
     "zod": "latest"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.x",
+    "@biomejs/biome": "^1",
     "@clack/prompts": "latest",
     "@types/bun": "latest",
     "@types/glob": "latest",
     "@types/mustache": "latest",
     "@types/node": "latest",
-    "browserslist": "4.x",
+    "browserslist": "^4",
     "bun": "latest",
     "bun-plugin-dts": "latest",
     "bun-types": "latest",
@@ -34,7 +35,7 @@
     "type-fest": "latest",
     "typescript": "beta",
     "typescript-plugin-toml": "latest",
-    "vite": "^6.0.3",
+    "vite": "^6",
     "vite-plugin-inspect": "^0.10.3",
     "vite-plugin-toml": "latest",
     "vite-tsconfig-paths": "latest"

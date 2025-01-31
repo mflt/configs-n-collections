@@ -4,11 +4,11 @@
     "./code/packages/gc-collections/*",
     "./code/packages/config-helpers/*",
     "./code/shared.linked-packages/**/*",
-    "./code/shared.deps/**/*",
+    "./code/shared.kits/**/*",
     "./code/shared.config/*"
   ],
   "scripts": {
-    "init": "yarn workspace @mflt-pseudo/std init-jsr",
+    "init": "yarn workspace @depjam.kits/xstd.brave initkit",
     "// build": "vite build",
     "xxbuild:ts": "bun tsc --build --pretty",
     "xxdev:link-deps": "bun link fe3 festrand",
