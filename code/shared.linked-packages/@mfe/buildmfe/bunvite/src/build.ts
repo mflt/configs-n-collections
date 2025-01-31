@@ -4,7 +4,9 @@ import { parseArgs } from 'util'
 import * as toml from '@std/toml'
 import { mergician } from 'mergician'
 import { build as viteBuild, type InlineConfig } from 'vite'
-import { _feIsObject, _feAssertIsObject, _feAssertIsAsyncFunction } from '../../../fe3/src/index.ts'
+import { _feIsObject, _feIsEmptyObject,
+  _feAssertIsObject, _feAssertIsAsyncFunction 
+} from '../../../fe3/src/index.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
@@ -36,8 +38,8 @@ if (!_feIsObject(defaults)) {
 let onTaskCancellationOrFailureMessage: string|undefined
 
 export type FeBunViteBuildProps = {
-  buildCommonConfig: BuildCommonConfig,
-  viteCommonConfigFn: ViteCommonConfigFn
+  buildCommonConfig: BuildCommonConfig|{},
+  viteCommonConfigFn: ViteCommonConfigFn|null
 }
 
 export const FeBunViteBuildReturnVariants = {
@@ -46,20 +48,30 @@ export const FeBunViteBuildReturnVariants = {
 } as const
 export type FeBunViteBuildReturnCode = (typeof FeBunViteBuildReturnVariants)[keyof typeof FeBunViteBuildReturnVariants]
 
-export async function buildvite (props: FeBunViteBuildProps): Promise<FeBunViteBuildReturnCode> {
+export async function buildvite (
+  props: FeBunViteBuildProps
+): Promise<FeBunViteBuildReturnCode> {
 
   try {
     onTaskCancellationOrFailureMessage = `Failed loading the common build config`
-    _feAssertIsObject(
-      props?.buildCommonConfig,
-      {message: 'Common build config content is not valid'}
-    )
+    if (_feIsEmptyObject(props?.buildCommonConfig)) {
+      prompt.log.warn('Common build config is empty')
+    } else {
+      _feAssertIsObject(
+        props?.buildCommonConfig,
+        {message: 'Common build config content is not valid'}
+      )
+    }
 
     onTaskCancellationOrFailureMessage = `Failed importing proper common vite config ts`
-    _feAssertIsAsyncFunction<InlineConfig,[ViteCommonConfigFnProps]>(
-      props?.viteCommonConfigFn,
-      {message: 'Common vite config is not a function'}
-    )
+    if (props?.viteCommonConfigFn === null) {
+      prompt.log.warn('No common vite config ts is provided')
+    } else {
+      _feAssertIsAsyncFunction<InlineConfig,[ViteCommonConfigFnProps]>(
+        props?.viteCommonConfigFn,
+        {message: 'Common vite config is not a function'}
+      )
+    }
 
     const buildConfig = await loadConfig(props.buildCommonConfig)
 
@@ -71,12 +83,15 @@ export async function buildvite (props: FeBunViteBuildProps): Promise<FeBunViteB
     prompt.log.step(`tsc ended`)
 
     onTaskCancellationOrFailureMessage = `Failed at vite-common-config function`
-    buildConfig.viteCommonConfig = await props.viteCommonConfigFn({
-      mode: 'build',
-      config: buildConfig,
-      resolve,
-      prompt
-    })
+    buildConfig.viteCommonConfig = props.viteCommonConfigFn // assumed to be a function if not null
+      ?
+        await props.viteCommonConfigFn({
+          mode: 'build',
+          config: buildConfig,
+          resolve,
+          prompt
+        })
+      : {}
 
     onTaskCancellationOrFailureMessage = `Failed importing the local vite config ts (${buildConfig.files.viteLocalConfigTsPath})`
     const viteLocalConfigFn = await import(buildConfig.files.viteLocalConfigTsPath)
@@ -110,7 +125,7 @@ export async function buildvite (props: FeBunViteBuildProps): Promise<FeBunViteB
 // END OF MAIN
 
 async function loadConfig (
-  buildCommonConfig: BuildCommonConfig,
+  buildCommonConfig: BuildCommonConfig|{},
 ): Promise<BuildEffectiveConfig> {
 
   onTaskCancellationOrFailureMessage = `Failed loading the local package.json`
@@ -145,7 +160,10 @@ async function loadConfig (
 
   onTaskCancellationOrFailureMessage = `Failed loading the local build config`
   let buildLocalConfig = {} as BuildLocalConfig
-  const buildLocalConfigFilePath = _argsValues.configFile || buildCommonConfig.files?.buildLocalConfigFilePath || defaults?.config?.files?.buildLocalConfigFilePath
+  const buildLocalConfigFilePath = 
+    _argsValues.configFile 
+    || (buildCommonConfig as BuildCommonConfig).files?.buildLocalConfigFilePath 
+    || defaults?.config?.files?.buildLocalConfigFilePath
   if (!buildLocalConfigFilePath) {
     prompt.log.warn('Local build config path can not be determined. If this is not how you intended it to be, please check the defaults and other related settings.')
   } else {
@@ -181,7 +199,7 @@ async function loadConfig (
   merged._meta = import.meta
   merged._packageJson = packageJson
   merged._commonConfig = buildCommonConfig
-  merged._commonConfig = buildCommonConfig
+  merged._localConfig = buildLocalConfig
 
   return merged
 }

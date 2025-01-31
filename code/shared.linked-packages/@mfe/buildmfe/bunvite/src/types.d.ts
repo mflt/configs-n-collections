@@ -31,7 +31,7 @@ export type BuildEffectiveConfig = BuildCommonConfig & BuildLocalConfig /* *merg
   viteEffectiveConfig: InlineConfig,  // merged and the common original possibly manipulated by viteLocalConfigFn
   _meta: ImportMeta,  // _ indicates externally given
   _packageJson: PackageJson,
-  _commonConfig: BuildCommonConfig, // not merged
+  _commonConfig: BuildCommonConfig|{}, // not merged
   _localConfig?: BuildLocalConfig, // not merged
 }
 

@@ -56,7 +56,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@biomejs/biome@npm:1.x":
+"@biomejs/biome@npm:^1":
   version: 1.9.4
   resolution: "@biomejs/biome@npm:1.9.4"
   dependencies:
@@ -167,6 +167,44 @@ __metadata:
   checksum: 10/df0587bed14a978bcd3bb3ae950e400c49fc9ca4bf4556393de81f2907a010a7c4042d7a52f3125245c1de478ab371d041327a5f8bee06f3042ad39263835143
   languageName: node
   linkType: hard
+
+"@depjam.kits/xstd.brave@workspace:code/shared.kits/xstd":
+  version: 0.0.0-use.local
+  resolution: "@depjam.kits/xstd.brave@workspace:code/shared.kits/xstd"
+  dependencies:
+    "@biomejs/biome": "npm:^1"
+    "@clack/prompts": "npm:latest"
+    "@std/toml": "npm:@jsr/std__toml@^1.0.2"
+    "@types/bun": "npm:latest"
+    "@types/glob": "npm:latest"
+    "@types/mustache": "npm:latest"
+    "@types/node": "npm:latest"
+    browserslist: "npm:^4"
+    bun: "npm:latest"
+    bun-plugin-dts: "npm:latest"
+    bun-types: "npm:latest"
+    effect: "npm:^3"
+    fast-safe-stringify: "npm:^2"
+    fnv1a: "npm:1.1.1"
+    jsr: "npm:latest"
+    mergician: "npm:latest"
+    mustache: "npm:latest"
+    nanoid: "npm:^5"
+    nanostores: "npm:latest"
+    picocolors: "npm:latest"
+    rimraf: "npm:latest"
+    ts-standard: "npm:latest"
+    tslib: "npm:latest"
+    type-fest: "npm:latest"
+    typescript: "npm:beta"
+    typescript-plugin-toml: "npm:latest"
+    vite: "npm:^6"
+    vite-plugin-inspect: "npm:^0.10.3"
+    vite-plugin-toml: "npm:latest"
+    vite-tsconfig-paths: "npm:latest"
+    zod: "npm:latest"
+  languageName: unknown
+  linkType: soft
 
 "@esbuild-plugins/node-resolve@npm:^0.2.2":
   version: 0.2.2
@@ -750,44 +788,6 @@ __metadata:
   checksum: 10/4bd4e1160e2b2bc9ea2b5b93246ce0e34a11ac5fd420ec025e82fb1120a72b80025d9cb205cce6394bb5f0013f209b9ea453cbda4c0ca4f97a2169df60084742
   languageName: node
   linkType: hard
-
-"@mflt-pseudo/std@workspace:code/shared.deps/std":
-  version: 0.0.0-use.local
-  resolution: "@mflt-pseudo/std@workspace:code/shared.deps/std"
-  dependencies:
-    "@biomejs/biome": "npm:1.x"
-    "@clack/prompts": "npm:latest"
-    "@std/toml": "npm:@jsr/std__toml@^1.0.2"
-    "@types/bun": "npm:latest"
-    "@types/glob": "npm:latest"
-    "@types/mustache": "npm:latest"
-    "@types/node": "npm:latest"
-    browserslist: "npm:4.x"
-    bun: "npm:latest"
-    bun-plugin-dts: "npm:latest"
-    bun-types: "npm:latest"
-    effect: "npm:3.x"
-    fast-safe-stringify: "npm:2.x"
-    fnv1a: "npm:1.1.1"
-    jsr: "npm:latest"
-    mergician: "npm:latest"
-    mustache: "npm:latest"
-    nanoid: "npm:5.x"
-    nanostores: "npm:latest"
-    picocolors: "npm:latest"
-    rimraf: "npm:latest"
-    ts-standard: "npm:latest"
-    tslib: "npm:latest"
-    type-fest: "npm:latest"
-    typescript: "npm:beta"
-    typescript-plugin-toml: "npm:latest"
-    vite: "npm:^6.0.3"
-    vite-plugin-inspect: "npm:^0.10.3"
-    vite-plugin-toml: "npm:latest"
-    vite-tsconfig-paths: "npm:latest"
-    zod: "npm:latest"
-  languageName: unknown
-  linkType: soft
 
 "@mflt/configs-n-collections@workspace:.":
   version: 0.0.0-use.local
@@ -2315,7 +2315,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:4.x":
+"browserslist@npm:^4":
   version: 4.24.4
   resolution: "browserslist@npm:4.24.4"
   dependencies:
@@ -2958,7 +2958,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect@npm:3.x":
+"effect@npm:^3":
   version: 3.12.7
   resolution: "effect@npm:3.12.7"
   dependencies:
@@ -2968,9 +2968,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.73":
-  version: 1.5.89
-  resolution: "electron-to-chromium@npm:1.5.89"
-  checksum: 10/e513c1588ce9b07406f90b7c6258ede8d7d3ae942b1f68b3e81ff7120181624f2a11ccca3dd4be40844101fa5f7aaaf1eba1ca4d1108c99994e519e361ab2931
+  version: 1.5.90
+  resolution: "electron-to-chromium@npm:1.5.90"
+  checksum: 10/4c04d3735a602913e431ffccfb2a910c21763a4fc64d5a00c95ae17c8869a1ee92d31b58ddfb8a00b47fe7b1061c037ad5526799d5e67883360a12b821eb2a5a
   languageName: node
   linkType: hard
 
@@ -3894,7 +3894,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-safe-stringify@npm:2.x":
+"fast-safe-stringify@npm:^2":
   version: 2.1.1
   resolution: "fast-safe-stringify@npm:2.1.1"
   checksum: 10/dc1f063c2c6ac9533aee14d406441f86783a8984b2ca09b19c2fe281f9ff59d315298bc7bc22fd1f83d26fe19ef2f20e2ddb68e96b15040292e555c5ced0c1e4
@@ -3902,11 +3902,11 @@ __metadata:
   linkType: hard
 
 "fastq@npm:^1.6.0":
-  version: 1.18.0
-  resolution: "fastq@npm:1.18.0"
+  version: 1.19.0
+  resolution: "fastq@npm:1.19.0"
   dependencies:
     reusify: "npm:^1.0.4"
-  checksum: 10/c5b501333dc8f5d188d828ea162aad03ff5a81aed185b6d4a5078aaeae0a42babc34296d7af13ebce86401cccd93c9b7b3cbf61280821c5f20af233378b42fbb
+  checksum: 10/20457acfb15946f8ea80496da296a0d4930919638315627f093269d302f46fa97eaac3ad180746910edcd6f7163b8125620c30a41427267ffacd10ab67b1c806
   languageName: node
   linkType: hard
 
@@ -6222,21 +6222,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:5.x, nanoid@npm:latest":
-  version: 5.0.9
-  resolution: "nanoid@npm:5.0.9"
-  bin:
-    nanoid: bin/nanoid.js
-  checksum: 10/8a3f9104f81095e3e4785f58caae47a05755599824b8611b9730cbf73db706b664f100e6189f8303f08764f144d499613d8e4a39e83125c53f4b4986d6576621
-  languageName: node
-  linkType: hard
-
 "nanoid@npm:^3.3.8":
   version: 3.3.8
   resolution: "nanoid@npm:3.3.8"
   bin:
     nanoid: bin/nanoid.cjs
   checksum: 10/2d1766606cf0d6f47b6f0fdab91761bb81609b2e3d367027aff45e6ee7006f660fb7e7781f4a34799fe6734f1268eeed2e37a5fdee809ade0c2d4eb11b0f9c40
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^5, nanoid@npm:latest":
+  version: 5.0.9
+  resolution: "nanoid@npm:5.0.9"
+  bin:
+    nanoid: bin/nanoid.js
+  checksum: 10/8a3f9104f81095e3e4785f58caae47a05755599824b8611b9730cbf73db706b664f100e6189f8303f08764f144d499613d8e4a39e83125c53f4b4986d6576621
   languageName: node
   linkType: hard
 
@@ -8506,7 +8506,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^6.0.3":
+"vite@npm:^6":
   version: 6.0.11
   resolution: "vite@npm:6.0.11"
   dependencies:
