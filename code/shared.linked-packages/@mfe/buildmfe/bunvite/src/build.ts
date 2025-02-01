@@ -52,6 +52,8 @@ export async function buildvite (
   props: FeBunViteBuildProps
 ): Promise<FeBunViteBuildReturnCode> {
 
+  let viteConfig = {} as InlineConfig
+
   try {
     onTaskCancellationOrFailureMessage = `Failed loading the common build config`
     if (_feIsEmptyObject(props?.buildCommonConfig)) {
@@ -76,9 +78,10 @@ export async function buildvite (
     const buildConfig = await loadConfig(props.buildCommonConfig)
 
     prompt.log.step(`tsc started`)
+    // console.warn(buildConfig)
 
     onTaskCancellationOrFailureMessage = `Failed at tsc`
-    await $`tsc -b ${buildConfig.files.tsLocalConfigJsonPath}`
+    // await $`tsc -b ${buildConfig.files.tsLocalConfigJsonPath}`
 
     prompt.log.step(`tsc ended`)
 
@@ -94,6 +97,9 @@ export async function buildvite (
       : {}
 
     onTaskCancellationOrFailureMessage = `Failed importing the local vite config ts (${buildConfig.files.viteLocalConfigTsPath})`
+    if (buildConfig.files.viteLocalConfigTsPath) {
+      prompt.log.warn('Local vite config ts can not be determined. If this is not how you intended it to be, please check the defaults and other related settings.')
+    } else {
     const viteLocalConfigFn = await import(buildConfig.files.viteLocalConfigTsPath)
     _feAssertIsAsyncFunction<InlineConfig,[ViteLocalConfigFnProps]>(
       viteLocalConfigFn,
@@ -108,16 +114,19 @@ export async function buildvite (
       prompt
     })
 
-    await viteBuild({
-      ...viteConfig,
-      configFile: false,
-    })
+    // await viteBuild({
+    //   ...viteConfig,
+    //   configFile: false,
+    // })
 
     prompt.outro('Lib building ended nicely')
     return FeBunViteBuildReturnVariants.done
 
   } catch (err) {
-    prompt.log.error(`${(onTaskCancellationOrFailureMessage || '') + (err?.message || '')}`)
+    prompt.log.error(`${
+      (onTaskCancellationOrFailureMessage || '') + 
+      (err?.message ? '\n' + err?.message : '')
+    }`)
     prompt.outro(color.bgRed(color.white(color.bold('Lib building failed.'))))
     return FeBunViteBuildReturnVariants.error
   }
@@ -131,7 +140,7 @@ async function loadConfig (
   onTaskCancellationOrFailureMessage = `Failed loading the local package.json`
   const packageJson: PackageJson = await Bun.file('./package.json', {type: 'application/json'})?.json()  // no reason to make the path configurable
   if (!packageJson?.name || !packageJson?.version)  // The required fields
-    throw('Local package json is not valid')
+    throw new Error(`Local package json is not valid \ncwd: ${import.meta.dir}`)
 
   onTaskCancellationOrFailureMessage = `Improper arguments`
   const {
@@ -183,6 +192,11 @@ async function loadConfig (
     }
   }
 
+  const viteLocalConfigTsPath = 
+  _argsValues.viteconfig 
+  || (buildCommonConfig as BuildCommonConfig).files?.viteLocalConfigTsPath 
+  || defaults?.config?.files?.viteLocalConfigTsPath
+
   const merged: BuildEffectiveConfig = mergician({ // @TODO add ability to omit common vite fields/array elements if local vite config does not work for that
     appendArrays: true,
     dedupArrays: true,
@@ -192,7 +206,7 @@ async function loadConfig (
     buildLocalConfig, {
       files: {
         tsLocalConfigJsonPath: _argsValues.tsconfig,
-        viteLocalConfigTsPath: _argsValues.viteconfig
+        viteLocalConfigTsPath
       } // asserts BuildConfig['files'],
     }
   )

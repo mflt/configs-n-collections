@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "build": "bun run ../../shared.config/build.ts",
+    "xbuild": "bun run ../../shared.linked-packages/@mfe/buildmfe/bunvite/localonly.ts",
     "xxbuild": "pnpm build-esm && pnpm build-annotate && pnpm build-cjs && build-utils pack-v2",
     "xxbuild-esm": "tsc -b tsconfig.build.json",
     "xxbuild-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",

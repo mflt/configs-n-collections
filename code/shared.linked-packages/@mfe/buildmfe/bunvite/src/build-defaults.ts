@@ -13,6 +13,6 @@ export default {
     },
   } satisfies Omit<
     BuildEffectiveConfig,
-    'libName'|'_vite'|'_meta'|'_packageJson'|'_commonConfig'|'_localConfig'
+    'libName'|'vite'|'viteCommonConfig'|'viteEffectiveConfig'|'_meta'|'_packageJson'|'_commonConfig'|'_localConfig'
   >
 }
