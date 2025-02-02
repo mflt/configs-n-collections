@@ -4,40 +4,56 @@ import * as prompt from '@clack/prompts'  // like import type, we hope
 
 export type Prompt = typeof prompt
 
+type ParamsArg = Object  // command line params arg is a parsable obj
+
 type LocalConfigFilesPaths = {
-  tsLocalConfigJsonPath: string,
+  tscLocalConfigJsonPath: string,
   viteLocalConfigTsPath: string,
 }
 type CommonConfigFilesPaths = {
-  buildLocalConfigFilePath: string,
+  builderLocalConfigFilePath: string,
 }
 
-export type BuildBaseConfig = {
+export type BuilderBaseConfig = {
   files: LocalConfigFilesPaths,
   fe: {
-    addPeerDependenciestoExternals: boolean
+    addPeerDependenciestoExternals: boolean,
+    // changetoAltCwd: boolean,
   }
   vite?: UserConfig['build'], // common and local merges, however viteLocalConfigFn may override this
 }
-export type BuildLocalConfig = BuildBaseConfig & {
+export type BuilderLocalConfig = 
+  & BuilderBaseConfig & {
   libName: string,
 }
-export type BuildCommonConfig = BuildBaseConfig & {
-  buildLocalConfigFileType: 'toml',
+export type BuilderCommonConfig = 
+  & BuilderBaseConfig & {
+  builderLocalConfigFileType: 'toml'|'ts',
   files: LocalConfigFilesPaths & CommonConfigFilesPaths,
+  cb?: {
+    cwd: (params: ParamsArg) => string
+  }
 }
-export type BuildEffectiveConfig = BuildCommonConfig & BuildLocalConfig /* *merged */ & {
+export type BuilderEffectiveLocalConfig =
+  & BuilderCommonConfig
+  & BuilderLocalConfig & {
+  builderCommonConfig: BuilderCommonConfig|{},
+  viteCommonConfigFn: ViteCommonConfigFn|null,
+  cwd?: string // @TODO path
+}
+export type BuilderEffectiveConfig = 
+  & BuilderEffectiveLocalConfig /* *merged */ & {
   viteCommonConfig: UserConfig,
   viteEffectiveConfig: InlineConfig,  // merged and the common original possibly manipulated by viteLocalConfigFn
-  _meta: ImportMeta,  // _ indicates externally given
+  _meta: ImportMeta,  // _ indicates externally given, probably cwd also belongs here
   _packageJson: PackageJson,
-  _commonConfig: BuildCommonConfig|{}, // not merged
-  _localConfig?: BuildLocalConfig, // not merged
+  _commonConfig: BuilderCommonConfig|{}, // not merged
+  _localConfig?: BuilderLocalConfig, // not merged
 }
 
 export type ViteConfigFnBaseProps = {
   mode: 'build',
-  config: BuildEffectiveConfig,
+  config: BuilderEffectiveConfig,
   resolve: (path: string) => any  // @TODO any?
   prompt: Prompt
 }
