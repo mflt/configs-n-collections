@@ -1,13 +1,11 @@
-import { build as viteBuild, type InlineConfig } from 'vite'
 import { _feIsObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction 
-} from '../../../fe3/src/index.ts'
+} from '../../../../fe3/src/index.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig, 
-  ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps, ParamsArg, 
-} from './types'
+  FeBuilderProps, FeBuilderReturnCode, _BuilderEffectiveConfig,
+} from './types.d'
 import { loadConfig } from './loadConfig.ts'
 
 export { prompt }
@@ -24,57 +22,46 @@ const resolve = (path: string) => {
   return resolved.replace('file:/', '')
 }
 
-prompt.intro(`Vite builder started`)
 
 const catchComm = {
   framingMessage: '' as string|undefined
 }
 
-export type FeBunViteBuilderProps = Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'viteCommonConfigFn'|'cwd'> & {
-  catchComm: typeof catchComm
-}
 // loading buildCommonConfig and viteCommonConfigFn is delegated to the caller, as it can do it statically
 
-export const FeBunViteBuilderReturnVariants = {
-  done: 0,
-  error: 1,
-} as const
-export type FeBunViteBuilderReturnCode = (typeof FeBunViteBuilderReturnVariants)[keyof typeof FeBunViteBuilderReturnVariants]
 
-//  Loading and execution oder:
-//  Loading order:
-//  common build config and common vite fn preloaded by the calling script
-//  command line args
-//  (change of cwd if requested in command line args or the cb in the common build config ts)
-//  local/cwd package.json (assumed to exist)
-//  local/cwd build config (toml)
-//  local/cwd vite ts (function)
-//  Exec order (post loading):
-//  tsc with the tsc config path calculated from the config
-//  common vite fn evaluated
-//  local/cwd vite fn evaluated
-//  vite build ran
+export async function bulderBase <B extends _BuilderEffectiveConfig<{}>> (
+  props: FeBuilderProps<B>
+): Promise<FeBuilderReturnCode> {
 
-export async function viteBuilder (
-  props: FeBunViteBuilderProps
-): Promise<FeBunViteBuilderReturnCode> {
+  const { 
+    builderName,
+    builderConfigPreps,
+    proc, 
+  } = props
+
+  prompt.intro(`${builderName || '<missing name>'} builder started`)
+
 
   const _catch = props.catchComm || catchComm
-  let viteConfig = {} as InlineConfig
 
   try {
 
-    // now we parse different build and vite configs possibly coming from different sources
+    _feAssertIsObject(proc)
 
-    const builderConfig = await loadConfig({...props, catchComm: _catch})
+    const builderConfig = await builderConfigPreps.pre({})
+    // loadConfig({...props, catchComm: _catch})
 
-    prompt.log.step(`tsc started`)
-    // console.warn(builderConfig)
+    if (proc.ifTscistobeRan) {
 
-    _catch.framingMessage = `Failed at tsc`
-    // await $`tsc -b ${buildConfig.files.tscLocalConfigJsonPath}`
+      prompt.log.step(`tsc started`)
+      // console.warn(builderConfig)
 
-    prompt.log.step(`tsc ended`)
+      _catch.framingMessage = `Failed at tsc`
+      // await $`tsc -b ${buildConfig.files.tscLocalConfigJsonPath}`
+
+      prompt.log.step(`tsc ended`)
+    }
 
     if (builderConfig.viteCommonConfigFn !== null) { // if not a function, that should've caused panic above
       prompt.log.step(`evaluating common config`)

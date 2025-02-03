@@ -1,0 +1,35 @@
+{
+  "name": "@mfe/builder",
+  "private": false,
+  "version": "0.1.0",
+  "type": "module",
+  "module": "./[dist]/esm/index.js",
+  "main": "./[dist]/cjs/index.cjs",
+  "types": "./[dist]/dts/index.d.ts",
+  "description": "",
+  "exports": {
+    "types": "./[dist]/dts/index.d.ts",
+    "import": "./[dist]/esm/index.js",
+    "require": "./[dist]/esm/index.cjs"
+  },
+  "files": [
+    "[dist]"
+  ],
+  "#": [
+    ""
+  ],
+  "scripts": {
+    "build": "bun run ../../shared.config/build.ts",
+  },
+  "dependencies": {
+  },
+  "peerDependencies": {
+    "@clack/prompts": "latest",
+    "fast-safe-stringify": "latest"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "latest",
+    "typescript": "beta"
+  }
+}

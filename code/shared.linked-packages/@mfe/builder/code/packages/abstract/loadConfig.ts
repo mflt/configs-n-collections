@@ -6,27 +6,32 @@ import { mergician } from 'mergician'
 import { type InlineConfig } from 'vite'
 import { _feIsObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction 
-} from '../../../fe3/src/index.ts'
+} from '../../../../fe3/src/index.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
   BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig, 
   ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps, ParamsArg, 
 } from './types'
-import type { FeBunViteBuilderProps } from './builder.ts'
-import defaults from './builder-defaults.ts'
+import type { FeBunViteBuilderProps } from './entry.ts'
+import defaultsProfiles from './defaults-profiles.ts'
 
 
 export async function loadConfig (
-  props: FeBunViteBuilderProps
+  props: FeBunViteBuilderProps & Required<Pick<FeBunViteBuilderProps, 'catchComm'>>
 ): Promise<BuilderEffectiveConfig> {
   
-  const _catch = props.catchComm
+  const { 
+    catchComm: _catch,
+    defaultsProfileName = 'base'
+  } = props
 
   let buildLocalConfig = {} as BuilderEffectiveLocalConfig
 
-  if (!_feIsObject(defaults)) {
-    prompt.log.warn('Builder defaults are not a valid object (see builder-defaults.ts)')
+  if (!_feIsObject(defaultsProfiles[defaultsProfileName])) {
+    prompt.log.warn(
+      `Builder defaults of profile named '${defaultsProfileName}' are not a valid object ` + 
+      '(see defaults-profiles.ts in the package)')
   }
 
   // the below two configs are assumed to be loaded by the caller
@@ -65,15 +70,15 @@ export async function loadConfig (
     options: {
       configFile: { // local/cwd build config path
         type: 'string',
-        short: 'c',
+        short: 'f',
       },
       tsconfig: { // local/cwd tsc config path
         type: 'string',
         short: 't',
       },
-      viteconfig: { // local/cwd vite config ts
+      config: { // local/cwd vite config ts
         type: 'string',
-        short: 'v',
+        short: 'c',
         // multiple: true,
       },
       cwd: {

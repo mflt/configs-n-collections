@@ -1,55 +1,49 @@
-import type { PackageJson } from 'type-fest'
 import type { UserConfig, InlineConfig } from 'vite'
-import * as prompt from '@clack/prompts'  // like import type, we hope
+import type {
+  FeBuilderCtx, FeBuilderReturnCode,
+  LocalConfigFilesPaths, CommonConfigFilesPaths, 
+  _BuilderLocalConfig, _BuilderCommonConfig, _BuilderEffectiveLocalConfig, _BuilderEffectiveConfig
+} from '../abstract/types.d'
+import { DefaultsProfileNames } from './defaults-profiles.ts'
 
-export type Prompt = typeof prompt
-
-type ParamsArg = Object  // command line params arg is a parsable obj
-
-type LocalConfigFilesPaths = {
-  tscLocalConfigJsonPath: string,
-  viteLocalConfigTsPath: string,
+export type { 
+  FeBuilderCtx, FeBuilderReturnCode
 }
-type CommonConfigFilesPaths = {
-  builderLocalConfigFilePath: string,
-}
+
+export type FeViteBuilderProps = FeBuilderProps < 
+  & Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'bundlerCommonConfigFn'|'cwd'> & {
+  defaultsProfileName?: DefaultsProfileNames,
+}>
+
 
 export type BuilderBaseConfig = {
   files: LocalConfigFilesPaths,
-  fe: {
+  feb: {
     addPeerDependenciestoExternals: boolean,
     // changetoAltCwd: boolean,
   }
   vite?: UserConfig['build'], // common and local merges, however viteLocalConfigFn may override this
 }
-export type BuilderLocalConfig = 
+export type BuilderLocalConfig = _BuilderLocalConfig<
+  BuilderBaseConfig
+>
+export type BuilderCommonConfig = _BuilderCommonConfig<
   & BuilderBaseConfig & {
-  libName: string,
-}
-export type BuilderCommonConfig = 
-  & BuilderBaseConfig & {
-  builderLocalConfigFileType: 'toml'|'ts',
   files: LocalConfigFilesPaths & CommonConfigFilesPaths,
-  cb?: {
-    cwd: (params: ParamsArg) => string
-  }
-}
-export type BuilderEffectiveLocalConfig =
+}>
+export type BuilderEffectiveLocalConfig = _BuilderEffectiveLocalConfig<
   & BuilderCommonConfig
   & BuilderLocalConfig & {
-  builderCommonConfig: BuilderCommonConfig|{},
-  viteCommonConfigFn: ViteCommonConfigFn|null,
-  cwd?: string // @TODO path
-}
-export type BuilderEffectiveConfig = 
+  feCommonConfig: BuilderCommonConfig|{},
+  bundlerCommonConfigFn: ViteCommonConfigFn|null,
+}>
+export type BuilderEffectiveConfig = _BuilderEffectiveConfig<
   & BuilderEffectiveLocalConfig /* *merged */ & {
   viteCommonConfig: UserConfig,
   viteEffectiveConfig: InlineConfig,  // merged and the common original possibly manipulated by viteLocalConfigFn
-  _meta: ImportMeta,  // _ indicates externally given, probably cwd also belongs here
-  _packageJson: PackageJson,
   _commonConfig: BuilderCommonConfig|{}, // not merged
   _localConfig?: BuilderLocalConfig, // not merged
-}
+}>
 
 export type ViteConfigFnBaseProps = {
   mode: 'build',
