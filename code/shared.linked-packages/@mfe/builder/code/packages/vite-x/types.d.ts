@@ -1,19 +1,35 @@
 import type { UserConfig, InlineConfig } from 'vite'
 import type {
-  FeBuilderCtx, FeBuilderReturnCode,
+  FeBuilderCtx, FeBuilderRunnerCtx, FeBuilderReturnCode, FeBuilderEntryCtx,
   LocalConfigFilesPaths, CommonConfigFilesPaths, 
   _BuilderLocalConfig, _BuilderCommonConfig, _BuilderEffectiveLocalConfig, _BuilderEffectiveConfig
 } from '../abstract/types.d'
+import type {
+  FeBundlerConfigPrototype
+} from '../abstract/prototype-bundler.d'
 import { DefaultsProfileNames } from './defaults-profiles.ts'
 
 export type { 
   FeBuilderCtx, FeBuilderReturnCode
 }
 
-export type FeViteBuilderProps = FeBuilderProps < 
-  & Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'bundlerCommonConfigFn'|'cwd'> & {
-  defaultsProfileName?: DefaultsProfileNames,
-}>
+// export type FeVitexEntryProps = FeBuilderProps < 
+//   & Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'bundlerCommonConfigFn'|'cwd'> & {
+//   defaultsProfileName?: DefaultsProfileNames,
+// }>
+
+export type FeBundlerVitexConfig = FeBundlerConfigPrototype<
+  InlineConfig,
+  UserConfig
+>
+
+export type FeBuilderVitexRunnerCtx = FeBuilderRunnerCtx<{
+  mode: 'build',
+}, FeBundlerVitexConfig>
+
+export type FeBuilderVitexEntryCtx =
+  & FeBuilderEntryCtx 
+  & Pick<FeBuilderVitexRunnerCtx,'mode'>
 
 
 export type BuilderBaseConfig = {
@@ -48,8 +64,6 @@ export type BuilderEffectiveConfig = _BuilderEffectiveConfig<
 export type ViteConfigFnBaseProps = {
   mode: 'build',
   config: BuilderEffectiveConfig,
-  resolve: (path: string) => any  // @TODO any?
-  prompt: Prompt
 }
 export type ViteCommonConfigFnProps = ViteConfigFnBaseProps
 export type ViteLocalConfigFnProps = ViteConfigFnBaseProps  // No diff yet

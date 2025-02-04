@@ -4,7 +4,8 @@ import { _feIsObject, _feIsEmptyObject,
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  FeBuilderProps, FeBuilderReturnCode, _BuilderEffectiveConfig,
+  FeBuilderCtx, FeBuilderRunnerCtx, FeBuilderReturnCode, 
+  FeBundlerConfigPrototype,
 } from './types.d'
 import { loadConfig } from './loadConfig.ts'
 
@@ -29,21 +30,35 @@ const catchComm = {
 
 // loading buildCommonConfig and viteCommonConfigFn is delegated to the caller, as it can do it statically
 
+export function initRunnerCtx <
+  RunnerExtensionProps extends Record<string,any>|void = void,
+  BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
+  BuilderExtensionProps extends Record<string,any>|void = void,
+> (
+  partialRunnerCtx: Partial<FeBuilderRunnerCtx<RunnerExtensionProps, BundlerConfig, BuilderExtensionProps>>
+) {
+  return {
+    awaitCatchCommUsable: runnerCtx.awaitCatchCommUsable 
+  }
+}
 
-export async function bulderBase <B extends _BuilderEffectiveConfig<{}>> (
-  props: FeBuilderProps<B>
+
+export async function bulderBase <
+  RunnerExtensionProps extends Record<string,any>|void = void,
+  BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
+  BuilderExtensionProps extends Record<string,any>|void = void,
+> (
+  runnerCtx: FeBuilderRunnerCtx<RunnerExtensionProps, BundlerConfig, BuilderExtensionProps>,
+  builderCtx: FeBuilderCtx<BundlerConfig, BuilderExtensionProps>, 
 ): Promise<FeBuilderReturnCode> {
 
-  const { 
-    builderName,
-    builderConfigPreps,
-    proc, 
-  } = props
+  prompt.intro(`${runnerCtx.builderName || '<missing name>'} builder started`)
 
-  prompt.intro(`${builderName || '<missing name>'} builder started`)
+  runnerCtx.builderCtx ??= ()=> builderCtx
+  runnerCtx.resolve ??= resolve
+  runnerCtx.catchComm ??= catchComm
 
-
-  const _catch = props.catchComm || catchComm
+  const _catch = runnerCtx.catchComm
 
   try {
 

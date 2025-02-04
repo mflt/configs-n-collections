@@ -10,15 +10,17 @@ import { _feIsObject, _feIsEmptyObject,
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig, 
-  ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps, ParamsArg, 
+  FeBuilderCtx, FeBuilderRunnerCtx
 } from './types'
-import type { FeBunViteBuilderProps } from './entry.ts'
 import defaultsProfiles from './defaults-profiles.ts'
 
 
-export async function loadConfig (
-  props: FeBunViteBuilderProps & Required<Pick<FeBunViteBuilderProps, 'catchComm'>>
+export async function loadConfig <
+
+> (
+  builderCtx: FeBuilderCtx,
+  runnerCtx: FeBuilderRunnerCtx
+  // props: FeBunViteBuilderProps & Required<Pick<FeBunViteBuilderProps, 'catchComm'>>
 ): Promise<BuilderEffectiveConfig> {
   
   const { 

@@ -2,39 +2,61 @@ import type { PackageJson } from 'type-fest'
 import * as prompt from '@clack/prompts'  // like import type, we hope
 import color from 'picocolors'
 import type { FeBuilderReturnVariants } from './defaults'
+import type { FeBundlerConfigPrototype  } from './prototype-bundler.d'
 
 export type Prompt = typeof prompt
+export type { FeBundlerConfigPrototype }
 
 type ParamsArg = Object  // command line params arg is a parsable obj
 
+export type FeCatchComm = {
+  framingMessage: string|undefined
+}
+
 export type FeBuilderCtx <
-  BuilderConfig extends _BuilderEffectiveConfig<{}>,  // @TODO
-  T extends Record<string,any>|void = void
+  BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
+  BuilderExtensionProps extends Record<string,any>|void = void
+> = 
+  & {
+    builderConfigPreps: {
+      pre: (bc: BundlerConfig) => BundlerConfig,
+      main: (bc: BundlerConfig) => BundlerConfig,
+      post: (bc: BundlerConfig) => BundlerConfig,
+    },
+    proc: {
+      preTsc: (bc: BundlerConfig) => BundlerConfig,
+      ifTscistobeRan: boolean,
+      build1: (bc: BundlerConfig) => BundlerConfig,
+      build2: (bc: BundlerConfig) => BundlerConfig,
+    },
+  }
+  & BundlerConfig
+  & BuilderExtensionProps
+
+export type FeBuilderRunnerCtx <
+  RunnerExtensionProps extends Record<string,any>|void = void,
+  BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
+  BuilderExtensionProps extends Record<string,any>|void = void
 > = 
   & {
     builderName: string,
-    prompt?: Prompt,
-    color?: typeof color,
+    bundlerName?: string,
+    builderCtx: () => FeBuilderCtx<BundlerConfig,BuilderExtensionProps>
+    prompt: Prompt,
+    color: typeof color,
     defaultsProfileName?: string, // narrow in children
-    catchComm?: {
-      framingMessage: string|undefined
-    },
-    builderConfigPreps: {
-      pre: (bc: BuilderConfig) => BuilderConfig,
-      main: (bc: BuilderConfig) => BuilderConfig,
-      post: (bc: BuilderConfig) => BuilderConfig,
-    },
-    proc: {
-      preTsc: (bc: BuilderConfig) => BuilderConfig,
-      ifTscistobeRan: boolean,
-      build1: (bc: BuilderConfig) => BuilderConfig,
-      build2: (bc: BuilderConfig) => BuilderConfig,
-    },
+    catchComm: FeCatchComm,
+    awaitCatchCommUsable: () => Promise<FeCatchComm>,
+    resolve: (path: string) => any,  // @TODO any?
   }
-  & T
+  & RunnerExtensionProps
+
+export type FeBuilderEntryCtx = Pick<
+  FeBuilderRunnerCtx,
+  'builderName'
+>
 
 export type FeBuilderReturnCode = (typeof FeBuilderReturnVariants)[keyof typeof FeBuilderReturnVariants]
-
 
 export type LocalConfigFilesPaths = {
   tscLocalConfigJsonPath: string,

@@ -3,13 +3,13 @@ import { _feIsObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction 
 } from '../../../../fe3/src/index.ts'
 import type {
-  FeViteBuilderProps, FeBuilderCtx, FeBuilderReturnCode,
+  FeBuilderVitexRunnerCtx, FeBuilderVitexEntryCtx, FeBuilderCtx, FeBuilderReturnCode,
+  FeBundlerVitexConfig, 
   BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig, 
   ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps, 
 } from './types.d'
 import { DefaultsProfileNames } from './defaults-profiles.ts'
-import { bulderBase } from '../entry/base.ts'
-import { loadConfig } from './loadConfig.ts'
+import { bulderBase, initRunnerCtx } from '../abstract/base.ts'
 
 
 //  Loading and execution oder:
@@ -27,20 +27,36 @@ import { loadConfig } from './loadConfig.ts'
 //  vite build ran
 
 export async function viteBuilder (
-  props: FeViteBuilderProps
+  props: FeBuilderVitexEntryCtx
 ): Promise<FeBuilderReturnCode> {
 
-  const ctx = {
-    ...props,
+  const builderCtx = {
     builderConfigPreps: {
       pre: loadConfig // await loadConfig({...props, catchComm: _catch})
     }
     
-  } as FeBuilderCtx<BuilderEffectiveConfig>
+  } satisfies FeBuilderCtx<
+      FeBundlerVitexConfig, {
+        // extension props
+      }
+    >
+
+  const runnerCtx = {
+    ...initRunnerCtx(this), // @TODO is the type right?
+    ...props,
+    bundlerName: 'vite',
+    builderName: props.builderName || 'vite-x',
+  } satisfies Omit<FeBuilderVitexRunnerCtx, 'builderCtx'|'resolve'|'prompt'|'color'|'catchComm'>
+
 
   let viteConfig = {} as InlineConfig
 
-  return bulderBase<BuilderEffectiveConfig>(ctx)
+  let retValue: FeBuilderReturnCode
+
+  Promise.allSettled([
+    () => retValue = await bulderBase<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx),
+    () => runnerCtx.awaitCatchCommUsable // @TODO
+  ])
 
     // now we parse different build and vite configs possibly coming from different sources
 
