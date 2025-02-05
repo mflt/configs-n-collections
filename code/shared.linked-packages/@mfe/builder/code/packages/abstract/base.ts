@@ -1,5 +1,6 @@
 import { _feIsObject, _feIsEmptyObject,
-  _feAssertIsObject, _feAssertIsAsyncFunction 
+  _feAssertIsObject, _feAssertIsAsyncFunction, 
+  FePromisewithResolvers
 } from '../../../../fe3/src/index.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
@@ -38,7 +39,8 @@ export function initRunnerCtx <
   partialRunnerCtx: Partial<FeBuilderRunnerCtx<RunnerExtensionProps, BundlerConfig, BuilderExtensionProps>>
 ) {
   return {
-    awaitCatchCommUsable: runnerCtx.awaitCatchCommUsable 
+    ...partialRunnerCtx,
+    awaitCatchCommUsable: new FePromisewithResolvers() 
   }
 }
 
@@ -57,6 +59,7 @@ export async function bulderBase <
   runnerCtx.builderCtx ??= ()=> builderCtx
   runnerCtx.resolve ??= resolve
   runnerCtx.catchComm ??= catchComm
+  runnerCtx.awaitCatchCommUsable.resolve(true)  // resolves 
 
   const _catch = runnerCtx.catchComm
 

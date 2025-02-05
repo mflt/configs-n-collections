@@ -1,6 +1,9 @@
 import type { PackageJson } from 'type-fest'
 import * as prompt from '@clack/prompts'  // like import type, we hope
 import color from 'picocolors'
+import {  
+  FePromisewithResolvers
+} from '../../../../fe3/src/index.ts'
 import type { FeBuilderReturnVariants } from './defaults'
 import type { FeBundlerConfigPrototype  } from './prototype-bundler.d'
 
@@ -41,12 +44,24 @@ export type FeBuilderRunnerCtx <
   & {
     builderName: string,
     bundlerName?: string,
-    builderCtx: () => FeBuilderCtx<BundlerConfig,BuilderExtensionProps>
+    getBuilderCtx: () => FeBuilderCtx<BundlerConfig,BuilderExtensionProps>
     prompt: Prompt,
     color: typeof color,
     defaultsProfileName?: string, // narrow in children
     catchComm: FeCatchComm,
-    awaitCatchCommUsable: () => Promise<FeCatchComm>,
+    syncPrepsSteps: {
+      catchComm: FePromisewithResolvers<FeCatchComm>,
+      pkgLocal: FePromisewithResolvers<BundlerConfig>,
+      shaded: FePromisewithResolvers<BundlerConfig>,
+      config: FePromisewithResolvers<BundlerConfig>,
+    },
+    syncSteps: {
+      pre: FePromisewithResolvers<BundlerConfig>,
+      tsc: FePromisewithResolvers<BundlerConfig>,
+      main: FePromisewithResolvers<BundlerConfig>,
+      additional: FePromisewithResolvers<BundlerConfig>,
+      post: FePromisewithResolvers<BundlerConfig>,
+    }
     resolve: (path: string) => any,  // @TODO any?
   }
   & RunnerExtensionProps

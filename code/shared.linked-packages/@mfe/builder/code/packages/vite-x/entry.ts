@@ -51,17 +51,16 @@ export async function viteBuilder (
 
   let viteConfig = {} as InlineConfig
 
-  let retValue: FeBuilderReturnCode
+  const baseReturnCode = bulderBase<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx)
+  
+  await runnerCtx.awaitCatchCommUsable
 
-  Promise.allSettled([
-    () => retValue = await bulderBase<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx),
-    () => runnerCtx.awaitCatchCommUsable // @TODO
-  ])
 
     // now we parse different build and vite configs possibly coming from different sources
 
     // const builderConfig = await loadConfig({...props, catchComm: _catch})
 
+  function a () {
 
     if (builderConfig.viteCommonConfigFn !== null) { // if not a function, that should've caused panic above
       prompt.log.step(`evaluating common config`)
@@ -98,6 +97,7 @@ export async function viteBuilder (
         prompt
       })
     }
+  
 
     async function main (
       ctx:
@@ -108,6 +108,6 @@ export async function viteBuilder (
         configFile: false,
       })
     }
-
+  }
 }
 
