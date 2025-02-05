@@ -21,16 +21,17 @@ export type FeBuilderCtx <
   BuilderExtensionProps extends Record<string,any>|void = void
 > = 
   & {
-    builderConfigPreps: {
+    configSteps: {
+      pkgLocal: (bc: BundlerConfig) => BundlerConfig,
+      shared: (bc: BundlerConfig) => BundlerConfig,
+      final: (bc: BundlerConfig) => BundlerConfig,
+    },
+    buildSteps: {
+      preTsc: (bc: BundlerConfig) => BundlerConfig,
+      skipTsc: boolean,
       pre: (bc: BundlerConfig) => BundlerConfig,
       main: (bc: BundlerConfig) => BundlerConfig,
       post: (bc: BundlerConfig) => BundlerConfig,
-    },
-    proc: {
-      preTsc: (bc: BundlerConfig) => BundlerConfig,
-      ifTscistobeRan: boolean,
-      build1: (bc: BundlerConfig) => BundlerConfig,
-      build2: (bc: BundlerConfig) => BundlerConfig,
     },
   }
   & BundlerConfig
@@ -49,13 +50,13 @@ export type FeBuilderRunnerCtx <
     color: typeof color,
     defaultsProfileName?: string, // narrow in children
     catchComm: FeCatchComm,
-    syncPrepsSteps: {
+    syncConfigSteps: {
       catchComm: FePromisewithResolvers<FeCatchComm>,
       pkgLocal: FePromisewithResolvers<BundlerConfig>,
       shaded: FePromisewithResolvers<BundlerConfig>,
       config: FePromisewithResolvers<BundlerConfig>,
     },
-    syncSteps: {
+    syncBuildSteps: {
       pre: FePromisewithResolvers<BundlerConfig>,
       tsc: FePromisewithResolvers<BundlerConfig>,
       main: FePromisewithResolvers<BundlerConfig>,

@@ -36,12 +36,18 @@ export function initRunnerCtx <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void,
 > (
-  partialRunnerCtx: Partial<FeBuilderRunnerCtx<RunnerExtensionProps, BundlerConfig, BuilderExtensionProps>>
+  overloadRunnerCtx: Partial<FeBuilderRunnerCtx<RunnerExtensionProps, BundlerConfig, BuilderExtensionProps>>
 ) {
   return {
-    ...partialRunnerCtx,
-    awaitCatchCommUsable: new FePromisewithResolvers() 
-  }
+    syncConfigSteps: {
+      catchComm: new FePromisewithResolvers(),
+      ...overloadRunnerCtx.syncConfigSteps
+    },
+    syncBuildSteps: {
+      ...overloadRunnerCtx.syncBuildSteps
+    },
+    ...overloadRunnerCtx,
+  } as Partial<FeBuilderRunnerCtx<RunnerExtensionProps, BundlerConfig, BuilderExtensionProps>>
 }
 
 
@@ -59,7 +65,7 @@ export async function bulderBase <
   runnerCtx.builderCtx ??= ()=> builderCtx
   runnerCtx.resolve ??= resolve
   runnerCtx.catchComm ??= catchComm
-  runnerCtx.awaitCatchCommUsable.resolve(true)  // resolves 
+  runnerCtx.syncConfigSteps.catchComm.resolve(true)  // resolves 
 
   const _catch = runnerCtx.catchComm
 
