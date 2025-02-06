@@ -7,14 +7,11 @@ import {
 import type { FeBuilderReturnVariants } from './defaults'
 import type { FeBundlerConfigPrototype  } from './prototype-bundler.d'
 
-export type Prompt = typeof prompt
+export type IPrompt = typeof prompt
+export type IPromptColor = typeof color
 export type { FeBundlerConfigPrototype }
 
 type ParamsArg = Object  // command line params arg is a parsable obj
-
-export type FeCatchComm = {
-  framingMessage: string|undefined
-}
 
 export type FeBuilderCtx <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
@@ -37,35 +34,6 @@ export type FeBuilderCtx <
   & BundlerConfig
   & BuilderExtensionProps
 
-export type FeBuilderRunnerCtx <
-  RunnerExtensionProps extends Record<string,any>|void = void,
-  BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
-  BuilderExtensionProps extends Record<string,any>|void = void
-> = 
-  & {
-    builderName: string,
-    bundlerName?: string,
-    getBuilderCtx: () => FeBuilderCtx<BundlerConfig,BuilderExtensionProps>
-    prompt: Prompt,
-    color: typeof color,
-    defaultsProfileName?: string, // narrow in children
-    catchComm: FeCatchComm,
-    syncConfigSteps: {
-      catchComm: FePromisewithResolvers<FeCatchComm>,
-      pkgLocal: FePromisewithResolvers<BundlerConfig>,
-      shaded: FePromisewithResolvers<BundlerConfig>,
-      config: FePromisewithResolvers<BundlerConfig>,
-    },
-    syncBuildSteps: {
-      pre: FePromisewithResolvers<BundlerConfig>,
-      tsc: FePromisewithResolvers<BundlerConfig>,
-      main: FePromisewithResolvers<BundlerConfig>,
-      additional: FePromisewithResolvers<BundlerConfig>,
-      post: FePromisewithResolvers<BundlerConfig>,
-    }
-    resolve: (path: string) => any,  // @TODO any?
-  }
-  & RunnerExtensionProps
 
 export type FeBuilderEntryCtx = Pick<
   FeBuilderRunnerCtx,

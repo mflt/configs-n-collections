@@ -1,9 +1,9 @@
 
 export const baseConfig = {
-  builderLocalConfigFileType: 'toml', // @TODO unused
+  pkglocalConfigFileType: 'toml', // @TODO unused
   files: {
-    builderLocalConfigFilePath: './builder-config.toml',
-    tscLocalConfigJsonPath: './tsconfig.build.json',
+    pkglocalConfigFilePath: './builder-config.toml',
+    pkgTsconfigJsonPath: './tsconfig.build.json',
   },
 } as const
 

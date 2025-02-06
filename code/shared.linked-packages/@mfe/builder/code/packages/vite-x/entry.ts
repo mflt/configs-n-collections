@@ -10,6 +10,7 @@ import type {
 } from './types.d'
 import { DefaultsProfileNames } from './defaults-profiles.ts'
 import { bulderBase, initRunnerCtx } from '../abstract/base.ts'
+import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
 
 //  Loading and execution oder:
@@ -41,19 +42,26 @@ export async function viteBuilder (
       }
     >
 
-  const runnerCtx = {
-    ...initRunnerCtx(this), // @TODO is the type right?
+  const runnerCtx = new FeBuilderRunnerCtx({
     ...props,
     bundlerName: 'vite',
     builderName: props.builderName || 'vite-x',
-  } satisfies Omit<FeBuilderVitexRunnerCtx, 'builderCtx'|'resolve'|'prompt'|'color'|'catchComm'>
+  })
+  // satisfies Omit<FeBuilderVitexRunnerCtx, 'builderCtx'|'resolve'|'prompt'|'color'|'catchComm'>
+
 
 
   let viteConfig = {} as InlineConfig
 
   const baseReturnCode = bulderBase<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx)
   
-  await runnerCtx.awaitCatchCommUsable
+  
+  const _catch = await runnerCtx.ctxSignals.catchCommReady.tillPassed
+  const _prompt = runnerCtx.prompt  // is ready when catch ready
+
+  runnerCtx.execSignals.config_pkglocal.request()
+  await runnerCtx.execSignals.config_pkglocal.tillRequested
+  runnerCtx.execSignals.additional.done()
 
 
     // now we parse different build and vite configs possibly coming from different sources
@@ -63,7 +71,7 @@ export async function viteBuilder (
   function a () {
 
     if (builderConfig.viteCommonConfigFn !== null) { // if not a function, that should've caused panic above
-      prompt.log.step(`evaluating common config`)
+      _prompt.log.step(`evaluating common config`)
 
       _catch.framingMessage = `Failed at vite-common-config function`
       builderConfig.viteCommonConfig = props.viteCommonConfigFn // assumed to be a function if not null
@@ -72,7 +80,7 @@ export async function viteBuilder (
             mode: 'build',
             config: builderConfig,
             resolve,
-            prompt
+            _prompt
           })
         : {}
     }
@@ -80,7 +88,7 @@ export async function viteBuilder (
     _catch.framingMessage = 
       `Failed importing the local vite config ts (${builderConfig.files.viteLocalConfigTsPath})`
     if (builderConfig.files.viteLocalConfigTsPath) {
-      prompt.log.warn('Local vite config ts can not be determined. \n' + 
+      _prompt.log.warn('Local vite config ts can not be determined. \n' + 
         'If this is not how you intended it to be, please check the defaults and other related settings.')
     } else {
       const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
@@ -94,7 +102,7 @@ export async function viteBuilder (
         mode: 'build',
         config: builderConfig,
         resolve,
-        prompt
+        _prompt
       })
     }
   
@@ -108,6 +116,8 @@ export async function viteBuilder (
         configFile: false,
       })
     }
+
+    return await baseReturnCode
   }
 }
 
