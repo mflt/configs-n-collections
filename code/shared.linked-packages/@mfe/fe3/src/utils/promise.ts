@@ -37,7 +37,7 @@ export class FeExecSignaling <
   FulfillmentValueT = true,
   ErrorReasonT = unknown
 > extends FePromisewithResolvers<FulfillmentValueT,ErrorReasonT> {
-  public get requested () { return this.promise as Promise<true> }
+  public get requested () { return this.promise as Promise<FulfillmentValueT> }
   public done (value?: FulfillmentValueT) { this.resolve(value || true as FulfillmentValueT) }
   public fail (err: ErrorReasonT) { this.reject(err)}
   public constructor () {
@@ -45,7 +45,19 @@ export class FeExecSignaling <
   }
 }
 
+export class FeReadinessSignaling <
+  FulfillmentValueT = true,
+  ErrorReasonT = unknown
+> extends FePromisewithResolvers<FulfillmentValueT,ErrorReasonT> {
+  public get wakeonReady () { return this.promise as Promise<FulfillmentValueT> }
+  public pass (value?: FulfillmentValueT) { this.resolve(value || true as FulfillmentValueT) }
+  public fail (err: ErrorReasonT) { this.reject(err)}
+  public constructor () {
+    super()
+  }
+}
 
+// Just classic:
 
 export class DeferredPromise extends Promise<void> {
   static get [Symbol.species]() {
