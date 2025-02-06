@@ -3,7 +3,7 @@ import type {
   _Fe_AnyI, _Fe_AnyI_theOther, FeStringKeyedCollectionObject,
 } from '../_shared/types.js';
 import {
-  _feIsArray, _feIsFunction, _feIsIterable, _feIsMap, _feIsObject,
+  _feIsArray, _feIsFunction, _feIsIterable, _feIsMap, _feIsObject, _feAssertIsIterable,
 } from '../utils/probes.js';
 import {
   type FeMapLikeCollectionObject, $fe
@@ -11,6 +11,15 @@ import {
 import type {
   FeValuesAnyIterable, IFeValue, IFeValueShade, FeValuesCollection, FeShadesEntryComputer
 } from '../triplet/value-shade.i-f.js';
+
+
+export function _feMakeRecordFeMapLike <
+  T extends Record<string,any>  // @TODO unknown instead of any?
+> (
+  self: Record<string,any>  // @TODO ...
+): asserts self is FeMapLikeCollectionObject<T> {
+  ponyfillIterableonKeyedObject(self)
+}
 
 
 export const ponyfillIterableonKeyedObject =

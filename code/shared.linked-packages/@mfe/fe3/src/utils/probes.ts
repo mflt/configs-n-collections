@@ -105,3 +105,15 @@ export function _feAssertIsAsyncFunction <
     );
   }
 }
+
+export function _feAssertIsIterable <T> (
+  that: unknown,
+  labelOrMessage?: string|{message: string}
+): asserts that is Iterable<T> {
+  if (_feIsIterable(that)) {
+    throw new TypeError(
+      (labelOrMessage as MessageinProps)?.message ||
+      `Expected ${labelOrMessage || 'label'} to be iterable, but received ${that}`
+    );
+  }
+}
