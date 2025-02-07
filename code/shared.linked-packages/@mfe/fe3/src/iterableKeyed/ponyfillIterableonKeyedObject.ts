@@ -87,7 +87,7 @@ export const ponyfillIterableonKeyedObject =
       _NextPropPyl | undefined
     >;
     const {
-      idPropertyName = 'id', // see StringKeyPropName in FeVM, @TODO implement with Array
+      // idPropertyName = 'id', // see StringKeyPropName in FeVM, @TODO implement with Array
       yieldedEntryComputer,
       iteratorSourceYieldedResultDeconstuctor,
       _logRef = 'undefined case',
@@ -164,7 +164,7 @@ export const ponyfillIterableonKeyedObject =
           if (_feIsFunction(options?.sortKeysComparer)) {
             objectKeys = objectKeys.sort(options!.sortKeysComparer);
           }
-          sourceIterator = objectKeys?.[Symbol.iterator]?.() as typeof sourceIterator;
+          sourceIterator = objectKeys?.[Symbol.iterator]?.() as typeof sourceIterator;  // @TODO
         }
         if (!_feIsFunction(sourceIterator.next)) {
           throw ('could not prepare source (values) or keys iterator');  // @TODO
