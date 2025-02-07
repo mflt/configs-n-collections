@@ -6,7 +6,7 @@ import {
 } from '../../../../fe3/src/index.ts'
 import {
   FeBuilderCtx, FeBuilderStepsKeys, FeBundlerConfigPrototype, IPrompt, IPromptColor,
-} from './types.d'
+} from './types'
 import { _stepsKeysDonor } from './defaults-n-prototypes.ts'
 
 export type FeCatchComm = {

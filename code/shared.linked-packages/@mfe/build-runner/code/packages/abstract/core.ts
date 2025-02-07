@@ -37,7 +37,7 @@ const catchComm: FeCatchComm = {
 // loading buildCommonConfig and viteCommonConfigFn is delegated to the caller, as it can do it statically
 
 
-export async function coreBulder <
+export async function buildRunner <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void,
 > (

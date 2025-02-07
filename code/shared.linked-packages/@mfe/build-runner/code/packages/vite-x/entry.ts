@@ -7,9 +7,9 @@ import type {
   FeBundlerVitexConfig,
   BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig,
   ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps,
-} from './types.d'
+} from './types'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
-import { coreBulder } from '../abstract/core.ts'
+import { buildRunner } from '../abstract/core.ts'
 import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
 
@@ -53,7 +53,7 @@ export async function viteBuilder (
 
   let viteConfig = {} as InlineConfig
 
-  const returnCode = coreBulder<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx)
+  const returnCode = buildRunner<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx)
 
 
   const _catch = await runnerCtx.ctxSignals.catchCommReady.tillPassed

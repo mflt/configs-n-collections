@@ -1,7 +1,7 @@
 import type { PackageJson } from 'type-fest'
 import type { FePromisewithResolvers } from '../../../../fe3/src/index.ts'
 import type { FeBuilderReturnVariants, FeBuilderStepsKeys } from './defaults-n-prototypes.ts'
-import type { FeBundlerConfigPrototype  } from './prototype-bundler.d'
+import type { FeBundlerConfigPrototype  } from './prototype-bundler'
 import type { IPrompt, IPromptColor } from './core.ts'
 export type { FeBundlerConfigPrototype, FeBuilderStepsKeys }
 export type { IPrompt, IPromptColor }
