@@ -1,15 +1,15 @@
 import { build as viteBuild, type InlineConfig } from 'vite'
 import { _feIsObject, _feIsEmptyObject,
-  _feAssertIsObject, _feAssertIsAsyncFunction 
+  _feAssertIsObject, _feAssertIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
 import type {
   FeBuilderVitexRunnerCtx, FeBuilderVitexEntryCtx, FeBuilderCtx, FeBuilderReturnCode,
-  FeBundlerVitexConfig, 
-  BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig, 
-  ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps, 
+  FeBundlerVitexConfig,
+  BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig,
+  ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps,
 } from './types.d'
-import { DefaultsProfileNames } from './defaults-profiles.ts'
-import { bulderBase, initRunnerCtx } from '../abstract/base.ts'
+import { DefaultsProfileNames } from './defaults-n-profiles.ts'
+import { coreBulder } from '../abstract/core.ts'
 import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
 
@@ -35,7 +35,7 @@ export async function viteBuilder (
     builderConfigPreps: {
       pre: loadConfig // await loadConfig({...props, catchComm: _catch})
     }
-    
+
   } satisfies FeBuilderCtx<
       FeBundlerVitexConfig, {
         // extension props
@@ -53,9 +53,9 @@ export async function viteBuilder (
 
   let viteConfig = {} as InlineConfig
 
-  const baseReturnCode = bulderBase<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx)
-  
-  
+  const returnCode = coreBulder<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx)
+
+
   const _catch = await runnerCtx.ctxSignals.catchCommReady.tillPassed
   const _prompt = runnerCtx.prompt  // is ready when catch ready
 
@@ -85,10 +85,10 @@ export async function viteBuilder (
         : {}
     }
 
-    _catch.framingMessage = 
+    _catch.framingMessage =
       `Failed importing the local vite config ts (${builderConfig.files.viteLocalConfigTsPath})`
     if (builderConfig.files.viteLocalConfigTsPath) {
-      _prompt.log.warn('Local vite config ts can not be determined. \n' + 
+      _prompt.log.warn('Local vite config ts can not be determined. \n' +
         'If this is not how you intended it to be, please check the defaults and other related settings.')
     } else {
       const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
@@ -105,19 +105,18 @@ export async function viteBuilder (
         _prompt
       })
     }
-  
+
 
     async function main (
       ctx:
-    ) { 
-      
+    ) {
+
       await viteBuild({
         ...viteConfig,
         configFile: false,
       })
     }
 
-    return await baseReturnCode
+    return await returnCode
   }
 }
-

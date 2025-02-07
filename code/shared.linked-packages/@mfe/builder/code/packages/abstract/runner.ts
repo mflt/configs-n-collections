@@ -1,32 +1,25 @@
 import { mergician } from 'mergician'
-import { _feIsObject, _feIsEmptyObject, _feIsAsyncFunction,
-  _feAssertIsObject, _feAssertIsAsyncFunction, 
-  FePromisewithResolvers, FeExecSignaling, _feMakeRecordFeMapLike,
-  $fe, FeMapLikeCollectionObject, FeReadinessSignaling,
+import {
+  _feIsObject, _feIsEmptyObject, _feIsAsyncFunction,
+  _feAssertIsObject, _feAssertIsAsyncFunction,
+  _feMakeRecordFeMapLike, $fe, FeExecSignaling, FeReadinessSignaling
 } from '../../../../fe3/src/index.ts'
 import {
-  FeBuilderCtx, FeCatchComm, 
-  FeBundlerConfigPrototype, IPrompt, IPromptColor,
+  FeBuilderCtx, FeBuilderStepsKeys, FeBundlerConfigPrototype, IPrompt, IPromptColor,
 } from './types.d'
+import { _stepsKeysDonor } from './defaults-n-prototypes.ts'
 
 export type FeCatchComm = {
   framingMessage: string|undefined
 }
 
-const __stepsKeysDonor = { // Just to have iterable keys to engage
-  config_pkglocal: {},
-  config_shared: {},
-  config_effective: {},
-  pre: {},
-  tsc: {},
-  main: {},
-  additional: {},
-  post: {},
-} as const
-const _stepsKeysDonor = __stepsKeysDonor as unknown as Record<
-  keyof typeof __stepsKeysDonor,
-  FeExecSignaling<any>
->
+export interface IFeBuilderRunnerUtilities {
+  catchComm: FeCatchComm
+  resolve: (path: string) => any  // @TODO any?
+  prompt: IPrompt
+  color: IPromptColor
+}
+
 
 export class IFeBuilderRunnerCtx <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
@@ -35,22 +28,22 @@ export class IFeBuilderRunnerCtx <
   builderName: string
   bundlerName?: string
   steps: Record<
-      keyof typeof _stepsKeysDonor,
-      undefined| (()=> Promise<FeBuilderCtx<BundlerConfig,BuilderExtensionProps>>)
-    >
-  getBuilderCtx: () => FeBuilderCtx<BundlerConfig,BuilderExtensionProps>
-  prompt: IPrompt
-  color: IPromptColor
-  defaultsProfileName?: string // narrow in children
-  catchComm: FeCatchComm
-  execSignals: Record<
-      keyof typeof _stepsKeysDonor,
-      FeExecSignaling<BundlerConfig,BundlerConfig>
-    >
-  resolve: (path: string) => any  // @TODO any?
-  ctxSignals: {
-    catchCommReady: FeReadinessSignaling<FeCatchComm>
+    FeBuilderStepsKeys,
+    undefined| (()=> Promise<FeBuilderCtx<BundlerConfig,BuilderExtensionProps>>)
+  >
+  stepsCtrl: {
+    skipTsc: boolean
   }
+  execSignals: Record<
+    FeBuilderStepsKeys,
+    FeExecSignaling<BundlerConfig,BundlerConfig>
+  >
+  ctxSignals: {
+    runnerReady: FeReadinessSignaling<IFeBuilderRunnerUtilities>
+  }
+  utilities: IFeBuilderRunnerUtilities
+  getBuilderCtx: () => FeBuilderCtx<BundlerConfig,BuilderExtensionProps>
+  defaultsProfileName?: string // narrow in children
 }
 //  & RunnerExtensionProps
 
@@ -79,20 +72,20 @@ export class FeBuilderRunnerCtx <
         new FeExecSignaling()
       )
     )
-    this.ctxSignals.catchCommReady = new FeReadinessSignaling()
+    this.ctxSignals.runnerReady = new FeReadinessSignaling()
   }
 
   async step (
-    stepId: keyof typeof __stepsKeysDonor
+    stepId: FeBuilderStepsKeys
   ) {
-    const step = this.steps[stepId]
+    const _step = this.steps[stepId]
     const signaling = this.execSignals[stepId]
-    if (signaling && step) {
-      if (!_feIsAsyncFunction(step)) {
+    if (signaling && _step) {
+      if (!_feIsAsyncFunction(_step)) {
         throw // @TODO
       }
       signaling.skip()
-      await step(r.getBuilderCtx())
+      await _step(r.getBuilderCtx())
       signaling.done()  // @TODO if failed
     } else {
       signaling.request()

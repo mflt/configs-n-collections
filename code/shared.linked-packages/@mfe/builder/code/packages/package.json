@@ -19,7 +19,7 @@
     ""
   ],
   "scripts": {
-    "build": "bun run ../../shared.config/build.ts",
+    "build": "bun run ../../shared.config/build.ts"
   },
   "dependencies": {
   },

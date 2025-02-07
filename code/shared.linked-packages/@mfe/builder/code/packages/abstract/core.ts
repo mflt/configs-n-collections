@@ -1,20 +1,22 @@
-import { _feIsObject, _feIsEmptyObject,
-  _feAssertIsObject, _feAssertIsAsyncFunction, 
-  FePromisewithResolvers,
-  _feIsAsyncFunction
+import {
+  _feIsObject, _feIsEmptyObject,
+  _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import {
-  FeBuilderCtx, FeBuilderReturnCode, 
+  FeBuilderCtx, FeBuilderReturnCode,
   FeBundlerConfigPrototype,
-} from './types.d'
+} from './types'
 import {
   FeBuilderRunnerCtx, FeCatchComm
 } from './runner.ts'
 import { loadConfig } from './loadConfig.ts'
 
-export { prompt }
+export { prompt, color }
+export type IPrompt = typeof prompt
+export type IPromptColor = typeof color
+
 
 Error.stackTraceLimit = Number.POSITIVE_INFINITY  // @TODO why is this
 
@@ -35,32 +37,30 @@ const catchComm: FeCatchComm = {
 // loading buildCommonConfig and viteCommonConfigFn is delegated to the caller, as it can do it statically
 
 
-export async function bulderBase <
+export async function coreBulder <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void,
 > (
   runnerCtx: FeBuilderRunnerCtx<BundlerConfig, BuilderExtensionProps>,
-  builderCtx: FeBuilderCtx<BundlerConfig, BuilderExtensionProps>, 
+  builderCtx: FeBuilderCtx<BundlerConfig, BuilderExtensionProps>,
 ): Promise<FeBuilderReturnCode> {
 
   const r = runnerCtx
-
-  r.prompt ??= prompt
-  r.color ??= color
-  const { 
+  r.getBuilderCtx ??= ()=> builderCtx
+  r.utilities ??= {} as typeof r.utilities
+  r.utilities.resolve ??= resolve
+  r.utilities.catchComm ??= catchComm
+  r.utilities.prompt ??= prompt
+  r.utilities.color ??= color
+  const {
+    catchComm: _catch,
     prompt: _prompt,
     color: _color
-  } = r
+  } = r.utilities
   _prompt.intro(`${r.builderName || '<missing name>'} builder started`)
-  // if no bundlername, prompt
+  // @TODO if no bundlername, prompt
 
-
-  r.getBuilderCtx ??= ()=> builderCtx
-  r.resolve ??= resolve
-  r.catchComm ??= catchComm
-  r.ctxSignals.catchCommReady.pass(r.catchComm)
-
-  const _catch = r.catchComm
+  r.ctxSignals.runnerReady.pass(r.utilities)  // warning: this is used as readiness signal for the higher order builder
 
   try {
 
@@ -97,10 +97,10 @@ export async function bulderBase <
         : {}
     }
 
-    _catch.framingMessage = 
+    _catch.framingMessage =
       `Failed importing the local vite config ts (${builderConfig.files.viteLocalConfigTsPath})`
     if (builderConfig.files.viteLocalConfigTsPath) {
-      _prompt.log.warn('Local vite config ts can not be determined. \n' + 
+      _prompt.log.warn('Local vite config ts can not be determined. \n' +
         'If this is not how you intended it to be, please check the defaults and other related settings.')
     } else {
       const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
@@ -128,7 +128,7 @@ export async function bulderBase <
 
   } catch (err) {
     _prompt.log.error(`${
-      (_catch.framingMessage || '') + 
+      (_catch.framingMessage || '') +
       (err?.message ? '\n' + err?.message : '')
     }`)
     _prompt.outro(color.bgRed(color.white(color.bold('Lib building failed.'))))
@@ -136,4 +136,3 @@ export async function bulderBase <
   }
 }
 // END OF MAIN
-
