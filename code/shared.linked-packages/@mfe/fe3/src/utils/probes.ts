@@ -1,29 +1,31 @@
 
-export const _feIsNumber = (num: number): num is number => 
+export const _feIsNumber = (num: number): num is number =>
   +num === +num;
-export const _feIsString = (val: unknown): val is string|String => 
+export const _feIsString = (val: unknown): val is string|String =>
   typeof val === 'string' || val instanceof String;
-export const _feIsMap = <K, V> (that: unknown): that is Map<K, V> => 
+export const _feIsMap = <K, V> (that: unknown): that is Map<K, V> =>
   that instanceof Map;
-export const _feIsWeakMap = <K extends Object, V> (that: unknown): that is WeakMap<K, V> => 
+export const _feIsWeakMap = <K extends Object, V> (that: unknown): that is WeakMap<K, V> =>
   that instanceof WeakMap;
-export const _feIsArray = <T> (that: unknown): that is Array<T> => 
+export const _feIsArray = <T> (that: unknown): that is Array<T> =>
   Array.isArray(that);
-export const _feIsSet = <T> (that: unknown): that is Set<T> => 
+export const _feIsSet = <T> (that: unknown): that is Set<T> =>
   that instanceof Set;
-export const _feIsObject = (that: unknown): that is Object => 
+export const _feIsObject = (that: unknown): that is Object =>
   that instanceof Object  // inherited also counts
   && !Array.isArray(that);
-export const _feIsEmptyObject = (that: unknown): that is Record<string,never> => 
+export const _feIsEmptyObject = (that: unknown): that is Record<string,never> =>
   that?.constructor === Object  // inherited doesn't count
   && Object.keys(that)?.length === 0;
   // JSON.stringify(that) === '{}';
-export const _feIsFunction = (that: unknown): that is Function => 
+export const _feIsNotanEmptyObject = (that: unknown): that is Object =>
+  _feIsObject(that) && !_feIsEmptyObject(that);
+export const _feIsFunction = (that: unknown): that is Function =>
   that instanceof Function; // @TODO all to unknown
 export const _feIsAsyncFunction = <
   P = unknown,
   Args extends any[] = any[]
-> (that: unknown): that is (...args: Args)=>Promise<P> => 
+> (that: unknown): that is (...args: Args)=>Promise<P> =>
   that?.constructor?.name === 'AsyncFunction'; // @TODO return type ? probably done
 
 export const _feIsIterable = <T>(that: unknown): that is Iterable<T> => (

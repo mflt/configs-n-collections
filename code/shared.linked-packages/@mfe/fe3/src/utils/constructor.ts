@@ -60,7 +60,7 @@ export function _defineProperty <
   obj: Obj,
   prop: Key,
   val: PDesc
-): asserts  obj is Obj & _DefineProperty<Key, PDesc>
+): asserts obj is Obj & _DefineProperty<Key, PDesc>
 {
   Object.defineProperty(obj, prop, val);
 }

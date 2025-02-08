@@ -38,7 +38,7 @@ export class FeReadinessSignaling <
   FulfillmentValueT = true,
   ErrorReasonT = unknown
 > extends FePromisewithResolvers<FulfillmentValueT,ErrorReasonT> {
-  public get tillPassed () {
+  public get tillReady () {
     return this.promise as Promise<FulfillmentValueT>
   }
   public pass (value?: FulfillmentValueT) {
@@ -56,7 +56,7 @@ export class FeReadinessSignaling <
 
 
 export class FeExecSignaling <
-  ExecutionValueT = true,
+  ExecutionValueT = true|false,
   RequestedValueT = true,
   ErrorReasonT = unknown
 > extends FePromisewithResolvers<ExecutionValueT,ErrorReasonT> {
@@ -78,6 +78,9 @@ export class FeExecSignaling <
   public done (value?: ExecutionValueT) {
     this.resolve(value || true as ExecutionValueT)
     return value
+  }
+  public skipped () {
+    return this.done(false as ExecutionValueT)
   }
   public fail (err?: ErrorReasonT) {
     this.reject(err)
