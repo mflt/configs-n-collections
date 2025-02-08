@@ -48,8 +48,8 @@ export class IFeStepsByrunnerCtx <
   runnerName: string
   stepstoExecasFunctions: FeStepsByrunnerToExecasFunctions<StepsKeys,ExecCtx>
   stepstoSkip: FeStepsByrunnerToSkip<StepsKeys>
-  stepstoExecasShadowFunctions?: StepsKeys[] // @TODO typing
-  shadowStepFunctions?: FeStepsByrunnerToExecasFunctions<StepsKeys,ExecCtx>
+  stepstoExecasBuiltin?: StepsKeys[] // @TODO typing
+  builtinStepFunctions?: FeStepsByrunnerToExecasFunctions<StepsKeys,ExecCtx>
   execSignals: FeStepsByrunnerExecSignals<StepsKeys,ExecCtx>
   ctxSignals: FeStepsByrunnerBaseCtxSignals<RunnerUtilities>
   utilities: RunnerUtilities
@@ -115,21 +115,21 @@ export class FeStepsByrunnerCtx <
   ) {
     const skip = this.stepstoSkip[stepId] === true  // @TODO test if not true but defined
     const _stepFn = this.stepstoExecasFunctions[stepId]
-    const _shadowFn = this.shadowStepFunctions?.[stepId]
+    const _builtinFn = this.builtinStepFunctions?.[stepId]
     const signaling = this.execSignals[stepId]  // @TODO test if usable or throw
     if (!skip) {
-      if (_stepFn || this.stepstoExecasShadowFunctions?.includes(stepId)) {
+      if (_stepFn || this.stepstoExecasBuiltin?.includes(stepId)) {
         if (_stepFn) {
           if (!_feIsAsyncFunction(_stepFn)) {
             throw new Error(`${this.runnerName} got ${stepId} as to be executed as a function by got a non-function value`) // @TODO
           }
-        } else {  // stepstoExecasShadowFunctions positive
-          if (!_feIsAsyncFunction(_shadowFn)) {
-            throw new Error(`${this.runnerName} got ${stepId} as to be executed as a shadow function by got a non-function value`) // @TODO
+        } else {  // stepstoExecasBuiltinFunctions positive
+          if (!_feIsAsyncFunction(_builtinFn)) {
+            throw new Error(`${this.runnerName} got ${stepId} as to be executed as a built-in function by got a non-function value`) // @TODO
           }
         }
-        signaling.skip({message: `${this.runnerName} is handling ${stepId} in the specified ${_stepFn? '' : 'shadow'} function call`})
-        const ctxfromFn = await (_stepFn || _shadowFn!)(this.getProcessingCtx())
+        signaling.skip({message: `${this.runnerName} is handling ${stepId} in the specified ${_stepFn? '' : 'built-in'} function call`})
+        const ctxfromFn = await (_stepFn || _builtinFn!)(this.getProcessingCtx())
         signaling.done(ctxfromFn)  // @TODO if failed
         return ctxfromFn
       } else {
