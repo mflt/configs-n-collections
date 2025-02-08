@@ -1,10 +1,11 @@
 import type { PackageJson } from 'type-fest'
 import type { FePromisewithResolvers } from '../../../../fe3/src/index.ts'
+import type { FeCatchComm, IFeByrunnerBaseUtilities } from '../../../../fessentials/steps-byrunner.ts'
 import type { FeBuilderReturnVariants, FeBuilderStepsKeys } from './defaults-n-prototypes.ts'
 import type { FeBundlerConfigPrototype  } from './prototype-bundler'
-import type { IPrompt, IPromptColor } from './core.ts'
+import type { FeBuildRunner, IPrompt, IPromptColor } from './core.ts'
 export type { FeBundlerConfigPrototype, FeBuilderStepsKeys }
-export type { IPrompt, IPromptColor }
+export type { FeBuildRunner, IPrompt, IPromptColor }
 
 type ParamsArg = Object  // command line params arg is a parsable obj
 
@@ -12,22 +13,14 @@ export type FeBuilderCtx <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void
 > =
-  & {
-    configSteps: {
-      pkgLocal: (bc: BundlerConfig) => BundlerConfig,
-      shared: (bc: BundlerConfig) => BundlerConfig,
-      final: (bc: BundlerConfig) => BundlerConfig,
-    },
-    buildSteps: {
-      preTsc: (bc: BundlerConfig) => BundlerConfig,
-      skipTsc: boolean,
-      pre: (bc: BundlerConfig) => BundlerConfig,
-      main: (bc: BundlerConfig) => BundlerConfig,
-      post: (bc: BundlerConfig) => BundlerConfig,
-    },
-  }
   & BundlerConfig
   & BuilderExtensionProps
+
+export interface IFeBuilderRunnerUtilities extends IFeByrunnerBaseUtilities {
+  resolve: (path: string) => any  // @TODO any?
+  prompt: IPrompt
+  color: IPromptColor
+}
 
 
 export type FeBuilderEntryCtx = Pick<

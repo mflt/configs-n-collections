@@ -9,8 +9,8 @@ import type {
   ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps,
 } from './types'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
-import { buildRunner } from '../abstract/core.ts'
-import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
+import { FeBuildRunner } from '../abstract/core.ts'
+// import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
 
 //  Loading and execution oder:
@@ -31,42 +31,51 @@ export async function viteBuilder (
   props: FeBuilderVitexEntryCtx
 ): Promise<FeBuilderReturnCode> {
 
-  const builderCtx = {
-    builderConfigPreps: {
-      pre: loadConfig // await loadConfig({...props, catchComm: _catch})
-    }
+  // } satisfies FeBuilderCtx<
+  //     FeBundlerVitexConfig, {
+  //       // extension props
+  //     }
+  //   >
 
-  } satisfies FeBuilderCtx<
-      FeBundlerVitexConfig, {
-        // extension props
-      }
-    >
-
-  const runnerCtx = new FeBuilderRunnerCtx({
-    ...props,
-    bundlerName: 'vite',
-    builderName: props.builderName || 'vite-x',
-  })
+  // const runnerCtx = new FeBuilderRunnerCtx({
+  //   ...props,
+  //   bundlerName: 'vite', @TODO ctx
+  //   builderName: props.builderName || 'vite-x',
+  // })
   // satisfies Omit<FeBuilderVitexRunnerCtx, 'builderCtx'|'resolve'|'prompt'|'color'|'catchComm'>
 
 
+  const builderCtx = {}
 
   let viteConfig = {} as InlineConfig
 
-  const returnCode = buildRunner<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(runnerCtx, builderCtx)
+  // const returnCode =
+
+  const r = new FeBuildRunner<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(
+    'vite', // '_',
+    builderCtx,
+    {
+      stepstoExecasFunctions: {
+        pre: ()=> true
+      }
+    }
+  )
+
+  const {
+    catchComm: _c,
+    prompt: p,
+    color: co
+  } = await r.ctxSignals.runnerReady.tillReady // returns utilities
 
 
-  const _catch = await runnerCtx.ctxSignals.catchCommReady.tillPassed
-  const _prompt = runnerCtx.prompt  // is ready when catch ready
+  try {
+    r.loadConfigs()
+    r.exec()
+  } catch(err) {
 
-  runnerCtx.execSignals.config_pkglocal.request()
-  await runnerCtx.execSignals.config_pkglocal.tillRequested
-  runnerCtx.execSignals.additional.done()
-
+  }
 
     // now we parse different build and vite configs possibly coming from different sources
-
-    // const builderConfig = await loadConfig({...props, catchComm: _catch})
 
   function a () {
 

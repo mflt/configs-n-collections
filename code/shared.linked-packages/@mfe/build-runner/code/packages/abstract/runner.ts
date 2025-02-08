@@ -13,12 +13,6 @@ export type FeCatchComm = {
   framingMessage: string|undefined
 }
 
-export interface IFeBuilderRunnerUtilities {
-  catchComm: FeCatchComm
-  resolve: (path: string) => any  // @TODO any?
-  prompt: IPrompt
-  color: IPromptColor
-}
 
 
 export class IFeBuilderRunnerCtx <

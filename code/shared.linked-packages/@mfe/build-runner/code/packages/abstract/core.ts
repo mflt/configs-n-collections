@@ -1,22 +1,23 @@
+import { MergicianOptions } from 'mergician'
 import {
-  _feIsObject, _feIsEmptyObject,
+  _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
+import { FeStepsByrunnerCtx, IFeStepsByrunnerCtx, FeCatchComm } from '../../../../fessentials/steps-byrunner.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import {
   FeBuilderCtx, FeBuilderReturnCode,
-  FeBundlerConfigPrototype,
+  FeBundlerConfigPrototype, FeBuilderStepsKeys, IFeBuilderRunnerUtilities,
 } from './types'
-import {
-  FeBuilderRunnerCtx, FeCatchComm
-} from './runner.ts'
-import { loadConfig } from './loadConfig.ts'
+import { _stepsKeysDonor } from './defaults-n-prototypes.ts'
+import { loadBuilderConfigs } from './configs-loader.ts'
 
 export { prompt, color }
 export type IPrompt = typeof prompt
 export type IPromptColor = typeof color
 
+const catchComm = new FeCatchComm()
 
 Error.stackTraceLimit = Number.POSITIVE_INFINITY  // @TODO why is this
 
@@ -30,41 +31,83 @@ const resolve = (path: string) => {
   return resolved.replace('file:/', '')
 }
 
-const catchComm: FeCatchComm = {
-  framingMessage: '' as string|undefined
-}
-
 // loading buildCommonConfig and viteCommonConfigFn is delegated to the caller, as it can do it statically
 
-
-export async function buildRunner <
+export class FeBuildRunner <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void,
-> (
-  runnerCtx: FeBuilderRunnerCtx<BundlerConfig, BuilderExtensionProps>,
-  builderCtx: FeBuilderCtx<BundlerConfig, BuilderExtensionProps>,
-): Promise<FeBuilderReturnCode> {
+> extends FeStepsByrunnerCtx<
+  FeBuilderStepsKeys,
+  FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+  IFeBuilderRunnerUtilities
+>
+{
+  get builderName () { return this.runnerName }
+  get getBuilderCtx () { return this.getProcessingCtx }
 
-  const r = runnerCtx
-  r.getBuilderCtx ??= ()=> builderCtx
-  r.utilities ??= {} as typeof r.utilities
-  r.utilities.resolve ??= resolve
-  r.utilities.catchComm ??= catchComm
-  r.utilities.prompt ??= prompt
-  r.utilities.color ??= color
-  const {
-    catchComm: _catch,
-    prompt: _prompt,
-    color: _color
-  } = r.utilities
-  _prompt.intro(`${r.builderName || '<missing name>'} builder started`)
-  // @TODO if no bundlername, prompt
+  assigntoBuilderCtx (
+    toMerge: FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+    mergicianOptions?: MergicianOptions
+  ) {
+    return this.assigntoProcessingCtx(toMerge, mergicianOptions)
+  }
 
-  r.ctxSignals.runnerReady.pass(r.utilities)  // warning: this is used as readiness signal for the higher order builder
+  constructor(
+    builderName: string,
+    // stepsKeysDonor: ConstructorParameters<
+    //   typeof FeStepsByrunnerCtx<
+    //     FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
+    //   >
+    // >[1] | '_',  // @TODO named one?
+    builderCtx: FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+    initiator?: Partial<
+      Omit<IFeStepsByrunnerCtx<
+        FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
+      >,'runnerName'|'getProcessingCtx'> & {
+        getBuilderCtx: FeStepsByrunnerCtx<
+          FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
+        >['getProcessingCtx']
+      }
+    >
+  ) {
+    super(
+      builderName,
+      // (stepsKeysDonor !== '_' && stepsKeysDonor) ||
+      _stepsKeysDonor,
+      initiator
+    )
+    // @TODO test builderCtx, if not defined throw
+    const r = this
+    r.getProcessingCtx ??= initiator?.getBuilderCtx || (() => builderCtx)
+    r.utilities.catchComm ??= catchComm
+    r.utilities.resolve ??= resolve
+    r.utilities.prompt ??= prompt
+    r.utilities.color ??= color
+    r.utilities.prompt.intro(`${r.builderName || '<missing name>'} builder started`)
+    // @TODO if no bundlername, prompt
+
+    r.ctxSignals.runnerReady.pass(r.utilities)  // warning: this is used as readiness signal for the higher order builder
+  }
+
+  async loadConfigs () {
+    return loadBuilderConfigs<
+      BundlerConfig,
+      BuilderExtensionProps
+    >(this)
+  }
+
+  async exec (): Promise<FeBuilderReturnCode> {
+
+    const r = this
+    const {
+      catchComm: _c,
+      prompt: p,
+      color: co
+    } = r.utilities
+
 
   try {
 
-    r.step('config_pkglocal')
 
     _feAssertIsObject(proc)
 
@@ -73,19 +116,19 @@ export async function buildRunner <
 
     if (proc.ifTscistobeRan) {
 
-      _prompt.log.step(`tsc started`)
+      p.log.step(`tsc started`)
       // console.warn(builderConfig)
 
-      _catch.framingMessage = `Failed at tsc`
+      _c.framingMessage = `Failed at tsc`
       // await $`tsc -b ${buildConfig.files.tscLocalConfigJsonPath}`
 
-      _prompt.log.step(`tsc ended`)
+      p.log.step(`tsc ended`)
     }
 
     if (builderConfig.viteCommonConfigFn !== null) { // if not a function, that should've caused panic above
-      _prompt.log.step(`evaluating common config`)
+      p.log.step(`evaluating common config`)
 
-      _catch.framingMessage = `Failed at vite-common-config function`
+      _c.framingMessage = `Failed at vite-common-config function`
       builderConfig.viteCommonConfig = props.viteCommonConfigFn // assumed to be a function if not null
         ?
           await props.viteCommonConfigFn({
@@ -97,10 +140,10 @@ export async function buildRunner <
         : {}
     }
 
-    _catch.framingMessage =
+    _c.framingMessage =
       `Failed importing the local vite config ts (${builderConfig.files.viteLocalConfigTsPath})`
     if (builderConfig.files.viteLocalConfigTsPath) {
-      _prompt.log.warn('Local vite config ts can not be determined. \n' +
+      p.log.warn('Local vite config ts can not be determined. \n' +
         'If this is not how you intended it to be, please check the defaults and other related settings.')
     } else {
       const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
@@ -109,7 +152,7 @@ export async function buildRunner <
         {message: 'Local vite config is not a function'}
       )
 
-      _catch.framingMessage = `Failed at vite-local-config function`
+      _c.framingMessage = `Failed at vite-local-config function`
       viteConfig = await viteLocalConfigFn({
         mode: 'build',
         config: builderConfig,
@@ -123,16 +166,16 @@ export async function buildRunner <
     //   configFile: false,
     // })
 
-    _prompt.outro('Lib building ended nicely')
+    p.outro('Lib building ended nicely')
     return FeBunViteBuilderReturnVariants.done
 
-  } catch (err) {
-    _prompt.log.error(`${
-      (_catch.framingMessage || '') +
-      (err?.message ? '\n' + err?.message : '')
-    }`)
-    _prompt.outro(color.bgRed(color.white(color.bold('Lib building failed.'))))
-    return FeBunViteBuilderReturnVariants.error
+    } catch (err) {
+      p.log.error(`${
+        (_c.framingMessage || '') +
+        (err?.message ? '\n' + err?.message : '')
+      }`)
+      p.outro(color.bgRed(color.white(color.bold('Lib building failed.'))))
+      return FeBunViteBuilderReturnVariants.error
+    }
   }
 }
-// END OF MAIN
