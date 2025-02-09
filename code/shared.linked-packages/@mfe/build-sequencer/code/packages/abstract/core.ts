@@ -6,10 +6,10 @@ import {
 import { FeStepsByrunnerCtx, IFeStepsByrunnerCtx, FeCatchComm } from '../../../../fessentials/steps-byrunner.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
-import {
-  FeBuilderCtx, FeBuilderReturnCode,
-  FeBundlerConfigPrototype, FeBuilderStepsKeys, IFeBuilderRunnerUtilities,
-} from './types'
+import type {
+  BsqrBuilderCtx, FeBuilderReturnCode,
+  FeBundlerConfigPrototype, FeBuilderStepsKeys, IBsqrRunnerUtilities,
+} from './types.d.ts'
 import { _stepsKeysDonor } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
 
@@ -33,20 +33,20 @@ const resolve = (path: string) => {
 
 // loading buildCommonConfig and viteCommonConfigFn is delegated to the caller, as it can do it statically
 
-export class FeBuildRunner <
+export class FeBuildSequencer <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void,
 > extends FeStepsByrunnerCtx<
   FeBuilderStepsKeys,
-  FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,
-  IFeBuilderRunnerUtilities
+  BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+  IBsqrRunnerUtilities
 >
 {
   get builderName () { return this.runnerName }
   get getBuilderCtx () { return this.getProcessingCtx }
 
   assigntoBuilderCtx (
-    toMerge: FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+    toMerge: BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,
     mergicianOptions?: MergicianOptions
   ) {
     return this.assigntoProcessingCtx(toMerge, mergicianOptions)
@@ -59,13 +59,13 @@ export class FeBuildRunner <
     //     FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
     //   >
     // >[1] | '_',  // @TODO named one?
-    builderCtx: FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+    builderCtx: BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,
     initiator?: Partial<
       Omit<IFeStepsByrunnerCtx<
-        FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
+        FeBuilderStepsKeys,BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBsqrRunnerUtilities
       >,'runnerName'|'getProcessingCtx'> & {
         getBuilderCtx: FeStepsByrunnerCtx<
-          FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
+          FeBuilderStepsKeys,BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBsqrRunnerUtilities
         >['getProcessingCtx']
       }
     >

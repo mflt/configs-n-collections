@@ -8,8 +8,8 @@ import { _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
 import {
-  FeBuildRunner, FeBuilderCtx, FeBuilderReturnCode,
-  FeBundlerConfigPrototype, FeBuilderStepsKeys, IFeBuilderRunnerUtilities,
+  FeBuildRunner, BsqrBuilderCtx, FeBuilderReturnCode,
+  FeBundlerConfigPrototype, FeBuilderStepsKeys, IBsqrRunnerUtilities,
 } from './types'
 // import defaultsProfiles from './defaults-profiles.ts'
 

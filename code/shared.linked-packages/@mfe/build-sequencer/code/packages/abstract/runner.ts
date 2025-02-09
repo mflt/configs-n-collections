@@ -5,7 +5,7 @@ import {
   _feMakeRecordFeMapLike, $fe, FeExecSignaling, FeReadinessSignaling
 } from '../../../../fe3/src/index.ts'
 import {
-  FeBuilderCtx, FeBuilderStepsKeys, FeBundlerConfigPrototype, IPrompt, IPromptColor,
+  BsqrBuilderCtx, FeBuilderStepsKeys, FeBundlerConfigPrototype, IPrompt, IPromptColor,
 } from './types'
 import { _stepsKeysDonor } from './defaults-n-prototypes.ts'
 
@@ -23,7 +23,7 @@ export class IFeBuilderRunnerCtx <
   bundlerName?: string
   steps: Record<
     FeBuilderStepsKeys,
-    undefined| (()=> Promise<FeBuilderCtx<BundlerConfig,BuilderExtensionProps>>)
+    undefined| (()=> Promise<BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>>)
   >
   stepsCtrl: {
     skipTsc: boolean
@@ -36,7 +36,7 @@ export class IFeBuilderRunnerCtx <
     runnerReady: FeReadinessSignaling<IFeBuilderRunnerUtilities>
   }
   utilities: IFeBuilderRunnerUtilities
-  getBuilderCtx: () => FeBuilderCtx<BundlerConfig,BuilderExtensionProps>
+  getBuilderCtx: () => BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>
   defaultsProfileName?: string // narrow in children
 }
 //  & RunnerExtensionProps

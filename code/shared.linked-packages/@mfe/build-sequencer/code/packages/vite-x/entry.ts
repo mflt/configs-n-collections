@@ -11,7 +11,7 @@ import type {
   ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps,
 } from './types'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
-import { FeBuildRunner } from '../abstract/core.ts'
+import { FeBuildSequencer } from '../abstract/core.ts'
 // import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
 type __BuilderCtx = {}
@@ -54,7 +54,7 @@ export async function viteBuilder (
 
   // const returnCode =
 
-  const r = new FeBuildRunner<
+  const r = new FeBuildSequencer<
     FeBuilderVitexRunnerCtx,
     FeBundlerVitexConfig
   >(

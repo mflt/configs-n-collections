@@ -16,10 +16,10 @@ const __stepsKeysDonor = { // Just to have iterable keys to engage
   post: {},
 } as const
 
-export type FeBuilderStepsKeys = keyof typeof __stepsKeysDonor  // @TODO naming
+export type BsqrStepsKeys = keyof typeof __stepsKeysDonor  // @TODO naming
 
 export const _stepsKeysDonor = __stepsKeysDonor as unknown as Record<
-  FeBuilderStepsKeys,
+  BsqrStepsKeys,
   FeExecSignaling<any>
 >
 
@@ -27,7 +27,7 @@ export const baseConfig: {
   files: PkglocalConfigFilesPaths
 } = {
   files: {
-    seqlocalConfigFilePath: './builder-config.toml',
+    bsqrlocalConfigFilePath: './builder-config.toml',
     pkgTsconfigJsonPath: './tsconfig.build.json',
   },
 } as const

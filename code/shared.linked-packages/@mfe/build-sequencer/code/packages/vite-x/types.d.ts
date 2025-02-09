@@ -1,6 +1,6 @@
 import type { UserConfig, InlineConfig } from 'vite'
 import type {
-  FeBuilderCtx, FeBuilderRunnerCtx, FeBuilderReturnCode, FeBuilderEntryCtx,
+  BsqrBuilderCtx, FeBuilderRunnerCtx, FeBuilderReturnCode, FeBuilderEntryCtx,
   PkglocalConfigFilesPaths, CommonConfigFilesPaths,
   _BuilderLocalConfig, _BuilderCommonConfig, _BuilderEffectiveLocalConfig, _BuilderEffectiveConfig
 } from '../abstract/types'
@@ -10,7 +10,7 @@ import type {
 import { DefaultsProfileNames } from './defaults-profiles.ts'
 
 export type {
-  FeBuilderCtx, FeBuilderReturnCode
+  BsqrBuilderCtx as FeBuilderCtx, FeBuilderReturnCode
 }
 
 // export type FeVitexEntryProps = FeBuilderProps <

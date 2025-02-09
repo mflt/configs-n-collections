@@ -1,24 +1,24 @@
 import type { PackageJson } from 'type-fest'
 import type { FePromisewithResolvers } from '../../../../fe3/src/index.ts'
 import type { FeCatchComm, IFeByrunnerBaseUtilities } from '../../../../fessentials/steps-byrunner.ts'
-import type { FeBuilderReturnVariants, FeBuilderStepsKeys } from './defaults-n-prototypes.ts'
+import type { FeBuilderReturnVariants, BsqrStepsKeys } from './defaults-n-prototypes.ts'
 import type { FeBundlerConfigPrototype  } from './prototype-bundler'
-import type { FeBuildRunner, IPrompt, IPromptColor } from './core.ts'
-export type { FeBundlerConfigPrototype, FeBuilderStepsKeys }
-export type { FeBuildRunner, IPrompt, IPromptColor }
+import type { FeBuildSequencer, IPrompt, IPromptColor } from './core.ts'
+export type { FeBundlerConfigPrototype, BsqrStepsKeys as FeBuilderStepsKeys }
+export type { FeBuildSequencer as FeBuildRunner, IPrompt, IPromptColor }
 
 type ParamsArg = Object  // command line params arg is a parsable obj
 
 export type FeBuilderReturnCode = (typeof FeBuilderReturnVariants)[keyof typeof FeBuilderReturnVariants]
 
-export type FeBuilderCtx <
+export type BsqrBuilderCtx <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void
 > =
   & BundlerConfig
   & BuilderExtensionProps
 
-export interface IFeBuilderRunnerUtilities extends IFeByrunnerBaseUtilities {
+export interface IBsqrRunnerUtilities extends IFeByrunnerBaseUtilities {
   resolve: (path: string) => any  // @TODO any?
   prompt: IPrompt
   color: IPromptColor
@@ -31,7 +31,7 @@ export interface IFeBuilderRunnerUtilities extends IFeByrunnerBaseUtilities {
 // >
 
 export type PkglocalConfigFilesPaths = {
-  seqlocalConfigFilePath: string,
+  bsqrlocalConfigFilePath: string,
   tscLocalConfigJsonPath: string,
   bundlerLocalConfigScriptPath: string,
 }
