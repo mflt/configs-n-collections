@@ -1,7 +1,7 @@
 import {
   FeExecSignaling
 } from '../../../../fe3/src/index.ts'
-import type { PkglocalConfigFilesPaths } from './types.d.ts'
+import type { PkglocalConfigFilesPaths } from './types'
 
 const __stepsKeysDonor = { // Just to have iterable keys to engage
   config_a_pkglocal: {},

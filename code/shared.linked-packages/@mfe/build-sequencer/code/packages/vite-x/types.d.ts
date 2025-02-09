@@ -3,10 +3,10 @@ import type {
   FeBuilderCtx, FeBuilderRunnerCtx, FeBuilderReturnCode, FeBuilderEntryCtx,
   PkglocalConfigFilesPaths, CommonConfigFilesPaths,
   _BuilderLocalConfig, _BuilderCommonConfig, _BuilderEffectiveLocalConfig, _BuilderEffectiveConfig
-} from '../abstract/types.d'
+} from '../abstract/types'
 import type {
   FeBundlerConfigPrototype
-} from '../abstract/prototype-bundler.d'
+} from '../abstract/prototype-bundler'
 import { DefaultsProfileNames } from './defaults-profiles.ts'
 
 export type {
