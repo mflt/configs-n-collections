@@ -107,3 +107,21 @@ export type _UnreadonlifyConstEnum <T> = {
 };
 // * https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
 // * https://stackoverflow.com/questions/74895551/mutablet-works-only-when-theres-an-missing-type
+
+export type _Branded <T,
+  Brand extends string
+> = T & {
+  readonly __brand: Brand // @TODO could be a symbol
+};  // @TODO is it zod compatible?
+
+export type _UniquelyBranded <T,
+  Brand extends string
+> = T & {
+  readonly [B in Brand as `__${B}_brand`]: never;
+};
+// *https://news.ycombinator.com/item?id=40146751
+
+export type _BrandofBranded <T> = T extends { __brand: infer B } ? B : never
+export type _WithAssertedBrand <T,
+  Brand extends string
+> = T extends { __brand: infer B } ? B extends Brand ? T : never  : never

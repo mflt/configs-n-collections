@@ -54,6 +54,12 @@ export class FeReadinessSignaling <
   }
 }
 
+export type FeExecSignalingErrorCodes = 'RequestSkipped'
+
+export type FeExecSignalingError = {
+  message: string,
+  execSignaling: FeExecSignalingErrorCodes,
+}
 
 export class FeExecSignaling <
   ExecutionValueT = true|false,
@@ -68,7 +74,7 @@ export class FeExecSignaling <
     this._requested.resolve(value || true as RequestedValueT)
     return value
   }
-  public skip (err?: ErrorReasonT) {
+  public skip (err?: FeExecSignalingError & ErrorReasonT) {
     this._requested.reject(err)
     return err
   }  // @TODO maybe different typing
@@ -82,7 +88,7 @@ export class FeExecSignaling <
   public skipped () {
     return this.done(false as ExecutionValueT)
   }
-  public fail (err?: ErrorReasonT) {
+  public fail (err?: FeExecSignalingError & ErrorReasonT) {
     this.reject(err)
     return err
   }

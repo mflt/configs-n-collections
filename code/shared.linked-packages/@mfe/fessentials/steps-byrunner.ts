@@ -1,11 +1,17 @@
 import { mergician, type MergicianOptions } from 'mergician'
+import type {
+  _Branded, _WithAssertedBrand, _FeMilliseconds,
+} from '../fe3/src/index.ts'
 import {
-  _feIsNotanEmptyObject, _feIsAsyncFunction, _feMakeRecordFeMapLike, $fe, FeExecSignaling, FeReadinessSignaling
+  FeExecSignaling, FeReadinessSignaling,
+  _feIsNotanEmptyObject, _feIsAsyncFunction, _feMakeRecordFeMapLike, $fe, _feDelay
 } from '../fe3/src/index.ts'
 
 export class FeCatchComm {
   framingMessage: string|undefined
 }
+
+const __waitingforRequestedSteptoCompleteDefaultTimeout = 5000
 
 export type FeStepsByrunnerToExecasFunctions <
   StepsKeys extends string,
@@ -40,6 +46,13 @@ export type FeStepsByrunnerBaseCtxSignals <
   runnerReady: FeReadinessSignaling<RunnerUtilities>
 }
 
+export type FeStepsByrunnerWaitingforRequestedSteptoCompleteTimeouts <
+  StepsKeys extends string
+> = Record<
+  StepsKeys,  // @TODO partial?
+  number | _FeMilliseconds  // @TODO test
+>
+
 export class IFeStepsByrunnerCtx <
   StepsKeys extends string,
   ExecCtx extends {}, // @TODO
@@ -48,14 +61,16 @@ export class IFeStepsByrunnerCtx <
   runnerName: string
   stepstoExecasFunctions: FeStepsByrunnerToExecasFunctions<StepsKeys,ExecCtx>
   stepstoSkip: FeStepsByrunnerToSkip<StepsKeys>
-  stepstoExecasBuiltin?: StepsKeys[] // @TODO typing
-  builtinStepFunctions?: FeStepsByrunnerToExecasFunctions<StepsKeys,ExecCtx>
+  builtinStepstoSkip?: StepsKeys[] // @TODO typing
+  builtinStepsFunctions?: FeStepsByrunnerToExecasFunctions<StepsKeys,ExecCtx>
   execSignals: FeStepsByrunnerExecSignals<StepsKeys,ExecCtx>
   ctxSignals: FeStepsByrunnerBaseCtxSignals<RunnerUtilities>
   utilities: RunnerUtilities
   getProcessingCtx: () => ExecCtx
+  waitingforRequestedSteptoCompleteTimeout:
+    FeStepsByrunnerWaitingforRequestedSteptoCompleteTimeouts<StepsKeys>
 }
-//  & RunnerExtensionProps
+// & RunnerExtensionProps
 
 export class FeStepsByrunnerCtx <
   StepsKeys extends string,
@@ -111,35 +126,57 @@ export class FeStepsByrunnerCtx <
   }
 
   async step (
-    stepId: StepsKeys
+    stepId: StepsKeys,
+    waitingforRequestedSteptoCompleteHandler?: () => Promise<void>
   ) {
+    // * Exceptions are let go
     const skip = this.stepstoSkip[stepId] === true  // @TODO test if not true but defined
     const _stepFn = this.stepstoExecasFunctions[stepId]
-    const _builtinFn = this.builtinStepFunctions?.[stepId]
+    const _builtinFn = this.builtinStepsFunctions?.[stepId]
     const signaling = this.execSignals[stepId]  // @TODO test if usable or throw
     if (!skip) {
-      if (_stepFn || this.stepstoExecasBuiltin?.includes(stepId)) {
+      if (_stepFn || !this.builtinStepstoSkip?.includes(stepId)) {
         if (_stepFn) {
           if (!_feIsAsyncFunction(_stepFn)) {
-            throw new Error(`${this.runnerName} got ${stepId} as to be executed as a function by got a non-function value`) // @TODO
+            throw new Error(`${this.runnerName} got ${stepId} as to be executed as a function but got a non-function value`) // @TODO
           }
         } else {  // stepstoExecasBuiltinFunctions positive
           if (!_feIsAsyncFunction(_builtinFn)) {
-            throw new Error(`${this.runnerName} got ${stepId} as to be executed as a built-in function by got a non-function value`) // @TODO
+            throw new Error(`${this.runnerName} got ${stepId} as to be executed as a built-in function but got a non-function value`) // @TODO
           }
         }
-        signaling.skip({message: `${this.runnerName} is handling ${stepId} in the specified ${_stepFn? '' : 'built-in'} function call`})
+        signaling.skip({
+          message: `${this.runnerName} is handling ${stepId} in the specified ${_stepFn? '' : 'built-in'} function call`,
+          execSignaling: 'RequestSkipped'
+        })
         const ctxfromFn = await (_stepFn || _builtinFn!)(this.getProcessingCtx())
         signaling.done(ctxfromFn)  // @TODO if failed
         return ctxfromFn
       } else {
+        const _timeoutHandler = _feIsAsyncFunction(waitingforRequestedSteptoCompleteHandler)
+          ?
+          waitingforRequestedSteptoCompleteHandler
+          :
+          _feDelay(
+            this.waitingforRequestedSteptoCompleteTimeout[stepId] || __waitingforRequestedSteptoCompleteDefaultTimeout,
+            () => {
+              throw new Error(`${this.runnerName} got ${stepId} as to be executed as a built-in function but got a non-function value`) // @TODO
+            } // @TODO will it throw here?
+          )
         signaling.request(this.getProcessingCtx())
-        const ctxfromWaiting = await signaling.tillDone
+        const ctxfromWaiting = await Promise.all([
+          signaling.tillDone,
+          _timeoutHandler
+        ]) as Awaited<ExecCtx>
         return ctxfromWaiting
       }
     } else {
-       signaling.skip({message: `${this.runnerName} is skipping ${stepId} step`})
+       signaling.skip({
+         message: `${this.runnerName} is skipping ${stepId} step`,
+         execSignaling: 'RequestSkipped'
+       })
        signaling.skipped()
+       return this.getProcessingCtx()
     }
   }
 }

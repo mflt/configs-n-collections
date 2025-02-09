@@ -1,3 +1,4 @@
+import { _Branded, _BrandofBranded } from './generic.types';
 
 export const _feIsNumber = (num: number): num is number =>
   +num === +num;
@@ -51,6 +52,13 @@ export const _feIsIterableTest = <T>(that: unknown): that is Iterable<T> => {
   }
   return false;
 };
+
+export const _feIsofBrand = <T>(
+  that: _Branded<T,string>,
+  brand: string
+): that is _Branded<T, typeof that['__brand']> => {
+  return (that as _Branded<T,'_'>)?.__brand === brand
+}
 
 // With Assertion
 

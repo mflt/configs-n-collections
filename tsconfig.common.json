@@ -22,6 +22,7 @@
     "strict": true, // * explicitly set in the init-ed version by tsc itself
     "forceConsistentCasingInFileNames": true, // * explicitly set in the init-ed version by tsc itself
     "skipLibCheck": true, // * explicitly set in the init-ed version by tsc itself
+    "useUnknownInCatchVariables": true,
     // "composite": true, * depends on the sub-project
     // "downlevelIteration": true,  * default already
     // "allowSyntheticDefaultImports": true, // otherwise import * as React from "react"
