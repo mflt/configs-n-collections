@@ -1,11 +1,14 @@
 import {
   FeExecSignaling
 } from '../../../../fe3/src/index.ts'
+import type { PkglocalConfigFilesPaths } from './types.d.ts'
 
 const __stepsKeysDonor = { // Just to have iterable keys to engage
-  config_pkglocal: {},
-  config_shared: {},
-  config_effective: {},
+  config_a_pkglocal: {},
+  config_b_shared: {},
+  config_c_bundler_local: {},
+  config_d_bundler_shared: {},
+  config_e_additional: {},
   pre: {},
   tsc: {},
   main: {},
@@ -20,10 +23,11 @@ export const _stepsKeysDonor = __stepsKeysDonor as unknown as Record<
   FeExecSignaling<any>
 >
 
-export const baseConfig = {
-  pkglocalConfigFileType: 'toml', // @TODO unused
+export const baseConfig: {
+  files: PkglocalConfigFilesPaths
+} = {
   files: {
-    pkglocalConfigFilePath: './builder-config.toml',
+    seqlocalConfigFilePath: './builder-config.toml',
     pkgTsconfigJsonPath: './tsconfig.build.json',
   },
 } as const

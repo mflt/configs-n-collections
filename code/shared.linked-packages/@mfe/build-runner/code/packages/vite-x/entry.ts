@@ -1,6 +1,8 @@
 import { build as viteBuild, type InlineConfig } from 'vite'
-import { _feIsObject, _feIsEmptyObject,
-  _feAssertIsObject, _feAssertIsAsyncFunction
+import {
+  type FeExecSignalingError, type FeExecSignalingErrorCodes,
+  _feIsObject, _feIsEmptyObject,
+  _feAssertIsObject, _feAssertIsAsyncFunction,
 } from '../../../../fe3/src/index.ts'
 import type {
   FeBuilderVitexRunnerCtx, FeBuilderVitexEntryCtx, FeBuilderCtx, FeBuilderReturnCode,
@@ -12,6 +14,7 @@ import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 import { FeBuildRunner } from '../abstract/core.ts'
 // import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
+type __BuilderCtx = {}
 
 //  Loading and execution oder:
 //  Loading order:
@@ -45,13 +48,16 @@ export async function viteBuilder (
   // satisfies Omit<FeBuilderVitexRunnerCtx, 'builderCtx'|'resolve'|'prompt'|'color'|'catchComm'>
 
 
-  const builderCtx = {}
+  const builderCtx = {} as __BuilderCtx
 
   let viteConfig = {} as InlineConfig
 
   // const returnCode =
 
-  const r = new FeBuildRunner<FeBuilderVitexRunnerCtx,FeBundlerVitexConfig>(
+  const r = new FeBuildRunner<
+    FeBuilderVitexRunnerCtx,
+    FeBundlerVitexConfig
+  >(
     'vite', // '_',
     builderCtx,
     {
@@ -71,42 +77,85 @@ export async function viteBuilder (
   try {
     r.loadConfigs()
     r.exec()
-  } catch(err) {
+  } catch(err: FeExecSignalingError) {
 
   }
 
     // now we parse different build and vite configs possibly coming from different sources
 
-  function a () {
+  // async function sharedConfig (
+  //   ctx: __BuilderCtx
+  // ) {
 
-    if (builderConfig.viteCommonConfigFn !== null) { // if not a function, that should've caused panic above
-      _prompt.log.step(`evaluating common config`)
+  try {
 
-      _catch.framingMessage = `Failed at vite-common-config function`
-      builderConfig.viteCommonConfig = props.viteCommonConfigFn // assumed to be a function if not null
-        ?
-          await props.viteCommonConfigFn({
-            mode: 'build',
-            config: builderConfig,
-            resolve,
-            _prompt
-          })
-        : {}
+    // Config/bundler: (shared vite config)
+    try {
+      // loading local vite config
+      await r.execSignals.config_c_bundler_local.tillRequested // returns ctx
+      _c.framingMessage =
+        `Failed importing the local vite config ts (${builderConfig.files.viteLocalConfigTsPath})`
+      if (builderConfig.files.viteLocalConfigTsPath) {
+        p.log.warn('Local vite config ts can not be determined. \n' +
+          'If this is not how you intended it to be, please check the defaults and other related settings.')
+      } else {
+        const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
+        _feAssertIsAsyncFunction<InlineConfig,[ViteLocalConfigFnProps]>(
+          viteLocalConfigFn,
+          {message: 'Local vite config is not a function'}
+        )
+      }
+      r.execSignals.config_c_bundler_local.done(ctx)
+    } catch(err) {
+      if (!(err as FeExecSignalingError).execSignaling)
+        throw err
     }
 
-    _catch.framingMessage =
-      `Failed importing the local vite config ts (${builderConfig.files.viteLocalConfigTsPath})`
-    if (builderConfig.files.viteLocalConfigTsPath) {
-      _prompt.log.warn('Local vite config ts can not be determined. \n' +
-        'If this is not how you intended it to be, please check the defaults and other related settings.')
-    } else {
-      const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
-      _feAssertIsAsyncFunction<InlineConfig,[ViteLocalConfigFnProps]>(
-        viteLocalConfigFn,
-        {message: 'Local vite config is not a function'}
-      )
+    try {
+      // loading shared vite config
+      await r.execSignals.config_d_bundler_shared.tillRequested // returns ctx
+      _c.framingMessage =
+        `Failed consuming a proper common (not the local one) vite config ts (provided by the user script)`
+      if (props?.viteCommonConfigFn === null) {
+        p.log.warn('Common vite config (which isn\'t the local one) ts was not provided (by the user scipt)')
+      } else {
+        _feAssertIsAsyncFunction<InlineConfig,[ViteCommonConfigFnProps]>(
+          props?.viteCommonConfigFn,
+          {message: 'What was proviced as a common vite config is not a function (specify as null if omitted)'}
+        )
+      }
 
-      _catch.framingMessage = `Failed at vite-local-config function`
+      r.execSignals.config_d_bundler_shared.done(ctx)
+    } catch(err) {
+      if (!(err as FeExecSignalingError).execSignaling)
+        throw err
+    }
+
+
+    if (ctx.viteCommonConfigFn !== null) { // if not a function, that should've caused panic above
+      p.log.step(`evaluating common config`)
+
+      _c.framingMessage = `Failed at vite-common-config function`
+      builderConfig.viteCommonConfig = props.viteCommonConfigFn // assumed to be a function if not null
+        ?
+        await props.viteCommonConfigFn({
+          mode: 'build',
+          config: builderConfig,
+          resolve,
+          _prompt
+        })
+        :
+        {}
+    }
+
+    r.execSignals.pre.done(ctx)
+
+  // async function local (
+  //   ctx: __BuilderCtx
+  // ) {
+
+
+      _c.framingMessage = `Failed at vite-local-config function`
       viteConfig = await viteLocalConfigFn({
         mode: 'build',
         config: builderConfig,
@@ -116,16 +165,16 @@ export async function viteBuilder (
     }
 
 
-    async function main (
-      ctx:
-    ) {
 
-      await viteBuild({
-        ...viteConfig,
-        configFile: false,
-      })
-    }
+  // async function main (
+  //   ctx: __BuilderCtx
+  // ) {
 
-    return await returnCode
+    await viteBuild({
+      ...viteConfig,
+      configFile: false,
+    })
   }
+
+    // return await returnCode
 }

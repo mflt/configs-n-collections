@@ -1,7 +1,7 @@
 import type { UserConfig, InlineConfig } from 'vite'
 import type {
   FeBuilderCtx, FeBuilderRunnerCtx, FeBuilderReturnCode, FeBuilderEntryCtx,
-  LocalConfigFilesPaths, CommonConfigFilesPaths, 
+  PkglocalConfigFilesPaths, CommonConfigFilesPaths,
   _BuilderLocalConfig, _BuilderCommonConfig, _BuilderEffectiveLocalConfig, _BuilderEffectiveConfig
 } from '../abstract/types.d'
 import type {
@@ -9,11 +9,11 @@ import type {
 } from '../abstract/prototype-bundler.d'
 import { DefaultsProfileNames } from './defaults-profiles.ts'
 
-export type { 
+export type {
   FeBuilderCtx, FeBuilderReturnCode
 }
 
-// export type FeVitexEntryProps = FeBuilderProps < 
+// export type FeVitexEntryProps = FeBuilderProps <
 //   & Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'bundlerCommonConfigFn'|'cwd'> & {
 //   defaultsProfileName?: DefaultsProfileNames,
 // }>
@@ -28,12 +28,12 @@ export type FeBuilderVitexRunnerCtx = FeBuilderRunnerCtx<{
 }, FeBundlerVitexConfig>
 
 export type FeBuilderVitexEntryCtx =
-  & FeBuilderEntryCtx 
+  & FeBuilderEntryCtx
   & Pick<FeBuilderVitexRunnerCtx,'mode'>
 
 
 export type BuilderBaseConfig = {
-  files: LocalConfigFilesPaths,
+  files: PkglocalConfigFilesPaths,
   feb: {
     addPeerDependenciestoExternals: boolean,
     // changetoAltCwd: boolean,
@@ -45,7 +45,7 @@ export type BuilderLocalConfig = _BuilderLocalConfig<
 >
 export type BuilderCommonConfig = _BuilderCommonConfig<
   & BuilderBaseConfig & {
-  files: LocalConfigFilesPaths & CommonConfigFilesPaths,
+  files: PkglocalConfigFilesPaths & CommonConfigFilesPaths,
 }>
 export type BuilderEffectiveLocalConfig = _BuilderEffectiveLocalConfig<
   & BuilderCommonConfig

@@ -1,5 +1,5 @@
-import { baseConfig } from '../entry/defaults'
-import type { BuilderEffectiveConfig } from './types'
+import { baseConfig } from '../abstract/defaults-n-prototypes.ts'
+import type { BuilderEffectiveConfig } from './types.d.ts'
 
 export type DefaultsProfileNames = 'base-vite'
 

@@ -43,9 +43,8 @@ export async function loadBuilderConfigs <
       '(see defaults-profiles.ts in the package)')
   }
 
-  await r.step('config_shared')
-
-  await r.step('config_pkglocal')
+  await r.step('config_c_bundler_local')
+  await r.step('config_d_bundler_shared')
 
 
   // the below two configs are assumed to be loaded by the caller
@@ -63,16 +62,6 @@ export async function loadBuilderConfigs <
     )
   }
 
-  _c.framingMessage =
-    `Failed consuming a proper common (not the local one) vite config ts (provided by the user script)`
-  if (props?.viteCommonConfigFn === null) {
-    p.log.warn('Common vite config (which isn\'t the local one) ts was not provided (by the user scipt)')
-  } else {
-    _feAssertIsAsyncFunction<InlineConfig,[ViteCommonConfigFnProps]>(
-      props?.viteCommonConfigFn,
-      {message: 'What was proviced as a common vite config is not a function (specify as null if omitted)'}
-    )
-  }
 
 
   _c.framingMessage = `Improper command line arguments`

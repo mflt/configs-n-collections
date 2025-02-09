@@ -9,6 +9,8 @@ export type { FeBuildRunner, IPrompt, IPromptColor }
 
 type ParamsArg = Object  // command line params arg is a parsable obj
 
+export type FeBuilderReturnCode = (typeof FeBuilderReturnVariants)[keyof typeof FeBuilderReturnVariants]
+
 export type FeBuilderCtx <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void
@@ -23,14 +25,13 @@ export interface IFeBuilderRunnerUtilities extends IFeByrunnerBaseUtilities {
 }
 
 
-export type FeBuilderEntryCtx = Pick<
-  FeBuilderRunnerCtx,
-  'builderName'
->
+// export type FeBuilderEntryCtx = Pick<
+//   FeBuilderRunnerCtx,
+//   'builderName'
+// >
 
-export type FeBuilderReturnCode = (typeof FeBuilderReturnVariants)[keyof typeof FeBuilderReturnVariants]
-
-export type LocalConfigFilesPaths = {
+export type PkglocalConfigFilesPaths = {
+  seqlocalConfigFilePath: string,
   tscLocalConfigJsonPath: string,
   bundlerLocalConfigScriptPath: string,
 }
