@@ -6,12 +6,12 @@ import {
 } from '../../../../fe3/src/index.ts'
 import type {
   FeBuilderVitexRunnerCtx, FeBuilderVitexEntryCtx, FeBuilderCtx, FeBuilderReturnCode,
-  FeBundlerVitexConfig,
+  BuiqVitexConfig,
   BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig,
   ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps,
 } from './types'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
-import { FeBuildSequencer } from '../abstract/core.ts'
+import { BuildSequencer } from '../abstract/core.ts'
 // import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
 type __BuilderCtx = {}
@@ -54,9 +54,9 @@ export async function viteBuilder (
 
   // const returnCode =
 
-  const r = new FeBuildSequencer<
+  const r = new BuildSequencer<
     FeBuilderVitexRunnerCtx,
-    FeBundlerVitexConfig
+    BuiqVitexConfig
   >(
     'vite', // '_',
     builderCtx,

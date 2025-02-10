@@ -1,66 +1,78 @@
 import type { PackageJson } from 'type-fest'
-import type { FePromisewithResolvers } from '../../../../fe3/src/index.ts'
+import type { FePromisewithResolvers, FeStringKeyedCollectionObject, FeAnyI } from '../../../../fe3/src/index.ts'
 import type { FeCatchComm, IFeBsqrBaseUtilities } from '../../../../fessentials/blocks-sequencer.ts'
-import type { FeBuilderReturnVariants, BsqrStepsKeys } from './defaults-n-prototypes.ts'
-import type { FeBundlerConfigPrototype  } from './prototype-bundler'
-import type { FeBuildSequencer, IPrompt, IPromptColor } from './core.ts'
-export type { FeBundlerConfigPrototype, BsqrStepsKeys as FeBuilderStepsKeys }
-export type { FeBuildSequencer as FeBuildRunner, IPrompt, IPromptColor }
+import type { BuiqBlocksKeys, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
+import type { BuildSequencer, IPrompt, IPromptColor } from './core.ts'
+export type { BuiqBlocksKeys }
+export type { BuildSequencer, IPrompt, IPromptColor }
 
-type ParamsArg = Object  // command line params arg is a parsable obj
+export type BuiqBundlerConfigPrototype <
+  PkglocalConfig extends BuiqPkglocalConfigPrototype = BuiqPkglocalConfigPrototype,
+  SharedConfig extends BuiqSharedConfigPrototype = BuiqSharedConfigPrototype,
+> = {
+  pkglocalConfig: PkglocalConfig,
+  sharedConfig: SharedConfig,
+}
 
-export type FeBuilderReturnCode = (typeof FeBuilderReturnVariants)[keyof typeof FeBuilderReturnVariants]
+export type BuiqExitCode = (typeof BuiqExitCodeVariants)[keyof typeof BuiqExitCodeVariants]
 
-export type BsqrBuilderCtx <
-  BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
-  BuilderExtensionProps extends Record<string,any>|void = void
+export type BuiqBuilderCtx <
+  BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,  // bundler is the external tool driven by us
+  BuilderExtensionProps extends FeAnyI|void = void
+  // * this part is for the higher order builder config part
+  // / logially it extends the bundler config mainly
 > =
   & BundlerConfig
   & BuilderExtensionProps
 
-export interface IBsqrRunnerUtilities extends IFeBsqrBaseUtilities {
+export interface IBuiqBaseUtilities extends IFeBsqrBaseUtilities {
   resolve: (path: string) => any  // @TODO any?
   prompt: IPrompt
   color: IPromptColor
 }
-
 
 // export type FeBuilderEntryCtx = Pick<
 //   FeBuilderRunnerCtx,
 //   'builderName'
 // >
 
-export type PkglocalConfigFilesPaths = {
-  bsqrlocalConfigFilePath: string,
-  tscLocalConfigJsonPath: string,
-  bundlerLocalConfigScriptPath: string,
-}
-export type CommonConfigFilesPaths = {
-  febLocalConfigFilePath: string,
+export type BuiqConfigFilesPaths = {
+  local?: {
+    buiq?: string,  // @TODO path type
+    tsc?: string,
+    bundler?: string,
+  },
+  shared?: {
+    buiq?: string,
+    tsc?: string,
+    bundler?: string,
+  }
 }
 
-export type _BuilderLocalConfig <T extends Record<string,any>> =
+export type BuiqPkglocalConfigPrototype <T extends FeAnyI = FeAnyI> =
   & {
-    libName: string,
+    bundleName: string,
   }
   & T
 
-export type _BuilderCommonConfig <T extends Record<string,any>> =
+type ParamsArg = FeStringKeyedCollectionObject<FeAnyI|string>  // command line params arg is a parsable obj
+
+export type BuiqSharedConfigPrototype <T extends FeAnyI = FeAnyI> =
   & {
-    builderLocalConfigFileType: 'toml'|'ts',
+    // builderLocalConfigFileType: 'toml'|'ts',
     cb?: {
       cwd: (params: ParamsArg) => string
     }
   }
   & T
 
-export type _BuilderEffectiveLocalConfig <T extends Record<string,any>> =
+export type BuiqEffectivePkglocalConfigPrototype <T extends FeAnyI> =
   & {
     cwd?: string // @TODO path
   }
   & T
 
-export type _BuilderEffectiveConfig <T extends Record<string,any>> =
+export type BuiqEffectiveConfigPrototype <T extends FeAnyI> =
   & {
     _meta: ImportMeta,  // _ indicates externally given, probably cwd also belongs here
     _packageJson: PackageJson,

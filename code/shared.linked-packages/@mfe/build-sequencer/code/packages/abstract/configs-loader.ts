@@ -8,15 +8,15 @@ import { _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
 import {
-  FeBuildRunner, BsqrBuilderCtx, FeBuilderReturnCode,
-  FeBundlerConfigPrototype, FeBuilderStepsKeys, IBsqrRunnerUtilities,
+  FeBuildRunner, BuiqBuilderCtx, BuiqExitCode,
+  BuiqBundlerConfigPrototype, FeBuilderStepsKeys, IBuiqBaseUtilities,
 } from './types'
 // import defaultsProfiles from './defaults-profiles.ts'
 
 
 export async function loadBuilderConfigs <
-  BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
-  BuilderExtensionProps extends Record<string,any>|void = void,
+  BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,
+  BuilderExtensionProps extends FeAnyI|void = void,
 > (
   runnerCtx: FeBuildRunner<
     BundlerConfig,

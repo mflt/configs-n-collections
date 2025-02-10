@@ -1,9 +1,7 @@
-import {
-  FeExecSignaling
-} from '../../../../fe3/src/index.ts'
-import type { PkglocalConfigFilesPaths } from './types'
+import { FeExecSignaling } from '../../../../fe3/src/index.ts'
+import type { BuiqConfigFilesPaths } from './types.d.ts'
 
-const __stepsKeysDonor = { // Just to have iterable keys to engage
+const __blocksKeysDonor = { // Just to have iterable keys to engage
   config_a_pkglocal: {},
   config_b_shared: {},
   config_c_bundler_local: {},
@@ -16,23 +14,25 @@ const __stepsKeysDonor = { // Just to have iterable keys to engage
   post: {},
 } as const
 
-export type BsqrStepsKeys = keyof typeof __stepsKeysDonor  // @TODO naming
+export type BuiqBlocksKeys = keyof typeof __blocksKeysDonor  // @TODO naming
 
-export const _stepsKeysDonor = __stepsKeysDonor as unknown as Record<
-  BsqrStepsKeys,
+export const _blocksKeysDonor = __blocksKeysDonor as unknown as Record<
+  BuiqBlocksKeys,
   FeExecSignaling<any>
 >
 
-export const baseConfig: {
-  files: PkglocalConfigFilesPaths
+export const baseBuilderConfig: {
+  files: BuiqConfigFilesPaths
 } = {
   files: {
-    bsqrlocalConfigFilePath: './builder-config.toml',
-    pkgTsconfigJsonPath: './tsconfig.build.json',
+    local: {
+      buiq: './builder-config.toml',
+      tsc: './tsconfig.build.json',
+    }
   },
 } as const
 
-export const FeBuilderReturnVariants = {
+export const BuiqExitCodeVariants = {
   done: 0,
   error: 1,
 } as const

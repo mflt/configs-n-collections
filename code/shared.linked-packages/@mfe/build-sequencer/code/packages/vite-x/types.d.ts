@@ -1,31 +1,26 @@
 import type { UserConfig, InlineConfig } from 'vite'
 import type {
-  BsqrBuilderCtx, FeBuilderRunnerCtx, FeBuilderReturnCode, FeBuilderEntryCtx,
-  PkglocalConfigFilesPaths, CommonConfigFilesPaths,
-  _BuilderLocalConfig, _BuilderCommonConfig, _BuilderEffectiveLocalConfig, _BuilderEffectiveConfig
-} from '../abstract/types'
-import type {
-  FeBundlerConfigPrototype
-} from '../abstract/prototype-bundler'
-import { DefaultsProfileNames } from './defaults-profiles.ts'
+  BuiqBuilderCtx, BuiqExitCode,
+  BuiqConfigFilesPaths, BuiqBundlerConfigPrototype,
+  BuiqPkglocalConfigPrototype, BuiqSharedConfigPrototype, BuiqEffectivePkglocalConfigPrototype, BuiqEffectiveConfigPrototype
+} from '../abstract/types.d.ts'
+import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
-export type {
-  BsqrBuilderCtx as FeBuilderCtx, FeBuilderReturnCode
-}
+export type { BuiqBuilderCtx, BuiqExitCode }
 
-// export type FeVitexEntryProps = FeBuilderProps <
+// export type BuiqVitexEntryProps = BuiqProps <
 //   & Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'bundlerCommonConfigFn'|'cwd'> & {
 //   defaultsProfileName?: DefaultsProfileNames,
 // }>
 
-export type FeBundlerVitexConfig = FeBundlerConfigPrototype<
-  InlineConfig,
-  UserConfig
+export type BuiqVitexConfig = BuiqBundlerConfigPrototype<
+  BuiqPkglocalConfigPrototype<InlineConfig>,
+  BuiqSharedConfigPrototype<UserConfig>
 >
 
 export type FeBuilderVitexRunnerCtx = FeBuilderRunnerCtx<{
   mode: 'build',
-}, FeBundlerVitexConfig>
+}, BuiqVitexConfig>
 
 export type FeBuilderVitexEntryCtx =
   & FeBuilderEntryCtx
@@ -33,27 +28,27 @@ export type FeBuilderVitexEntryCtx =
 
 
 export type BuilderBaseConfig = {
-  files: PkglocalConfigFilesPaths,
-  feb: {
+  files: BuiqConfigFilesPaths,
+  buiq: {
     addPeerDependenciestoExternals: boolean,
     // changetoAltCwd: boolean,
   }
   vite?: UserConfig['build'], // common and local merges, however viteLocalConfigFn may override this
 }
-export type BuilderLocalConfig = _BuilderLocalConfig<
+export type BuilderLocalConfig = BuiqPkglocalConfigPrototype<
   BuilderBaseConfig
 >
-export type BuilderCommonConfig = _BuilderCommonConfig<
+export type BuilderCommonConfig = BuiqSharedConfigPrototype<
   & BuilderBaseConfig & {
-  files: PkglocalConfigFilesPaths & CommonConfigFilesPaths,
+  files: BuiqConfigFilesPaths & CommonConfigFilesPaths,
 }>
-export type BuilderEffectiveLocalConfig = _BuilderEffectiveLocalConfig<
+export type BuilderEffectiveLocalConfig = BuiqEffectivePkglocalConfigPrototype<
   & BuilderCommonConfig
   & BuilderLocalConfig & {
   feCommonConfig: BuilderCommonConfig|{},
   bundlerCommonConfigFn: ViteCommonConfigFn|null,
 }>
-export type BuilderEffectiveConfig = _BuilderEffectiveConfig<
+export type BuilderEffectiveConfig = BuiqEffectiveConfigPrototype<
   & BuilderEffectiveLocalConfig /* *merged */ & {
   viteCommonConfig: UserConfig,
   viteEffectiveConfig: InlineConfig,  // merged and the common original possibly manipulated by viteLocalConfigFn

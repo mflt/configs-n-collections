@@ -15,7 +15,7 @@
   "files": [
     "[dist]"
   ],
-  "#": [
+  "//": [
     "peerDependencies also become excluded from the bundle"
   ],
   "scripts": {

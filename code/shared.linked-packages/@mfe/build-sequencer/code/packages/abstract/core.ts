@@ -1,16 +1,19 @@
 import { MergicianOptions } from 'mergician'
+import type { FeAnyI } from '../../../../fe3/src/index.ts'
 import {
   _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
-import { FeBlockSequencerCtx, IFeBlockSequencerCtx, FeCatchComm } from '../../../../fessentials/blocks-sequencer.ts'
+import {
+  FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm
+} from '../../../../fessentials/blocks-sequencer.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BsqrBuilderCtx, FeBuilderReturnCode,
-  FeBundlerConfigPrototype, FeBuilderStepsKeys, IBsqrRunnerUtilities,
+  BuiqBuilderCtx, BuiqExitCode, BuiqBlocksKeys,
+  BuiqBundlerConfigPrototype, IBuiqBaseUtilities,
 } from './types.d.ts'
-import { _stepsKeysDonor } from './defaults-n-prototypes.ts'
+import { _blocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
 
 export { prompt, color }
@@ -33,20 +36,21 @@ const resolve = (path: string) => {
 
 // loading buildCommonConfig and viteCommonConfigFn is delegated to the caller, as it can do it statically
 
-export class FeBuildSequencer <
-  BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
-  BuilderExtensionProps extends Record<string,any>|void = void,
-> extends FeBlockSequencerCtx<
-  FeBuilderStepsKeys,
-  BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,
-  IBsqrRunnerUtilities
+export class BuildSequencer <
+  BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,
+  BuilderExtensionProps extends FeAnyI|void = void,
+  // * keep in sync w/ BuiqBuilderCtx
+> extends FeBlocksSequencerCtx<
+  BuiqBlocksKeys,
+  BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+  IBuiqBaseUtilities
 >
 {
   get builderName () { return this.sequencerName }
-  get getBuilderCtx () { return this.getProcessingCtx }
+  get getBuilderCtx () { return this.getExecCtx }
 
   assigntoBuilderCtx (
-    toMerge: BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+    toMerge: BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,
     mergicianOptions?: MergicianOptions
   ) {
     return this.assigntoProcessingCtx(toMerge, mergicianOptions)
@@ -59,26 +63,26 @@ export class FeBuildSequencer <
     //     FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
     //   >
     // >[1] | '_',  // @TODO named one?
-    builderCtx: BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+    builderCtx: BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,
     initiator?: Partial<
-      Omit<IFeBlockSequencerCtx<
-        FeBuilderStepsKeys,BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBsqrRunnerUtilities
-      >,'runnerName'|'getProcessingCtx'> & {
-        getBuilderCtx: FeBlockSequencerCtx<
-          FeBuilderStepsKeys,BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBsqrRunnerUtilities
-        >['getProcessingCtx']
+      Omit<IFeBlocksSequencerCtx<
+        BuiqBlocksKeys,BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBuiqBaseUtilities
+      >,'sequencerName'|'getProcessingCtx'> & {
+        getBuilderCtx: FeBlocksSequencerCtx<
+          BuiqBlocksKeys,BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBuiqBaseUtilities
+        >['getExecCtx']
       }
     >
   ) {
     super(
       builderName,
       // (stepsKeysDonor !== '_' && stepsKeysDonor) ||
-      _stepsKeysDonor,
+      _blocksKeysDonor,
       initiator
     )
     // @TODO test builderCtx, if not defined throw
     const r = this
-    r.getProcessingCtx ??= initiator?.getBuilderCtx || (() => builderCtx)
+    r.getExecCtx ??= initiator?.getBuilderCtx || (() => builderCtx)
     r.utilities.catchComm ??= catchComm
     r.utilities.resolve ??= resolve
     r.utilities.prompt ??= prompt
@@ -96,7 +100,7 @@ export class FeBuildSequencer <
     >(this)
   }
 
-  async exec (): Promise<FeBuilderReturnCode> {
+  async exec (): Promise<BuiqExitCode> {
 
     const r = this
     const {
@@ -168,16 +172,16 @@ export class FeBuildSequencer <
     //   configFile: false,
     // })
 
-    p.outro('Lib building ended nicely')
-    return FeBunViteBuilderReturnVariants.done
+    p.outro('Building XOX ended nicely')
+    return BuiqExitCodeVariants.done
 
     } catch (err) {
       p.log.error(`${
         (_c.framingMessage || '') +
         (err?.message ? '\n' + err?.message : '')
       }`)
-      p.outro(color.bgRed(color.white(color.bold('Lib building failed.'))))
-      return FeBunViteBuilderReturnVariants.error
+      p.outro(color.bgRed(color.white(color.bold('Building XOX failed.'))))
+      return BuiqExitCodeVariants.error
     }
   }
 }
