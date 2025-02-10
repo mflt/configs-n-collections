@@ -43,8 +43,8 @@ export async function loadBuilderConfigs <
       '(see defaults-profiles.ts in the package)')
   }
 
-  await r.step('config_c_bundler_local')
-  await r.step('config_d_bundler_shared')
+  await r.executeBlock('config_c_bundler_local')
+  await r.executeBlock('config_d_bundler_shared')
 
 
   // the below two configs are assumed to be loaded by the caller

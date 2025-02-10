@@ -61,7 +61,7 @@ export async function viteBuilder (
     'vite', // '_',
     builderCtx,
     {
-      stepstoExecasFunctions: {
+      blockstoExecasFunctions: {
         pre: ()=> true
       }
     }
@@ -71,7 +71,7 @@ export async function viteBuilder (
     catchComm: _c,
     prompt: p,
     color: co
-  } = await r.ctxSignals.runnerReady.tillReady // returns utilities
+  } = await r.ctxSignals.sequencerReady.tillReady // returns utilities
 
 
   try {

@@ -1,6 +1,6 @@
 import type { PackageJson } from 'type-fest'
 import type { FePromisewithResolvers } from '../../../../fe3/src/index.ts'
-import type { FeCatchComm, IFeByrunnerBaseUtilities } from '../../../../fessentials/steps-byrunner.ts'
+import type { FeCatchComm, IFeBsqrBaseUtilities } from '../../../../fessentials/blocks-sequencer.ts'
 import type { FeBuilderReturnVariants, BsqrStepsKeys } from './defaults-n-prototypes.ts'
 import type { FeBundlerConfigPrototype  } from './prototype-bundler'
 import type { FeBuildSequencer, IPrompt, IPromptColor } from './core.ts'
@@ -18,7 +18,7 @@ export type BsqrBuilderCtx <
   & BundlerConfig
   & BuilderExtensionProps
 
-export interface IBsqrRunnerUtilities extends IFeByrunnerBaseUtilities {
+export interface IBsqrRunnerUtilities extends IFeBsqrBaseUtilities {
   resolve: (path: string) => any  // @TODO any?
   prompt: IPrompt
   color: IPromptColor

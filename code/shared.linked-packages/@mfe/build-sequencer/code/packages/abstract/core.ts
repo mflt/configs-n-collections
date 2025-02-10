@@ -3,7 +3,7 @@ import {
   _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
-import { FeStepsByrunnerCtx, IFeStepsByrunnerCtx, FeCatchComm } from '../../../../fessentials/steps-byrunner.ts'
+import { FeBlockSequencerCtx, IFeBlockSequencerCtx, FeCatchComm } from '../../../../fessentials/blocks-sequencer.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
@@ -36,13 +36,13 @@ const resolve = (path: string) => {
 export class FeBuildSequencer <
   BundlerConfig extends FeBundlerConfigPrototype = FeBundlerConfigPrototype,
   BuilderExtensionProps extends Record<string,any>|void = void,
-> extends FeStepsByrunnerCtx<
+> extends FeBlockSequencerCtx<
   FeBuilderStepsKeys,
   BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,
   IBsqrRunnerUtilities
 >
 {
-  get builderName () { return this.runnerName }
+  get builderName () { return this.sequencerName }
   get getBuilderCtx () { return this.getProcessingCtx }
 
   assigntoBuilderCtx (
@@ -61,10 +61,10 @@ export class FeBuildSequencer <
     // >[1] | '_',  // @TODO named one?
     builderCtx: BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,
     initiator?: Partial<
-      Omit<IFeStepsByrunnerCtx<
+      Omit<IFeBlockSequencerCtx<
         FeBuilderStepsKeys,BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBsqrRunnerUtilities
       >,'runnerName'|'getProcessingCtx'> & {
-        getBuilderCtx: FeStepsByrunnerCtx<
+        getBuilderCtx: FeBlockSequencerCtx<
           FeBuilderStepsKeys,BsqrBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBsqrRunnerUtilities
         >['getProcessingCtx']
       }
@@ -86,7 +86,7 @@ export class FeBuildSequencer <
     r.utilities.prompt.intro(`${r.builderName || '<missing name>'} builder started`)
     // @TODO if no bundlername, prompt
 
-    r.ctxSignals.runnerReady.pass(r.utilities)  // warning: this is used as readiness signal for the higher order builder
+    r.ctxSignals.sequencerReady.pass(r.utilities)  // warning: this is used as readiness signal for the higher order builder
   }
 
   async loadConfigs () {
