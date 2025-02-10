@@ -12,6 +12,9 @@ export type _Fe_AnyI_theOther = {  // @TODO infer keys from T maybe
   [VK: string]: any,
 };
 
+export type FeAnyI = Record<FeTKeyof|never|symbol,unknown|never>|{}
+export type FeAnyOtherI = Record<FeTKeyof,unknown|never|any>|{}
+
 // * any kind of generic interface (an ephemeral convenience type)
 
 
@@ -31,7 +34,7 @@ export type FeObjectwithNamedKeyProp <
 // * Used as an entry of arrays
 
 export type FeStringKeyedCollectionObject<
-  T extends _Fe_AnyI,
+  T extends unknown,
   KeyPropType extends FeTKeyof = string,  // see definition of Record
 > =
   Record<KeyPropType, T>
