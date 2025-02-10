@@ -2,16 +2,17 @@ import type { __NID } from '../_integration/types.js';
 // this file contains functions which dont strictly implement Fe concepts
 
 export type FeTKeyof = keyof any;
-export type FeTEmptyObject = Record<string,never>;
+export type FeTEmptyObject = Record<string,never>;  // @TODO cf {}
 
 export type _Fe_AnyI = {  // @TODO infer keys from T maybe
   [VK: string]: any,  // @TODO unknown
 };
+// * @TODO cf type Record<K extends keyof any, T> = { [P in K]: T; }
 export type _Fe_AnyI_theOther = {  // @TODO infer keys from T maybe
   [VK: string]: any,
 };
 
-//* any kind of generic interface (an ephemeral convenience type)
+// * any kind of generic interface (an ephemeral convenience type)
 
 
 export type FeStringKeyPropPartofObject <

@@ -46,7 +46,7 @@ export type FeBsqrWaitingforRequestedBlocktoCompleteTimeouts <
   number | _FeMilliseconds  // @TODO test
 >
 
-export class IFeBlockSequencerCtx <
+export class IFeBlocksSequencerCtx <
   BlocksKeys extends string,
   ExecCtx extends {}, // @TODO
   Utilities extends IFeBsqrBaseUtilities = IFeBsqrBaseUtilities
@@ -59,23 +59,23 @@ export class IFeBlockSequencerCtx <
   execSignals: FeBsqrExecSignals<BlocksKeys,ExecCtx>
   ctxSignals: FeBsqrBaseCtxSignals<Utilities>
   utilities: Utilities
-  getProcessingCtx: () => ExecCtx
+  getExecCtx: () => ExecCtx
   waitingforRequestedBlocktoCompleteTimeout:
     FeBsqrWaitingforRequestedBlocktoCompleteTimeouts<BlocksKeys>
 }
-// & RunnerExtensionProps
+// & SequencerExtensionProps
 
-export class FeBlockSequencerCtx <
+export class FeBlocksSequencerCtx <
   BlocksKeys extends string,
   ExecCtx extends {},
   Utilities extends IFeBsqrBaseUtilities = IFeBsqrBaseUtilities
-> extends IFeBlockSequencerCtx<BlocksKeys,ExecCtx,Utilities> {
+> extends IFeBlocksSequencerCtx<BlocksKeys,ExecCtx,Utilities> {
 
   public constructor (
     public sequencerName: string,
     private blocksKeysDonor: Record<BlocksKeys,{}>, // must bring all the blocks keys (functional or skipped) and no others
     initiator?: Partial<
-      Omit<IFeBlockSequencerCtx<BlocksKeys,ExecCtx,Utilities>,'sequencerName'>
+      Omit<IFeBlocksSequencerCtx<BlocksKeys,ExecCtx,Utilities>,'sequencerName'>
     >
   ) {
     super()
@@ -95,7 +95,7 @@ export class FeBlockSequencerCtx <
     toMerge: Partial<ExecCtx>,
     mergicianOptions?: MergicianOptions
   ): ExecCtx {
-    const processingCtx = this.getProcessingCtx()
+    const processingCtx = this.getExecCtx()
     if (_feIsNotanEmptyObject(toMerge)) {
       return Object.assign(processingCtx, mergician(
         mergicianOptions||{}
@@ -142,7 +142,7 @@ export class FeBlockSequencerCtx <
           message: `${this.sequencerName} is handling ${blockId} in the specified ${_blockFn? '' : 'built-in'} function call`,
           execSignaling: 'RequestSkipped'
         })
-        const ctxfromFn = await (_blockFn || _builtinFn!)(this.getProcessingCtx())
+        const ctxfromFn = await (_blockFn || _builtinFn!)(this.getExecCtx())
         signaling.done(ctxfromFn)  // @TODO if failed
         return ctxfromFn
       } else {
@@ -156,7 +156,7 @@ export class FeBlockSequencerCtx <
               throw new Error(`${this.sequencerName} got ${blockId} as to be executed as a built-in function but got a non-function value`) // @TODO
             } // @TODO will it throw here?
           )
-        signaling.request(this.getProcessingCtx())
+        signaling.request(this.getExecCtx())
         const ctxfromWaiting = await Promise.all([
           signaling.tillDone,
           _timeoutHandler
@@ -169,7 +169,7 @@ export class FeBlockSequencerCtx <
          execSignaling: 'RequestSkipped'
        })
        signaling.skipped()
-       return this.getProcessingCtx()
+       return this.getExecCtx()
     }
   }
 }
