@@ -101,13 +101,31 @@ export function _feAssertIsObject (
   }
 }
 
-export function _feAssertIsAsyncFunction <
-  P = unknown,
+export function _feAssertIsSyncFunction <
+  ReturnedValueT = unknown,
   Args extends any[] = any[]
 > (
   that: unknown,
   labelOrMessage?: string|{message: string}
-): asserts that is (...args: Args)=>Promise<P> {
+): asserts that is (...args: Args)=> ReturnedValueT {
+  if (
+    !(that instanceof Function)
+    || that?.constructor?.name === 'AsyncFunction'
+  ) {
+    throw new TypeError(
+      (labelOrMessage as MessageinProps)?.message ||
+      `Expected ${labelOrMessage || 'label'} to be an sync funciton, but received ${that}`
+    );
+  }
+}
+
+export function _feAssertIsAsyncFunction <
+  ReturnedValueT = unknown,
+  Args extends any[] = any[]
+> (
+  that: unknown,
+  labelOrMessage?: string|{message: string}
+): asserts that is (...args: Args)=> Promise<ReturnedValueT> {
   if (that?.constructor?.name !== 'AsyncFunction') {
     throw new TypeError(
       (labelOrMessage as MessageinProps)?.message ||
