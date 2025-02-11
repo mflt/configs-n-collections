@@ -5,7 +5,7 @@ import {
   _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
 import {
-  FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm
+  FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm, FeBsqrInitiorModder,
 } from '../../../../fessentials/blocks-sequencer.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
@@ -71,8 +71,10 @@ export class BuildSequencer <
           BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,
           IBuiqBaseUtilities
         >,
-        'sequencerName'|'getExecCtx'
-      > & {
+        'sequencerName'|'blockstoSkip'|'builtinBlockstoSkip'|'getExecCtx'
+      >
+      & FeBsqrInitiorModder<BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>>
+      & {
         getBuilderCtx: FeBlocksSequencerCtx<
           BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,IBuiqBaseUtilities
         >['getExecCtx']

@@ -7,10 +7,9 @@ const __BlocksKeysDonor = { // Just to have iterable keys to engage
   config_c_bundler_local: {},
   config_d_bundler_shared: {},
   config_e_additional: {},
-  pre: {},
-  tsc: {},
+  preps: {},
+  compile: {},
   bundler: {},
-  additional: {},
   post: {},
 } as const
 
