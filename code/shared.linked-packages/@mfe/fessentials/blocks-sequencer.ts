@@ -3,7 +3,7 @@ import type {
   _Branded, _WithAssertedBrand, _FeMilliseconds,
 } from '../fe3/src/index.ts'
 import {
-  FeExecSignaling, FeReadinessSignaling,
+  FeExecSignaling, FeReadinessSignaling, _feAssertIsSyncFunction, _feIsFunction, _feIsObject,
   _feIsNotanEmptyObject, _feIsAsyncFunction, _feMakeRecordFeMapLike, $fe, _feDelay
 } from '../fe3/src/index.ts'
 
@@ -48,18 +48,19 @@ export type FeBsqrWaitingforRequestedBlocktoCompleteTimeouts <
 
 export class IFeBlocksSequencerCtx <
   BlocksKeys extends string,
-  ExecCtx extends {}, // @TODO
+  ExecCtx extends {},
+  // * @TODO but basically it's a matter of the implementation, which will pass it arround between blocks
   Utilities extends IFeBsqrBaseUtilities = IFeBsqrBaseUtilities
 > {
   sequencerName: string
-  blockstoExecasFunctions: FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>
+  blockstoExecasFunctions: Partial<FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>>
   blockstoSkip: BlocksKeys[] // @TODO typing
   builtinBlockstoSkip?: BlocksKeys[] // @TODO typing
-  builtinBlocksFunctions?: FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>
+  builtinBlocksFunctions?: Partial<FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>>
   execSignals: FeBsqrExecSignals<BlocksKeys,ExecCtx>
   ctxSignals: FeBsqrBaseCtxSignals<Utilities>
   utilities: Utilities
-  getExecCtx: () => ExecCtx
+  getExecCtx: () => ExecCtx // all blocks are expected to process this shared context
   waitingforRequestedBlocktoCompleteTimeout:
     FeBsqrWaitingforRequestedBlocktoCompleteTimeouts<BlocksKeys>
 }
@@ -76,6 +77,10 @@ export class FeBlocksSequencerCtx <
     private blocksKeysDonor: Record<BlocksKeys,{}>, // must bring all the blocks keys (functional or skipped) and no others
     initiator?: Partial<
       Omit<IFeBlocksSequencerCtx<BlocksKeys,ExecCtx,Utilities>,'sequencerName'>
+      & Partial<Pick<IFeBlocksSequencerCtx<BlocksKeys,ExecCtx,Utilities>,'blockstoExecasFunctions'>>
+      & {
+        execCtxRef: ExecCtx
+      }
     >
   ) {
     super()
@@ -87,24 +92,32 @@ export class FeBlocksSequencerCtx <
     this.blockstoExecasFunctions ??= {} as typeof this.blockstoExecasFunctions
     // _feMakeRecordFeMapLike(this.blockstoExecasFunctions)
     this.blockstoSkip ??= {} as typeof this.blockstoSkip
+    if (!_feIsFunction(this.getExecCtx) && _feIsObject(initiator?.execCtxRef)) {
+      this.getExecCtx = ()=> initiator?.execCtxRef!
+    } else {
+      _feAssertIsSyncFunction<ExecCtx>(
+        this.getExecCtx,
+        {message: `getExecCtx in ${this.sequencerName || '<unnamed seqiencer>'} is not a function`}
+      )
+    }
     // this.utilities.catchComm ??= @TODO
     // test @TODO
   }
 
-  assigntoProcessingCtx (
+  assigntoExecCtx (
     toMerge: Partial<ExecCtx>,
     mergicianOptions?: MergicianOptions
   ): ExecCtx {
-    const processingCtx = this.getExecCtx()
+    const execCtxRef = this.getExecCtx()
     if (_feIsNotanEmptyObject(toMerge)) {
-      return Object.assign(processingCtx, mergician(
+      return Object.assign(execCtxRef, mergician(
         mergicianOptions||{}
       )(
-        processingCtx,
+        execCtxRef,
         toMerge
-      )) as ExecCtx // returns the target aka this.getProcessingCtx()
+      )) as ExecCtx // returns the target aka this.getExecCtx()
     }
-    return processingCtx
+    return execCtxRef
   }
 
   engageExecSignals () {
