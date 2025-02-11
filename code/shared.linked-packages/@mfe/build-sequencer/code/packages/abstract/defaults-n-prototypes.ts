@@ -1,36 +1,41 @@
 import { FeExecSignaling } from '../../../../fe3/src/index.ts'
-import type { BuiqConfigFilesPaths } from './types.d.ts'
+import type { BuiqBundlerConfigPrototype } from './types.d.ts'
 
-const __blocksKeysDonor = { // Just to have iterable keys to engage
-  config_a_pkglocal: {},
+const __BlocksKeysDonor = { // Just to have iterable keys to engage
+  config_a_local: {},
   config_b_shared: {},
   config_c_bundler_local: {},
   config_d_bundler_shared: {},
   config_e_additional: {},
   pre: {},
   tsc: {},
-  main: {},
+  bundler: {},
   additional: {},
   post: {},
 } as const
 
-export type BuiqBlocksKeys = keyof typeof __blocksKeysDonor  // @TODO naming
+export type BuiqBlocksKeys = keyof typeof __BlocksKeysDonor  // @TODO naming
 
-export const _blocksKeysDonor = __blocksKeysDonor as unknown as Record<
+export const _BlocksKeysDonor = __BlocksKeysDonor as unknown as Record<
   BuiqBlocksKeys,
-  FeExecSignaling<any>
+  FeExecSignaling<any>  // @TODO any?
 >
 
-export const baseBuilderConfig: {
-  files: BuiqConfigFilesPaths
-} = {
-  files: {
-    local: {
+export const _BaseBuilderConfig: BuiqBundlerConfigPrototype = {
+  local: {
+    bundleName: '',
+    files: {
+      cwd: './',
       buiq: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
   },
-} as const
+  shared: {
+    files: {
+      cwd: '..'
+    }
+  }
+}
 
 export const BuiqExitCodeVariants = {
   done: 0,

@@ -8,7 +8,7 @@ import { _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
 import {
-  FeBuildRunner, BuiqBuilderCtx, BuiqExitCode,
+  FeBuildRunner, BuiqBuilderExecCtx, BuiqExitCode,
   BuiqBundlerConfigPrototype, FeBuilderStepsKeys, IBuiqBaseUtilities,
 } from './types'
 // import defaultsProfiles from './defaults-profiles.ts'

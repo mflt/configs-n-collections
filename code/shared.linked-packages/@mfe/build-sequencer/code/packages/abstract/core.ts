@@ -10,10 +10,10 @@ import {
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BuiqBuilderCtx, BuiqExitCode, BuiqBlocksKeys,
+  BuiqBuilderExecCtx, BuiqExitCode, BuiqBlocksKeys,
   BuiqBundlerConfigPrototype, IBuiqBaseUtilities,
 } from './types.d.ts'
-import { _blocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
+import { _BlocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
 
 export { prompt, color }
@@ -42,18 +42,18 @@ export class BuildSequencer <
   // * keep in sync w/ BuiqBuilderCtx
 > extends FeBlocksSequencerCtx<
   BuiqBlocksKeys,
-  BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,
-  IBuiqBaseUtilities
+  BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,
+  IBuiqBaseUtilities  // additional utils add to BuilderExtensionProps
 >
 {
   get builderName () { return this.sequencerName }
   get getBuilderCtx () { return this.getExecCtx }
 
   assigntoBuilderCtx (
-    toMerge: BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+    toMerge: BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,
     mergicianOptions?: MergicianOptions
   ) {
-    return this.assigntoProcessingCtx(toMerge, mergicianOptions)
+    return this.assigntoExecCtx(toMerge, mergicianOptions)
   }
 
   constructor(
@@ -63,26 +63,32 @@ export class BuildSequencer <
     //     FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
     //   >
     // >[1] | '_',  // @TODO named one?
-    builderCtx: BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,
+    builderCtxRef: BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,  // which is ExecCtx
     initiator?: Partial<
-      Omit<IFeBlocksSequencerCtx<
-        BuiqBlocksKeys,BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBuiqBaseUtilities
-      >,'sequencerName'|'getProcessingCtx'> & {
+      Omit<
+        IFeBlocksSequencerCtx<
+          BuiqBlocksKeys,
+          BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,
+          IBuiqBaseUtilities
+        >,
+        'sequencerName'|'getExecCtx'
+      > & {
         getBuilderCtx: FeBlocksSequencerCtx<
-          BuiqBlocksKeys,BuiqBuilderCtx<BundlerConfig,BuilderExtensionProps>,IBuiqBaseUtilities
+          BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,IBuiqBaseUtilities
         >['getExecCtx']
       }
     >
   ) {
     super(
       builderName,
-      // (stepsKeysDonor !== '_' && stepsKeysDonor) ||
-      _blocksKeysDonor,
-      initiator
+      _BlocksKeysDonor, {
+        ...initiator,
+        execCtxRef: builderCtxRef
+      }
     )
     // @TODO test builderCtx, if not defined throw
     const r = this
-    r.getExecCtx ??= initiator?.getBuilderCtx || (() => builderCtx)
+    // r.getExecCtx ??= initiator?.getBuilderCtx || (() => builderCtx)
     r.utilities.catchComm ??= catchComm
     r.utilities.resolve ??= resolve
     r.utilities.prompt ??= prompt

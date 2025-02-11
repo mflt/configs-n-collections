@@ -5,10 +5,8 @@ import {
   _feAssertIsObject, _feAssertIsAsyncFunction,
 } from '../../../../fe3/src/index.ts'
 import type {
-  FeBuilderVitexRunnerCtx, FeBuilderVitexEntryCtx, FeBuilderCtx, FeBuilderReturnCode,
-  BuiqVitexConfig,
-  BuilderEffectiveConfig, BuilderEffectiveLocalConfig, BuilderLocalConfig, BuilderCommonConfig,
-  ViteCommonConfigFn, ViteCommonConfigFnProps, ViteLocalConfigFnProps,
+  BuiqVitexExecCtx, BuiqVitexConfig, BuiqExitCode,
+  ViteCommonConfigFnProps, ViteLocalConfigFnProps,
 } from './types'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 import { BuildSequencer } from '../abstract/core.ts'
@@ -30,39 +28,36 @@ type __BuilderCtx = {}
 //  local/cwd vite fn evaluated
 //  vite build ran
 
-export async function viteBuilder (
-  props: FeBuilderVitexEntryCtx
-): Promise<FeBuilderReturnCode> {
+export async function vitexBuilder (
+  props: Partial<BuiqVitexExecCtx>
+): Promise<BuiqExitCode> {
 
-  // } satisfies FeBuilderCtx<
-  //     FeBundlerVitexConfig, {
-  //       // extension props
-  //     }
-  //   >
-
-  // const runnerCtx = new FeBuilderRunnerCtx({
-  //   ...props,
-  //   bundlerName: 'vite', @TODO ctx
-  //   builderName: props.builderName || 'vite-x',
-  // })
-  // satisfies Omit<FeBuilderVitexRunnerCtx, 'builderCtx'|'resolve'|'prompt'|'color'|'catchComm'>
-
-
-  const builderCtx = {} as __BuilderCtx
-
-  let viteConfig = {} as InlineConfig
-
-  // const returnCode =
+  const ctx: BuiqVitexExecCtx = {
+    ...props,
+    mode: 'build',
+    shared: {
+      ...props.shared,
+      files: {
+        ...props.shared?.files
+      }
+    },
+    local: {
+      ...props.local,
+      files: {
+        ...props.local?.files
+      }
+    },
+  }
 
   const r = new BuildSequencer<
-    FeBuilderVitexRunnerCtx,
+    BuiqVitexExecCtx,
     BuiqVitexConfig
   >(
     'vite', // '_',
-    builderCtx,
+    ctx,
     {
       blockstoExecasFunctions: {
-        pre: ()=> true
+        pre: (c: BuiqVitexExecCtx)=> (0 as unknown as Promise<BuiqVitexExecCtx>)
       }
     }
   )
@@ -94,12 +89,12 @@ export async function viteBuilder (
       // loading local vite config
       await r.execSignals.config_c_bundler_local.tillRequested // returns ctx
       _c.framingMessage =
-        `Failed importing the local vite config ts (${builderConfig.files.viteLocalConfigTsPath})`
-      if (builderConfig.files.viteLocalConfigTsPath) {
+        `Failed importing the local vite config ts (${ctx.local.files.bundler})`
+      if (!ctx.local.files.bundler) {
         p.log.warn('Local vite config ts can not be determined. \n' +
           'If this is not how you intended it to be, please check the defaults and other related settings.')
       } else {
-        const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
+        const viteLocalConfigFn = await import(ctx.local.files.bundler)
         _feAssertIsAsyncFunction<InlineConfig,[ViteLocalConfigFnProps]>(
           viteLocalConfigFn,
           {message: 'Local vite config is not a function'}
