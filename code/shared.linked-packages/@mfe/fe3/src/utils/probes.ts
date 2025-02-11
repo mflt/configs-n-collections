@@ -12,15 +12,16 @@ export const _feIsArray = <T> (that: unknown): that is Array<T> =>
   Array.isArray(that);
 export const _feIsSet = <T> (that: unknown): that is Set<T> =>
   that instanceof Set;
-export const _feIsObject = (that: unknown): that is Object =>
+export const _feIsObject = (that: unknown): that is Exclude< Object, Array<unknown>> =>
   that instanceof Object  // inherited also counts
   && !Array.isArray(that);
 export const _feIsEmptyObject = (that: unknown): that is Record<string,never> =>
   that?.constructor === Object  // inherited doesn't count
   && Object.keys(that)?.length === 0;
   // JSON.stringify(that) === '{}';
-export const _feIsNotanEmptyObject = (that: unknown): that is Object =>
-  _feIsObject(that) && !_feIsEmptyObject(that);
+export const _feIsNotanEmptyObject =
+  (that: unknown): that is Exclude< Object, Array<unknown> | Record<string,never>> =>
+    _feIsObject(that) && !_feIsEmptyObject(that);
 export const _feIsFunction = (that: unknown): that is Function =>
   that instanceof Function; // @TODO all to unknown
 export const _feIsAsyncFunction = <
@@ -92,7 +93,7 @@ export function _feAssertIsString (
 export function _feAssertIsObject (
   that: unknown,
   labelOrMessage?: string|{message: string}
-): asserts that is Object {
+): asserts that is Exclude< Object, Array<unknown>> {
   if (!(that instanceof Object) || Array.isArray(that)) {
     throw new TypeError(
       (labelOrMessage as MessageinProps)?.message ||
@@ -107,7 +108,7 @@ export function _feAssertIsSyncFunction <
 > (
   that: unknown,
   labelOrMessage?: string|{message: string}
-): asserts that is (...args: Args)=> ReturnedValueT {
+): asserts that is (...args: Args)=> Exclude< ReturnedValueT, Promise<unknown>> {
   if (
     !(that instanceof Function)
     || that?.constructor?.name === 'AsyncFunction'
