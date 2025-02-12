@@ -7,6 +7,7 @@ import {
 } from './probes.js';
 
 
+// export declare const $fe: unique symbol;
 export const $fe = Symbol.for('@feProps');
 
 export type FeMapLikeCollectionObject<

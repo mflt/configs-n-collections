@@ -1,10 +1,12 @@
-import { FeExecSignaling } from '../../../../fe3/src/index.ts'
-import type { BuiqBundlerConfigPrototype } from './types.d.ts'
+import { FeExecSignaling, $fe } from '../../../../fe3/src/index.ts'
+import type { BuiqLocalFeConfig, BuiqSharedFeConfig } from './types.d.ts'
 
 const __BlocksKeysDonor = { // Just to have iterable keys to engage
   config_a_local: {},
   config_b_shared: {},
   config_c_bundler_local: {},
+  // / local bundler comes first in order to provide inputs for the shared one
+  // / which like in case of vite is evaluated then first
   config_d_bundler_shared: {},
   config_e_additional: {},
   preps: {},
@@ -20,7 +22,7 @@ export const _BlocksKeysDonor = __BlocksKeysDonor as unknown as Record<
   FeExecSignaling<any>  // @TODO any?
 >
 
-export const _BaseBuilderConfig: BuiqBundlerConfigPrototype = {
+export const _BaseBuilderConfig = { // we omitted the $fe here
   local: {
     bundleName: '',
     files: {
@@ -28,12 +30,12 @@ export const _BaseBuilderConfig: BuiqBundlerConfigPrototype = {
       buiq: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
-  },
+  } satisfies BuiqLocalFeConfig,
   shared: {
     files: {
       cwd: '..'
     }
-  }
+  } satisfies BuiqSharedFeConfig,
 }
 
 export const BuiqExitCodeVariants = {

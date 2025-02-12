@@ -1,4 +1,5 @@
 import type { UserConfig, InlineConfig } from 'vite'
+import type { $fe } from '../../../../fe3/src/index.ts'
 import type {
   BuiqBuilderExecCtx, BuiqExitCode,
   BuiqConfigFilesPaths, BuiqBundlerConfigPrototype,
@@ -17,7 +18,7 @@ export type BuiqVitexExecCtx = BuiqBuilderExecCtx<
   BuiqVitexConfig, {
     'vite-x': {
       mode: 'build',
-      addPeerDependenciestoExternals: boolean,
+      addPeerDependenciestoExternals?: boolean,
       // changetoAltCwd: boolean,
     },
   }
@@ -67,8 +68,9 @@ export type BuiqVitexConfig = BuiqBundlerConfigPrototype<
 //   mode: 'build',
 //   config: BuilderEffectiveConfig,
 // }
-export type ViteCommonConfigFnProps = BuiqVitexExecCtx  // make the local part absent
-export type ViteLocalConfigFnProps = BuiqVitexExecCtx  // No diff yet
 
-export type ViteCommonConfigFn = (props: ViteCommonConfigFnProps) => Promise<UserConfig>
-export type ViteLocalConfigFn = (props: ViteLocalConfigFnProps) => Promise<InlineConfig>
+export type ViteLocalConfigFnProps = Omit<BuiqVitexExecCtx['local'],typeof $fe> // ie. InlineConfig & LocalExtensionProps
+export type ViteCommonConfigFnProps = Omit<BuiqVitexExecCtx['shared'],typeof $fe> // ie. UserConfig & SgaredExtensionProps
+
+export type ViteLocalConfigFn = (props: ViteLocalConfigFnProps) => Promise<ViteLocalConfigFnProps>
+export type ViteCommonConfigFn = (props: ViteCommonConfigFnProps) => Promise<ViteCommonConfigFnProps>

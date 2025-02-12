@@ -6,7 +6,7 @@ import { ViteToml as tomlPlugin } from 'vite-plugin-toml'
 // import { getSharedConfig } from '../shared.lib/getSharedConfig'
 // import type { SharedAssetsPaths } from './types/shared-assets-and-content'  // pending support with ${configDir}
 // import type { _getAppConfig } from './helpers/config/_getAppConfig'
-import type { ViteCommonConfigFnProps } from '../shared.linked-packages/@mfe/buildmfe/bunvite/src/types'
+import type { ViteCommonConfigFnProps } from '../shared.linked-packages/@mfe/build-sequencer/code/packages/vite-x/types.d.ts'
 
 export const viteCommonConfigFn = async (props: ViteCommonConfigFnProps): Promise<UserConfig> => {
 

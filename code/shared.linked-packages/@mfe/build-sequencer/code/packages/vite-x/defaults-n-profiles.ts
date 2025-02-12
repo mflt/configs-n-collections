@@ -1,3 +1,4 @@
+import { FeExecSignaling, $fe } from '../../../../fe3/src/index.ts'
 import { _BaseBuilderConfig } from '../abstract/defaults-n-prototypes.ts'
 import type { BuiqVitexExecCtx } from './types.d.ts'
 
@@ -5,22 +6,23 @@ export type DefaultsProfileNames = 'base-vite'
 
 export const _DefaultProfiles: Record<string,BuiqVitexExecCtx> = {
   'base-vite': {
-    ..._BaseBuilderConfig,
     'vite-x': {
       addPeerDependenciestoExternals: true,
       mode: 'build',
     },
-    local: {
+    local: { [$fe]: {
+      ..._BaseBuilderConfig.local,
       files: {
         ..._BaseBuilderConfig.local.files,
         bundler: './vite-local-config.ts',
       },
-    },
-    shared: {
+    }},
+    shared: { [$fe]: {
+      ..._BaseBuilderConfig.shared,
       files: {
         ..._BaseBuilderConfig.shared.files,
         bundler: './vite-common-config.ts',
       },
-    }
+    }}
   }
 }

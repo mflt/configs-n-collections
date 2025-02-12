@@ -1,10 +1,11 @@
 import type { PackageJson } from 'type-fest'
-import type { FeStringKeyedCollectionObject, FeAnyI } from '../../../../fe3/src/index.ts'
+import type { FeStringKeyedCollectionObject, FeAnyI, $fe } from '../../../../fe3/src/index.ts'
 import type { IFeBsqrBaseUtilities } from '../../../../fessentials/blocks-sequencer.ts'
 import type { BuiqBlocksKeys, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import type { BuildSequencer, IPrompt, IPromptColor } from './core.ts'
 export type { BuiqBlocksKeys }
 export type { BuildSequencer, IPrompt, IPromptColor }
+
 
 // # Legend:
 // Builder, or builder package/lib is the higher order entity which is decendent of BuildSequencer
@@ -68,6 +69,11 @@ export type BuiqConfigFilesPaths = {  // @TODO path type
   additional?: string,  // like tailwind or a bunch of such things
 }
 
+export type BuiqLocalFeConfig = {
+  bundleName?: string,
+  files?: BuiqConfigFilesPaths,
+}
+
 export type BuiqLocalConfigPrototype <
   BundlerLocalConfig extends FeAnyI = FeAnyI, // should not be undefined / unknown
   LocalExtensionProps extends FeAnyI|void = {}
@@ -75,9 +81,17 @@ export type BuiqLocalConfigPrototype <
 // this/descendants we load
   & BundlerLocalConfig
   & {
-    files: BuiqConfigFilesPaths,
+    [$fe]: BuiqLocalFeConfig
   }
   & LocalExtensionProps
+
+export type BuiqSharedFeConfig = {
+  // builderLocalConfigFileType: 'toml'|'ts',
+  files?: BuiqConfigFilesPaths
+  cb?: {
+    cwd: (params: ParamsArg) => string
+  }
+}
 
 export type BuiqSharedConfigPrototype <
   BundlerSharedConfig extends FeAnyI = FeAnyI,
@@ -86,11 +100,7 @@ export type BuiqSharedConfigPrototype <
 // this/descendants we load
   & BundlerSharedConfig
   & {
-    // builderLocalConfigFileType: 'toml'|'ts',
-    files: BuiqConfigFilesPaths
-    cb?: {
-      cwd: (params: ParamsArg) => string
-    }
+    [$fe]: BuiqSharedFeConfig
   }
   & SharedExtensionProps
 
