@@ -1,10 +1,10 @@
 import { FeExecSignaling, $fe } from '../../../../fe3/src/index.ts'
 import { _BaseBuilderConfig } from '../abstract/defaults-n-prototypes.ts'
-import type { BuiqVitexExecCtx } from './types.d.ts'
+import type { VitexExecCtx } from './types.d.ts'
 
 export type DefaultsProfileNames = 'base-vite'
 
-export const _DefaultProfiles: Record<string,BuiqVitexExecCtx> = {
+export const _DefaultProfiles: Record<string,VitexExecCtx> = {
   'base-vite': {
     'vite-x': {
       addPeerDependenciestoExternals: true,

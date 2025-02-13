@@ -5,8 +5,7 @@ import {
   _feAssertIsObject, _feAssertIsAsyncFunction,
 } from '../../../../fe3/src/index.ts'
 import type {
-  BuiqVitexExecCtx, BuiqVitexConfig, BuiqExitCode,
-  ViteCommonConfigFnProps, ViteLocalConfigFnProps, ViteCommonConfigFn,
+  VitexExecCtx, VitexConfig, BuiqExitCode, VitexBuilderProps
 } from './types.d.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 import { BuildSequencer, prompt, color, builderEntryLoaded } from '../abstract/core.ts'
@@ -29,42 +28,26 @@ export { prompt, color, builderEntryLoaded }
 //  local/cwd vite fn evaluated
 //  vite build ran
 
-type Props = {
-  builderCommonConfig: {},
-  viteCommonConfigFn: ViteCommonConfigFn|null,
-  ctx?: Partial<BuiqVitexExecCtx>
-}
-
 builderEntryLoaded.pass('vite-x')
 
 export async function vitexBuilder (
-  props: Props
+  props: VitexBuilderProps
 ): Promise<BuiqExitCode> {
 
-  const _ctx = props?.ctx || {}
-  const ctx: BuiqVitexExecCtx = { // ensure that main slots are not undefined
+  const _ctx = props?.initialCtx || {}
+  const ctx: VitexExecCtx = { // ensure that main slots are not undefined
     ..._ctx,
-    'vite-x': {
+    local: _ctx.local || {},
+    shared: _ctx.shared || {},
+    [$fe]: {
       mode: 'build',
-      ..._ctx['vite-x']
+      ..._ctx[$fe]
     },
-    shared: { [$fe]: {
-      ..._ctx.shared?.[$fe],
-      files: {
-        ..._ctx.shared?.[$fe].files
-      }
-    }},
-    local: { [$fe]: {
-      ..._ctx.local?.[$fe],
-      files: {
-        ..._ctx.local?.[$fe].files
-      }
-    }},
   }
 
   const r = new BuildSequencer<
-    BuiqVitexExecCtx,
-    BuiqVitexConfig
+    VitexExecCtx,
+    VitexConfig
   >(
     'vite-x', // '_',
     // @TODO let there be a builder kind, like 'vite' and sub like 'vxrn'

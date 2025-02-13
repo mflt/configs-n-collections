@@ -31,10 +31,6 @@ export type BuiqBuilderExecCtx <
   // / tsc and additional configs come here
 > =
   & BundlerConfig // local and shared
-  & {
-    _meta?: ImportMeta,  // _ indicates externally given, probably cwd also belongs here
-    _packageJson?: PackageJson,
-  }
   & BuilderExecExtensionProps
 
 export type BuiqBundlerConfigPrototype <
@@ -43,8 +39,9 @@ export type BuiqBundlerConfigPrototype <
 > = {
   // both input types are basically bundler config objects with additional config options
   // for the two stages of config computations aka loading (where shared stage comes first)
-  local: LocalConfig,
+  local: LocalConfig, // omitting $fe couldve been adequate
   shared: SharedConfig,
+  [$fe]: BuiqFeOnlyConfig
 }
 
 export interface IBuiqBaseUtilities extends IFeBsqrBaseUtilities {
@@ -55,14 +52,12 @@ export interface IBuiqBaseUtilities extends IFeBsqrBaseUtilities {
 
 export type BuiqExitCode = (typeof BuiqExitCodeVariants)[keyof typeof BuiqExitCodeVariants]
 
-export type BuiqAbstractEntryFnProps <
-
-> = {
+type BuiqAbstractEntryFnProps = {
   builderCommonConfig: BuiqAbstractSharedFeConfig,
-  viteCommonConfigFn: ViteCommonConfigFn|null,
-  ctx?: Partial<BuiqVitexExecCtx>
+  bundlerCommonConfigFn: BuiqAbstractSharedConfigFn|null,
+  initialCtx?: Partial<BuiqBuilderExecCtx>
 }
-
+type BuiqAbstractSharedConfigFn = (props: BuiqSharedConfigPrototype) => Promise<BuiqSharedConfigPrototype>
 
 export type BuiqConfigFilesPaths = {  // @TODO path type
   // All relative to their cwd path, which is relative to node/bun cwd (which can be a cli arg):
@@ -73,14 +68,33 @@ export type BuiqConfigFilesPaths = {  // @TODO path type
   additional?: string,  // like tailwind or a bunch of such things
 }
 
+export type BuiqLocalFeOnlyConfig = {
+  bundleName?: string,
+  files?: BuiqConfigFilesPaths,
+}
+export type BuiqSharedFeOnlyConfig = {
+  // builderLocalConfigFileType: 'toml'|'ts',
+  files?: BuiqConfigFilesPaths
+  cb?: {
+    cwd: (params: ParamsArg) => string
+  }
+}
+export type BuiqFeOnlyConfig = BuiqSharedFeOnlyConfig & BuiqLocalFeOnlyConfig & {
+  meta?: ImportMeta,  // _ indicates externally given, probably cwd also belongs here
+  packageJson?: PackageJson,
+}
+
 export type BuiqAbstractLocalFeConfig <
   BundlerName extends string = never,
   BundlerLocalConfig extends BuiqLocalConfigPrototype = BuiqLocalConfigPrototype,
-> = {
+> = BuiqLocalFeOnlyConfig & {
   [BundlerNameKey in `${BundlerName}`]: BundlerLocalConfig  // used in builder config file
-  } & {
-  bundleName?: string,
-  files?: BuiqConfigFilesPaths,
+}
+export type BuiqAbstractSharedFeConfig <
+  BundlerName extends string = never,
+  BundlerSharedConfig extends FeAnyI = FeAnyI,
+> = BuiqSharedFeOnlyConfig & {
+  [BundlerNameKey in `${BundlerName}`]: BundlerSharedConfig  // used in builder config file
 }
 
 export type BuiqLocalConfigPrototype <
@@ -90,22 +104,9 @@ export type BuiqLocalConfigPrototype <
 // this/descendants we load
   & BundlerLocalConfig
   & {
-    [$fe]: BuiqAbstractLocalFeConfig
+    [$fe]?: BuiqFeOnlyConfig
   }
   & LocalExtensionProps
-
-export type BuiqAbstractSharedFeConfig <
-  BundlerName extends string = never,
-  BundlerSharedConfig extends FeAnyI = FeAnyI,
-> = {
-  [BundlerNameKey in `${BundlerName}`]: BundlerSharedConfig  // used in builder config file
-  } & {
-  // builderLocalConfigFileType: 'toml'|'ts',
-  files?: BuiqConfigFilesPaths
-  cb?: {
-    cwd: (params: ParamsArg) => string
-  }
-}
 
 export type BuiqSharedConfigPrototype <
   BundlerSharedConfig extends FeAnyI = FeAnyI,
@@ -114,7 +115,7 @@ export type BuiqSharedConfigPrototype <
 // this/descendants we load
   & BundlerSharedConfig
   & {
-    [$fe]: BuiqAbstractSharedFeConfig
+    [$fe]?: BuiqFeOnlyConfig
   }
   & SharedExtensionProps
 

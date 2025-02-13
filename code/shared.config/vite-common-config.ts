@@ -1,14 +1,15 @@
 import type { UserConfig, PluginOption, Plugin /* UserConfigExport, searchForWorkspaceRoot */ } from 'vite'
 import { ViteToml as tomlPlugin } from 'vite-plugin-toml'
+import { $fe } from '../shared.linked-packages/@mfe/fe3/src/index.ts'
 // import contentCollectionsPlugin from '@content-collections/vite'
 // import { fileURLToPath, URL } from 'node:url'
 // import fs from 'node:fs'
 // import { getSharedConfig } from '../shared.lib/getSharedConfig'
 // import type { SharedAssetsPaths } from './types/shared-assets-and-content'  // pending support with ${configDir}
 // import type { _getAppConfig } from './helpers/config/_getAppConfig'
-import type { ViteCommonConfigFnProps } from '../shared.linked-packages/@mfe/build-sequencer/code/packages/vite-x/types.d.ts'
+import type { VitexSharedConfig } from '../shared.linked-packages/@mfe/build-sequencer/code/packages/vite-x/types.d.ts'
 
-export const viteCommonConfigFn = async (props: ViteCommonConfigFnProps): Promise<UserConfig> => {
+export const viteCommonConfigFn = async (props: VitexSharedConfig): Promise<UserConfig> => {
 
   props.prompt?.log.step(`vite common config started`)
 
@@ -48,7 +49,7 @@ export const viteCommonConfigFn = async (props: ViteCommonConfigFnProps): Promis
       target: 'esnext',
       rollupOptions: {
         external: [
-          ...(Object.keys(props.packageJson?.peerDependencies || {}) || []),
+          ...(Object.keys(props[$fe]?.packageJson?.peerDependencies || {}) || []),
           ...((props.config?.vite?.rollupOptions?.external as string[]) || []),
           // 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/react/+esm',
           // fileURLToPath(new URL(
