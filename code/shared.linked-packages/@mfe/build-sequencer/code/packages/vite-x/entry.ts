@@ -7,13 +7,13 @@ import {
 import type {
   BuiqVitexExecCtx, BuiqVitexConfig, BuiqExitCode,
   ViteCommonConfigFnProps, ViteLocalConfigFnProps, ViteCommonConfigFn,
-} from './types'
+} from './types.d.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
-import { BuildSequencer, prompt, color } from '../abstract/core.ts'
+import { BuildSequencer, prompt, color, builderEntryLoaded } from '../abstract/core.ts'
 import { BuiqExitCodeVariants } from '../abstract/defaults-n-prototypes.ts'
 // import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
-export { prompt, color }
+export { prompt, color, builderEntryLoaded }
 
 //  Loading and execution oder:
 //  Loading order:
@@ -32,14 +32,16 @@ export { prompt, color }
 type Props = {
   builderCommonConfig: {},
   viteCommonConfigFn: ViteCommonConfigFn|null,
-  ctx: Partial<BuiqVitexExecCtx>
+  ctx?: Partial<BuiqVitexExecCtx>
 }
+
+builderEntryLoaded.pass('vite-x')
 
 export async function vitexBuilder (
   props: Props
 ): Promise<BuiqExitCode> {
 
-  const _ctx = props?.ctx
+  const _ctx = props?.ctx || {}
   const ctx: BuiqVitexExecCtx = { // ensure that main slots are not undefined
     ..._ctx,
     'vite-x': {

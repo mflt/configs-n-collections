@@ -1,7 +1,7 @@
 import { MergicianOptions } from 'mergician'
 import type { FeAnyI } from '../../../../fe3/src/index.ts'
 import {
-  _feIsNotanEmptyObject, _feIsEmptyObject,
+  _feIsNotanEmptyObject, _feIsEmptyObject, FeReadinessSignaling,
   _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction
 } from '../../../../fe3/src/index.ts'
 import {
@@ -35,6 +35,14 @@ const resolve = (path: string) => {
 }
 
 // loading buildCommonConfig and viteCommonConfigFn is delegated to the caller, as it can do it statically
+
+export const builderEntryLoaded = new FeReadinessSignaling<string>();
+
+(async function () {
+  prompt.intro(`Build sequencer started for builder entry ${
+      await builderEntryLoaded.tillReady
+    }`)
+})()
 
 export class BuildSequencer <
   BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,
@@ -81,6 +89,7 @@ export class BuildSequencer <
       }
     >
   ) {
+    builderEntryLoaded.makeObsolete()
     super(
       builderName,
       _BlocksKeysDonor, {
