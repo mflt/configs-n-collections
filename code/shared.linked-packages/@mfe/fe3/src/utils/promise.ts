@@ -15,7 +15,7 @@ export class FePromisewithResolvers <
 > extends Promise<FulfillmentValueT> {
 
   static get [Symbol.species]() { // @TODO
-    return Promise;
+    return Promise
   }
   public get promise () { return this as Omit<typeof this, 'resolve'|'reject'> }
   public resolve!: _Resolve<FulfillmentValueT>
@@ -38,19 +38,38 @@ export class FeReadinessSignaling <
   FulfillmentValueT = true,
   ErrorReasonT = unknown
 > extends FePromisewithResolvers<FulfillmentValueT,ErrorReasonT> {
+  private $status: 'awaited'|'fulfilled'|'failed'|'undefined'|'obsolite' = 'undefined'
+  private $fulfillmentValue: FulfillmentValueT|undefined
+  private $errorReason: ErrorReasonT|undefined
+  public get status () { return this.$status }
+  public get stillAwaited () { return ['awaited','undefined'].includes(this.$status) }
+  public get fulfillmentValue () { return this.$fulfillmentValue }
+  public get errorReason () { return this.$errorReason }
   public get tillReady () {
     return this.promise as Promise<FulfillmentValueT>
   }
   public pass (value?: FulfillmentValueT) {
+    this.$fulfillmentValue = value
+    this.$status = 'fulfilled'
     this.resolve(value || true as FulfillmentValueT)
     return value
   }
   public fail (err?: ErrorReasonT) {
+    this.$errorReason = err
+    this.$status = 'failed'
     this.reject(err)
+    return err
+  }
+  public makeObsolete (err?: ErrorReasonT) {
+    this.$status = 'obsolite'
+    if (err) {
+      this.reject(err)
+    }
     return err
   }
   public constructor () {
     super()
+    this.$status = 'awaited'
   }
 }
 
@@ -112,7 +131,9 @@ export class DeferredPromise extends Promise<void> {
         internalResolve = resolve;
         internalReject = reject;
     });
+    // @ts-expect-error
     this.resolve = internalResolve;
+    // @ts-expect-error
     this.reject = internalReject;
   }
 }
