@@ -1,5 +1,5 @@
 import { FeExecSignaling, $fe } from '../../../../fe3/src/index.ts'
-import type { BuiqLocalFeConfig, BuiqSharedFeConfig } from './types.d.ts'
+import type { BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig } from './types.d.ts'
 
 const __BlocksKeysDonor = { // Just to have iterable keys to engage
   config_a_local: {},
@@ -30,12 +30,12 @@ export const _BaseBuilderConfig = { // we omitted the $fe here
       buiq: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
-  } satisfies BuiqLocalFeConfig,
+  } satisfies BuiqAbstractLocalFeConfig,
   shared: {
     files: {
       cwd: '..'
     }
-  } satisfies BuiqSharedFeConfig,
+  } satisfies BuiqAbstractSharedFeConfig,
 }
 
 export const BuiqExitCodeVariants = {

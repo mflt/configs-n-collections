@@ -1,9 +1,8 @@
 import type { UserConfig, InlineConfig } from 'vite'
 import type { $fe } from '../../../../fe3/src/index.ts'
 import type {
-  BuiqBuilderExecCtx, BuiqExitCode,
-  BuiqConfigFilesPaths, BuiqBundlerConfigPrototype,
-  BuiqLocalConfigPrototype, BuiqSharedConfigPrototype,
+  BuiqBuilderExecCtx, BuiqExitCode, BuiqBundlerConfigPrototype,
+  BuiqLocalConfigPrototype, BuiqSharedConfigPrototype, BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig
 } from '../abstract/types.d.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
@@ -29,6 +28,10 @@ export type BuiqVitexConfig = BuiqBundlerConfigPrototype<
   BuiqSharedConfigPrototype<UserConfig,{}>
 >
 
+export type BuiqVitexSharedFeConfig = BuiqAbstractSharedFeConfig <
+  'vite',
+  Inline,
+>
 
 // export type FeBuilderVitexEntryCtx =
 //   & FeBuilderEntryCtx

@@ -55,10 +55,14 @@ export interface IBuiqBaseUtilities extends IFeBsqrBaseUtilities {
 
 export type BuiqExitCode = (typeof BuiqExitCodeVariants)[keyof typeof BuiqExitCodeVariants]
 
-// export type FeBuilderEntryCtx = Pick<
-//   FeBuilderRunnerCtx,
-//   'builderName'
-// >
+export type BuiqAbstractEntryFnProps <
+
+> = {
+  builderCommonConfig: BuiqAbstractSharedFeConfig,
+  viteCommonConfigFn: ViteCommonConfigFn|null,
+  ctx?: Partial<BuiqVitexExecCtx>
+}
+
 
 export type BuiqConfigFilesPaths = {  // @TODO path type
   // All relative to their cwd path, which is relative to node/bun cwd (which can be a cli arg):
@@ -69,7 +73,12 @@ export type BuiqConfigFilesPaths = {  // @TODO path type
   additional?: string,  // like tailwind or a bunch of such things
 }
 
-export type BuiqLocalFeConfig = {
+export type BuiqAbstractLocalFeConfig <
+  BundlerName extends string = never,
+  BundlerLocalConfig extends BuiqLocalConfigPrototype = BuiqLocalConfigPrototype,
+> = {
+  [BundlerNameKey in `${BundlerName}`]: BundlerLocalConfig  // used in builder config file
+  } & {
   bundleName?: string,
   files?: BuiqConfigFilesPaths,
 }
@@ -81,11 +90,16 @@ export type BuiqLocalConfigPrototype <
 // this/descendants we load
   & BundlerLocalConfig
   & {
-    [$fe]: BuiqLocalFeConfig
+    [$fe]: BuiqAbstractLocalFeConfig
   }
   & LocalExtensionProps
 
-export type BuiqSharedFeConfig = {
+export type BuiqAbstractSharedFeConfig <
+  BundlerName extends string = never,
+  BundlerSharedConfig extends FeAnyI = FeAnyI,
+> = {
+  [BundlerNameKey in `${BundlerName}`]: BundlerSharedConfig  // used in builder config file
+  } & {
   // builderLocalConfigFileType: 'toml'|'ts',
   files?: BuiqConfigFilesPaths
   cb?: {
@@ -100,15 +114,8 @@ export type BuiqSharedConfigPrototype <
 // this/descendants we load
   & BundlerSharedConfig
   & {
-    [$fe]: BuiqSharedFeConfig
+    [$fe]: BuiqAbstractSharedFeConfig
   }
   & SharedExtensionProps
-
-// export type BuiqEffectivePkglocalConfigPrototype <T extends FeAnyI> = // @TODO maybe get rid of it
-// // this/descendants evaluate as we process config inputs in sequence
-//   & {
-//     cwd?: string // @TODO path
-//   }
-//   & T
 
 type ParamsArg = FeStringKeyedCollectionObject<FeAnyI|string>  // command line params arg is a parsable obj
