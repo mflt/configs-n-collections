@@ -65,7 +65,7 @@ export class IFeBlocksSequencerCtx <
   blockstoExecasFunctions: Partial<FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>>
   blockstoSkip: Set<BlocksKeys> // @TODO typing
   builtinBlockstoSkip?: Set<BlocksKeys> // @TODO typing
-  builtinBlocksFunctions?: Partial<FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>>
+  protected builtinBlocksFunctions?: Partial<FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>>
   execSignals: FeBsqrExecSignals<BlocksKeys,ExecCtx>
   ctxSignals: FeBsqrBaseCtxSignals<Utilities>
   utilities: Utilities
@@ -95,7 +95,7 @@ export class FeBlocksSequencerCtx <
 
   public constructor (
     public sequencerName: string,
-    private blocksKeysDonor: Record<BlocksKeys,{}>, // must bring all the blocks keys (functional or skipped) and no others
+    protected blocksKeysDonor: Record<BlocksKeys,{}>, // must bring all the blocks keys (functional or skipped) and no others
     initiator?: Partial<
       Omit<IFeBlocksSequencerCtx<BlocksKeys,ExecCtx,Utilities>,'sequencerName'|'blockstoSkip'|'builtinBlockstoSkip'>
       // * see FeBsqrInitiorMod
