@@ -1,8 +1,9 @@
-import { MergicianOptions } from 'mergician'
+import { mergician, MergicianOptions } from 'mergician'
 import type { FeAnyI } from '../../../../fe3/src/index.ts'
 import {
   _feIsNotanEmptyObject, _feIsEmptyObject, FeReadinessSignaling,
-  _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction
+  _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction,
+  _feIsObject, $fe
 } from '../../../../fe3/src/index.ts'
 import {
   FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm, FeBsqrInitiorModder,
@@ -10,8 +11,8 @@ import {
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BuiqBuilderExecCtx, BuiqExitCode, BuiqBlocksKeys,
-  BuiqBundlerConfigPrototype, IBuiqBaseUtilities,
+  BuiqBuilderExecCtx, BuiqExitCode, BuiqBlocksKeys, BuiqLocalBundlerConfig, BuiqSharedBundlerConfig,
+  BuiqBundlerSpecificFePartFather, IBuiqBaseUtilities,
 } from './types.d.ts'
 import { _BlocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
@@ -45,12 +46,16 @@ export const builderEntryLoaded = new FeReadinessSignaling<string>();
 })()
 
 export class BuildSequencer <
-  BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,
-  BuilderExtensionProps extends FeAnyI|void = void,
-  // * keep in sync w/ BuiqBuilderCtx
+  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
+  BundlerLocalConfig extends BuiqLocalBundlerConfig<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedConfig extends BuiqSharedBundlerConfig<unknown,unknown>,
+  // * keep in sync w/ BuiqBuilderExecCtx
 > extends FeBlocksSequencerCtx<
   BuiqBlocksKeys,
-  BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,
+  BuiqBuilderExecCtx<
+    BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig
+    // the extension slots are not relevant in this abstract/bundler-independent context
+  >,
   IBuiqBaseUtilities  // additional utils add to BuilderExtensionProps
 >
 {
@@ -58,10 +63,13 @@ export class BuildSequencer <
   get getBuilderCtx () { return this.getExecCtx }
 
   assigntoBuilderCtx (
-    toMerge: BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,
+    toMerge: Partial<BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>>,
     mergicianOptions?: MergicianOptions
   ) {
-    return this.assigntoExecCtx(toMerge, mergicianOptions)
+    return this.assigntoExecCtx(
+      toMerge,
+      mergicianOptions
+    )
   }
 
   constructor(
@@ -71,20 +79,20 @@ export class BuildSequencer <
     //     FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
     //   >
     // >[1] | '_',  // @TODO named one?
-    builderCtxRef: BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,  // which is ExecCtx
+    builderCtxRef: BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,  // which is ExecCtx
     initiator?: Partial<
       Omit<
         IFeBlocksSequencerCtx<
           BuiqBlocksKeys,
-          BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,
+          BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,
           IBuiqBaseUtilities
         >,
         'sequencerName'|'blockstoSkip'|'builtinBlockstoSkip'|'getExecCtx'
       >
-      & FeBsqrInitiorModder<BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>>
+      & FeBsqrInitiorModder<BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>>
       & {
         getBuilderCtx: FeBlocksSequencerCtx<
-          BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerConfig,BuilderExtensionProps>,IBuiqBaseUtilities
+          BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,IBuiqBaseUtilities
         >['getExecCtx']
       }
     >
@@ -97,13 +105,22 @@ export class BuildSequencer <
         execCtxRef: builderCtxRef
       }
     )
-    // @TODO test builderCtx, if not defined throw
+    if (!builderCtxRef || _feIsEmptyObject(builderCtxRef)) {
+      throw new Error(
+        `${!builderCtxRef ? 'Undefined' : 'Empty'} builder/exec context objects are not allowed`  // @TODO
+      )
+    }
+    _feAssertIsObject(builderCtxRef,
+      {message: `Builder/exec context should be a non-empty object`}
+    )
+    builderCtxRef[$fe].meta = import.meta
     const r = this
     // r.getExecCtx ??= initiator?.getBuilderCtx || (() => builderCtx)
     r.utilities.catchComm ??= catchComm
     r.utilities.resolve ??= resolve
     r.utilities.prompt ??= prompt
     r.utilities.color ??= color
+    builderCtxRef[$fe].utilities = r.utilities
     r.utilities.prompt.intro(`${r.builderName || '<missing name>'} builder started`)
     // @TODO if no bundlername, prompt
 

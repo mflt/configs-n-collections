@@ -5,10 +5,20 @@ import { commonConfig, type CommonConfigProps } from '../../shared.config/vite.c
 // import localConfig from './config/app.static-config.toml'
 // import { getAppConfig } from './helpers/config/getAppConfig'
 import { _feIsObject } from '../../shared.linked-packages/@mfe/fe3/src'
+import { type VitexLocalConfigFnCtx, $fe } from '../../shared.linked-packages/@mfe/build-sequencer/code/packages/vite-x'
 
 
-export async function viteConfig ({ mode }) {
 
+export async function viteConfig (props: VitexLocalConfigFnCtx) {
+
+  // test props for supporting all the $fe non-optionals
+
+  const {
+    builderLocalConfig,
+    utilities: {
+      prompt
+    }
+  } = props[$fe]!
 
   _commonConfig.build ??= {}
 

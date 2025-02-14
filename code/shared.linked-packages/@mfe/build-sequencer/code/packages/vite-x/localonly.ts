@@ -5,6 +5,6 @@ if (!import.meta.main) {
 }
 
 await vitexBuilder({
-  builderCommonConfig: {},
-  viteCommonConfigFn: null
+  builderSharedConfig: {},
+  viteSharedConfigFn: null
 })

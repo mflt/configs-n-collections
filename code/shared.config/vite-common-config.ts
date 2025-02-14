@@ -1,17 +1,26 @@
 import type { UserConfig, PluginOption, Plugin /* UserConfigExport, searchForWorkspaceRoot */ } from 'vite'
 import { ViteToml as tomlPlugin } from 'vite-plugin-toml'
-import { $fe } from '../shared.linked-packages/@mfe/fe3/src/index.ts'
+// import { $fe } from '../shared.linked-packages/@mfe/fe3/src/index.ts'
 // import contentCollectionsPlugin from '@content-collections/vite'
 // import { fileURLToPath, URL } from 'node:url'
 // import fs from 'node:fs'
 // import { getSharedConfig } from '../shared.lib/getSharedConfig'
 // import type { SharedAssetsPaths } from './types/shared-assets-and-content'  // pending support with ${configDir}
 // import type { _getAppConfig } from './helpers/config/_getAppConfig'
-import type { VitexSharedConfig } from '../shared.linked-packages/@mfe/build-sequencer/code/packages/vite-x/types.d.ts'
+import { type VitexLocalConfigFnCtx, $fe } from '../shared.linked-packages/@mfe/build-sequencer/code/packages/vite-x'
 
-export const viteCommonConfigFn = async (props: VitexSharedConfig): Promise<UserConfig> => {
+export const viteCommonConfigFn = async (props: VitexLocalConfigFnCtx): Promise<VitexLocalConfigFnCtx> => {
 
-  props.prompt?.log.step(`vite common config started`)
+  // test props for supporting all the $fe non-optionals
+
+  const {
+
+    utilities: {
+      prompt
+    }
+  } = props?.[$fe]!
+
+  prompt?.log.step(`vite common config started`)
 
   // const sharedAssetsConfig = props?.localConfig?.sharedAssets
   // const sharedContentConfig = props?.localConfig?.sharedContent

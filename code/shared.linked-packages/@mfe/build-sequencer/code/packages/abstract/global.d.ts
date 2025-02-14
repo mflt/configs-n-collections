@@ -1,1 +1,1 @@
-declare var builderName: string
+// declare var builderName: string

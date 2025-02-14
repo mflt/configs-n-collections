@@ -1,12 +1,13 @@
 import type { UserConfig, InlineConfig } from 'vite'
 import type { $fe } from '../../../../fe3/src/index.ts'
 import type {
-  BuiqBuilderExecCtx, BuiqExitCode, BuiqBundlerConfigPrototype,
-  BuiqLocalConfigPrototype, BuiqSharedConfigPrototype, BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig
+  BuiqBuilderExecCtx, BuiqExitCode,
+  BuiqLocalBundlerConfig, BuiqSharedBundlerConfig, BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig,
+  BuiqBundlerConfigFnCtx,
 } from '../abstract/types.d.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
-export type { BuiqExitCode, $fe }
+export type { BuiqExitCode }
 
 // export type BuiqVitexEntryProps = BuiqProps <
 //   & Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'bundlerCommonConfigFn'|'cwd'> & {
@@ -14,29 +15,43 @@ export type { BuiqExitCode, $fe }
 // }>
 
 export type VitexExecCtx = BuiqBuilderExecCtx<
-  VitexConfig & {
-    [$fe]: {
-      mode: 'build',
-      addPeerDependenciestoExternals?: boolean,
-      // changetoAltCwd: boolean,
-    },
-  }
+  VitexSpecificFePart,
+  ViteLocalConfig,
+  ViteSharedConfig
 >
 
-export type VitexBuilderProps = {
-  builderSharedConfig: VitexSharedFeConfig|{},
-  viteSharedConfigFn: VitexSharedConfigFn|null,
-  initialCtx?: Partial<VitexExecCtx>
+export type VitexSpecificFePart =
+  & VitexLocalBuilderExecCtx
+  & VitexSharedBuilderExecCtx
+  & {
+    bundlerName: 'vite',
+    mode: 'build',
+    addPeerDependenciestoExternals?: boolean,
+    // changetoAltCwd: boolean,
 }
 
+export type VitexLocalBuilderExecCtx = {
+  builderLocalConfig: VitexLocalBuilderConfig|{},
+  viteLocalConfigFn: VitexLocalConfigFn|null,
+}
 
-export type VitexLocalConfig = BuiqLocalConfigPrototype<InlineConfig,{}>
-export type VitexSharedConfig = BuiqSharedConfigPrototype<UserConfig,{}>
-export type VitexConfig = BuiqBundlerConfigPrototype<VitexLocalConfig,VitexSharedConfig>
+export type VitexSharedBuilderExecCtx = {
+  builderSharedConfig: VitexSharedBuilderConfig|{},
+  viteSharedConfigFn: VitexSharedConfigFn|null,
+}
+
+export type VitexBuilderProps = VitexSpecificFePart // cf _AbstractEntryFnProps
+
+export type ViteLocalConfig = BuiqLocalBundlerConfig<InlineConfig> // Extendable classic Vite config aka InlineConfig
+export type ViteSharedConfig = BuiqSharedBundlerConfig<UserConfig>
+// export type VitexConfig = BuiqBundlerConfigPrototype<ViteLocalConfig,ViteSharedConfig>
 
 // To be used in builder config file:
-export type VitexLocalFeConfig = BuiqAbstractLocalFeConfig <'vite', VitexLocalConfig>
-export type VitexSharedFeConfig = BuiqAbstractSharedFeConfig <'vite', VitexSharedConfig>
+export type VitexLocalBuilderConfig = BuiqAbstractLocalFeConfig<'vite', ViteLocalConfig, VitexSpecificFePart>
+export type VitexSharedBuilderConfig = BuiqAbstractSharedFeConfig<'vite', ViteSharedConfig, VitexSpecificFePart>
+
+export type VitexLocalConfigFnCtx = BuiqBundlerConfigFnCtx<ViteLocalConfig,VitexSpecificFePart>
+export type VitexSharedConfigFnCtx = BuiqBundlerConfigFnCtx<ViteSharedConfig,VitexSpecificFePart>
 
 // export type FeBuilderVitexEntryCtx =
 //   & FeBuilderEntryCtx
@@ -55,5 +70,9 @@ export type VitexSharedFeConfig = BuiqAbstractSharedFeConfig <'vite', VitexShare
 // export type ViteLocalConfigFnProps = Omit<BuiqVitexExecCtx['local'],typeof $fe> // ie. InlineConfig & LocalExtensionProps
 // export type ViteCommonConfigFnProps = Omit<BuiqVitexExecCtx['shared'],typeof $fe> // ie. UserConfig & SgaredExtensionProps
 
-export type VitexLocalConfigFn = (props: VitexLocalConfig) => Promise<VitexLocalConfig>
-export type VitexSharedConfigFn = (props: VitexSharedConfig) => Promise<VitexSharedConfig>
+export type VitexLocalConfigFn = (
+  props: VitexLocalConfigFnCtx
+) => Promise<VitexLocalConfigFnCtx>
+export type VitexSharedConfigFn = (
+  props: VitexSharedConfigFnCtx
+) => Promise<VitexSharedConfigFnCtx>
