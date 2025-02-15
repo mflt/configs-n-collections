@@ -17,7 +17,8 @@ export const _feIsObject = (that: unknown): that is Exclude< Object, Array<unkno
   && !Array.isArray(that);
 export const _feIsEmptyObject = (that: unknown): that is Record<string,never> =>
   that?.constructor === Object  // inherited doesn't count
-  && Object.keys(that)?.length === 0;
+  && Object.keys(that)?.length === 0  // could also be getOwnPropertyNames()
+  && Object.getOwnPropertySymbols(that)?.length === 0;
   // JSON.stringify(that) === '{}';
 export const _feIsNotanEmptyObject =
   (that: unknown): that is Exclude< Object, Array<unknown> | Record<string,never>> =>
