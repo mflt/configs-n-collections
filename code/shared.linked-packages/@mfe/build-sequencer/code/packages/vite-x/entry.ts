@@ -40,6 +40,7 @@ export async function vitexBuilder (
     // local and shared slots are treated by the core
     [$fe]: propsFeInit,
   } as VitexExecCtx
+
   const r = new BuildSequencer<
     VitexSpecificFePart,
     ViteLocalConfig,
@@ -85,6 +86,7 @@ export async function vitexBuilder (
     // Config/bundler: (local vite config)
     try {
       // loading local vite config
+      console.log('TILL')
       await r.execSignals.config_c_bundler_local.tillRequested // returns ctx
       _c.framingMessage =
         `Failed importing the local vite config ts (${ctx[$fe].files?.bundler || '(see the bundler property'})`
@@ -144,7 +146,7 @@ export async function vitexBuilder (
         {}
     }
 
-    r.execSignals.pre.done(ctx)
+    // r.execSignals.pre.done(ctx)
 
   // async function local (
   //   ctx: __BuilderCtx

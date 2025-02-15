@@ -118,12 +118,13 @@ export class FeBlocksSequencerCtx <
     >
   ) {
     super()
-    this.engageExecSignals()  // normally should not be overwritten
-    this.ctxSignals.sequencerReady ??= new FeReadinessSignaling()
     if (_feIsNotanEmptyObject(initiator)) {
       const { blockstoSkip, builtinBlockstoSkip, execCtxRef, addtoSkipped, ...trimmedInitiator } = initiator
       Object.assign(this, mergician(this, trimmedInitiator))
     }
+    this.engageExecSignals()  // normally should not be overwritten
+    this.ctxSignals ??= {} as typeof this.ctxSignals
+    this.ctxSignals.sequencerReady ??= new FeReadinessSignaling()
     // catchComm is nor prepared here
     this.blockstoExecasFunctions ??= {} as typeof this.blockstoExecasFunctions
     // _feMakeRecordFeMapLike(this.blockstoExecasFunctions)

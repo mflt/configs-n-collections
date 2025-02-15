@@ -109,7 +109,7 @@ export class BuildSequencer <
         execCtxRef: builderCtxRef
       }
     )
-    if (!builderCtxRef || _feIsEmptyObject(builderCtxRef)) {
+    if (!builderCtxRef || (_feIsEmptyObject(builderCtxRef) && !builderCtxRef[$fe])) { //  @TODO empty but has a symbol slot
       throw new Error(
         `${!builderCtxRef ? 'Undefined' : 'Empty'} builder/exec context objects are not allowed`  // @TODO
       )
