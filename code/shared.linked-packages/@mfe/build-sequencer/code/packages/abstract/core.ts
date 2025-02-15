@@ -6,13 +6,13 @@ import {
   _feIsObject, $fe
 } from '../../../../fe3/src/index.ts'
 import {
-  FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm, FeBsqrInitiorModder,
+  FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm, FeBsqrCastCtxSlotstoInitiatorType,
 } from '../../../../fessentials/blocks-sequencer.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
   BuiqBuilderExecCtx, BuiqExitCode, BuiqBlocksKeys, BuiqLocalBundlerConfig, BuiqSharedBundlerConfig,
-  BuiqBundlerSpecificFePartFather, IBuiqBaseUtilities,
+  BuiqBundlerSpecificFePartFather, IBuiqBaseUtilities, BuiqEexecMods,
 } from './types.d.ts'
 import { _BlocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
@@ -81,15 +81,19 @@ export class BuildSequencer <
     // >[1] | '_',  // @TODO named one?
     builderCtxRef: BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,  // which is ExecCtx
     initiator?: Partial<
-      Omit<
+      & Pick<
         IFeBlocksSequencerCtx<
           BuiqBlocksKeys,
           BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,
           IBuiqBaseUtilities
         >,
-        'sequencerName'|'blockstoSkip'|'builtinBlockstoSkip'|'getExecCtx'
+        'utilities'|'waitingforRequestedBlocktoCompleteTimeout'
       >
-      & FeBsqrInitiorModder<BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>>
+      & Omit<FeBsqrCastCtxSlotstoInitiatorType<
+          BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>
+        >,
+        'execCtxRef'  // this one comes as a direct prop
+      >
       & {
         getBuilderCtx: FeBlocksSequencerCtx<
           BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,IBuiqBaseUtilities
@@ -113,6 +117,8 @@ export class BuildSequencer <
     _feAssertIsObject(builderCtxRef,
       {message: `Builder/exec context should be a non-empty object`}
     )
+    builderCtxRef.local ??= {} as BundlerLocalConfig
+    builderCtxRef.shared ??= {} as BundlerSharedConfig
     builderCtxRef[$fe].meta = import.meta
     const r = this
     // r.getExecCtx ??= initiator?.getBuilderCtx || (() => builderCtx)
@@ -121,8 +127,9 @@ export class BuildSequencer <
     r.utilities.prompt ??= prompt
     r.utilities.color ??= color
     builderCtxRef[$fe].utilities = r.utilities
-    r.utilities.prompt.intro(`${r.builderName || '<missing name>'} builder started`)
+    // ctx slots are ready at this point, internally and in the fe
     // @TODO if no bundlername, prompt
+    r.utilities.prompt.intro(`${r.builderName || '<missing name>'} builder started`)
 
     r.ctxSignals.sequencerReady.pass(r.utilities)  // warning: this is used as readiness signal for the higher order builder
   }

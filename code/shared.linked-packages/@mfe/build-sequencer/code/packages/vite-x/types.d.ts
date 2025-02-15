@@ -3,7 +3,7 @@ import type { $fe } from '../../../../fe3/src/index.ts'
 import type {
   BuiqBuilderExecCtx, BuiqExitCode,
   BuiqLocalBundlerConfig, BuiqSharedBundlerConfig, BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig,
-  BuiqBundlerConfigFnCtx,
+  BuiqBundlerConfigFnCtx, BuiqBuilderProps
 } from '../abstract/types.d.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
@@ -40,7 +40,11 @@ export type VitexSharedBuilderExecCtx = {
   viteSharedConfigFn: VitexSharedConfigFn|null,
 }
 
-export type VitexBuilderProps = VitexSpecificFePart // cf _AbstractEntryFnProps
+export type VitexBuilderProps = BuiqBuilderProps<
+  VitexSpecificFePart,
+  ViteLocalConfig,
+  ViteSharedConfig
+>
 
 export type ViteLocalConfig = BuiqLocalBundlerConfig<InlineConfig> // Extendable classic Vite config aka InlineConfig
 export type ViteSharedConfig = BuiqSharedBundlerConfig<UserConfig>

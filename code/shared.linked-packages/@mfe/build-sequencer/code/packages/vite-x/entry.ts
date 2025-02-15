@@ -5,8 +5,8 @@ import {
   _feAssertIsObject, _feAssertIsAsyncFunction,
 } from '../../../../fe3/src/index.ts'
 import type {
-  VitexExecCtx, VitexConfig, BuiqExitCode, VitexBuilderProps, ViteLocalConfig,
-  ViteSharedConfig
+  VitexExecCtx, BuiqExitCode, VitexBuilderProps, ViteLocalConfig,
+  ViteSharedConfig, VitexSpecificFePart
 } from './types.d.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 import { BuildSequencer, prompt, color, builderEntryLoaded } from '../abstract/core.ts'
@@ -35,25 +35,21 @@ export async function vitexBuilder (
   props: VitexBuilderProps
 ): Promise<BuiqExitCode> {
 
-  const _ctx = props?.initialCtx || {}
-  const ctx: VitexExecCtx = { // ensure that main slots are not undefined
-    ..._ctx,
-    local: _ctx.local || {},
-    shared: _ctx.shared || {},
-    [$fe]: {
-      // mode: 'build',
-      ..._ctx[$fe]
-    },
-  }
-
+  const { execMods, ...propsFeInit  } = props
+  const ctx = {
+    // local and shared slots are treated by the core
+    [$fe]: propsFeInit,
+  } as VitexExecCtx
   const r = new BuildSequencer<
-    VitexExecCtx,
-    VitexConfig
+    VitexSpecificFePart,
+    ViteLocalConfig,
+    ViteSharedConfig
   >(
     'vite-x', // '_',
     // @TODO let there be a builder kind, like 'vite' and sub like 'vxrn'
     ctx,
     {
+      ...execMods
       // blockstoExecasFunctions: {
       //   preps: (c: BuiqVitexExecCtx)=> (0 as unknown as Promise<BuiqVitexExecCtx>)
       // }

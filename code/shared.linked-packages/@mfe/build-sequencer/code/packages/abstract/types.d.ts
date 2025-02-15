@@ -1,6 +1,6 @@
 import type { PackageJson } from 'type-fest'
 import type { FeStringKeyedCollectionObject, FeAnyI, $fe } from '../../../../fe3/src/index.ts'
-import type { IFeBsqrBaseUtilities } from '../../../../fessentials/blocks-sequencer.ts'
+import type { IFeBsqrBaseUtilities, IFeBsqrExecMods } from '../../../../fessentials/blocks-sequencer.ts'
 import type { BuiqBlocksKeys, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import type { BuildSequencer, IPrompt, IPromptColor } from './core.ts'
 export type { BuiqBlocksKeys }
@@ -122,7 +122,6 @@ export type BuiqBundlerConfigFnCtx <
     [$fe]: BuiqBuilderFeConfig<BundlerSpecificFePart>
 }
 
-
 export type BuiqAbstractLocalFeConfig <
   // to be used in a builder config file
   BundlerName extends string,
@@ -146,6 +145,30 @@ export type BuiqAbstractSharedFeConfig <
     [BundlerNameKey in `${BundlerName}`]: SharedBundlerConfig
 }
 
+export type BuiqBuilderProps <
+  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
+  BundlerLocalConfig extends BuiqLocalBundlerConfig<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedConfig extends BuiqSharedBundlerConfig<unknown,unknown>,
+> =
+  & Partial<BundlerSpecificFePart>
+  & {
+    execMods?: BuiqEexecMods<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>
+  }
+
+export type BuiqEexecMods <
+  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
+  BundlerLocalConfig extends BuiqLocalBundlerConfig<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedConfig extends BuiqSharedBundlerConfig<unknown,unknown>,
+> =
+  & IFeBsqrExecMods<
+      BuiqBlocksKeys,
+      BuiqBuilderExecCtx<
+        BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig
+    >
+  >
+  & {
+    getBuilderCtx: ()=> BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>
+  }
 
 type ParamsArg = FeStringKeyedCollectionObject<FeAnyI|string>  // command line params arg is a parsable obj
 

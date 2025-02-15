@@ -4,11 +4,11 @@ import type {
 } from '../fe3/src/index.ts'
 import {
   FeExecSignaling, FeReadinessSignaling, _feAssertIsSyncFunction, _feIsFunction, _feIsObject, _feIsArray,
-  _feIsNotanEmptyObject, _feIsAsyncFunction, _feMakeRecordFeMapLike, $fe, _feDelay
+  _feIsNotanEmptyObject, _feIsAsyncFunction, _feMakeRecordFeMapLike, $fe, _feDelay, CastArrayTtoSetTinRecord
 } from '../fe3/src/index.ts'
 
 export class FeCatchComm {
-  framingMessage: string|undefined
+  framingMessage: string | undefined
 }
 
 export type FeBsqrBlocksKeysT = string
@@ -20,7 +20,7 @@ export type FeBsqrToExecasFunctions <
   ExecCtx extends {}, // @TODO prototype, aka processing ctx
 > = Record<
   BlocksKeys,
-  undefined| ((ctx: ExecCtx)=> Promise<ExecCtx>)
+  undefined | ((ctx: ExecCtx) => Promise<ExecCtx>)
 >
 
 export type FeBsqrExecSignals <
@@ -28,7 +28,7 @@ export type FeBsqrExecSignals <
   ExecCtx extends {},
 > = Record<
   BlocksKeys,
-  FeExecSignaling<ExecCtx,ExecCtx>
+  FeExecSignaling<ExecCtx, ExecCtx>
 >
 
 export interface IFeBsqrBaseUtilities {
@@ -48,25 +48,37 @@ export type FeBsqrWaitingforRequestedBlocktoCompleteTimeouts <
   number | _FeMilliseconds  // @TODO test
 >
 
-export type FeBsqrAddtoSkipped =
-  | Array<FeBsqrBlocksKeysT>
+export type FeBsqrAddtoSkipped  <
+  BlocksKeys extends FeBsqrBlocksKeysT
+> =
+  | Array<BlocksKeys>
   | {
-    blocks: Array<FeBsqrBlocksKeysT>,
-    builtinBlocks: Array<FeBsqrBlocksKeysT>
+    blocks: Array<BlocksKeys>,
+    builtinBlocks: Array<BlocksKeys>
   }
+
+export interface IFeBsqrExecMods <
+  BlocksKeys extends FeBsqrBlocksKeysT,
+  ExecCtx extends {},
+> {
+  addtoSkipped: FeBsqrAddtoSkipped<BlocksKeys>
+  // blockstoSkip?: BlocksKeys[] // @TODO typing
+  // builtinBlockstoSkip?: Array<BlocksKeys> // @TODO typing
+  blockstoExecasFunctions?: Partial<FeBsqrToExecasFunctions<BlocksKeys, ExecCtx>>
+}
 
 export class IFeBlocksSequencerCtx <
   BlocksKeys extends FeBsqrBlocksKeysT,
   ExecCtx extends {},
   // * @TODO but basically it's a matter of the implementation, which will pass it arround between blocks
   Utilities extends IFeBsqrBaseUtilities = IFeBsqrBaseUtilities
-> {
+> /* implements CastArrayTtoSetTinRecord<IFeBsqrExecMods<BlocksKeys, ExecCtx>> */ {
+  blockstoSkip: Set<BlocksKeys>
+  builtinBlockstoSkip: Set<BlocksKeys>
+  blockstoExecasFunctions: Partial<FeBsqrToExecasFunctions<BlocksKeys, ExecCtx>>
+  protected builtinBlocksFunctions?: Partial<FeBsqrToExecasFunctions<BlocksKeys, ExecCtx>>
   sequencerName: string
-  blockstoExecasFunctions: Partial<FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>>
-  blockstoSkip: Set<BlocksKeys> // @TODO typing
-  builtinBlockstoSkip?: Set<BlocksKeys> // @TODO typing
-  protected builtinBlocksFunctions?: Partial<FeBsqrToExecasFunctions<BlocksKeys,ExecCtx>>
-  execSignals: FeBsqrExecSignals<BlocksKeys,ExecCtx>
+  execSignals: FeBsqrExecSignals<BlocksKeys, ExecCtx>
   ctxSignals: FeBsqrBaseCtxSignals<Utilities>
   utilities: Utilities
   getExecCtx: () => ExecCtx // all blocks are expected to process this shared context
@@ -75,41 +87,44 @@ export class IFeBlocksSequencerCtx <
 }
 // & SequencerExtensionProps
 
-export type FeBsqrInitiorModder <
+export type FeBsqrCastCtxSlotstoInitiatorType <
   BlocksKeys extends FeBsqrBlocksKeysT,
   ExecCtx extends {},
-> = {
-  // redefine types
-  blockstoSkip?: Array<BlocksKeys> // @TODO typing
-  builtinBlockstoSkip?: Array<BlocksKeys> // @TODO typing
-  // helper initiator slots
-  execCtxRef?: ExecCtx
-  addtoSkipped?: FeBsqrAddtoSkipped
-}
+> =
+  & IFeBsqrExecMods<BlocksKeys, ExecCtx>  // no actual casting needed here
+  & {
+    // helper initiator slots
+    execCtxRef?: ExecCtx
+  }
 
 export class FeBlocksSequencerCtx <
   BlocksKeys extends FeBsqrBlocksKeysT,
   ExecCtx extends {},
   Utilities extends IFeBsqrBaseUtilities = IFeBsqrBaseUtilities
-> extends IFeBlocksSequencerCtx<BlocksKeys,ExecCtx,Utilities> {
+> extends IFeBlocksSequencerCtx<BlocksKeys, ExecCtx, Utilities> {
 
-  public constructor (
+  public constructor(
     public sequencerName: string,
-    protected blocksKeysDonor: Record<BlocksKeys,{}>, // must bring all the blocks keys (functional or skipped) and no others
+    protected blocksKeysDonor: Record<BlocksKeys, {}>, // must bring all the blocks keys (functional or skipped) and no others
     initiator?: Partial<
-      Omit<IFeBlocksSequencerCtx<BlocksKeys,ExecCtx,Utilities>,'sequencerName'|'blockstoSkip'|'builtinBlockstoSkip'>
-      // * see FeBsqrInitiorMod
-      & Partial<Pick<IFeBlocksSequencerCtx<BlocksKeys,ExecCtx,Utilities>,'blockstoExecasFunctions'>>
-      & FeBsqrInitiorModder<BlocksKeys,ExecCtx>
+      & Pick<
+        IFeBlocksSequencerCtx<BlocksKeys, ExecCtx, Utilities>,
+        // 'blockstoExecasFunctions'
+        // / see in the FeBsqrCastCtxSlotstoInitiatorType below
+        'blockstoSkip' | 'builtinBlockstoSkip' |  // these come from level1, while addtoSkipped comes from mod
+        'utilities'|'waitingforRequestedBlocktoCompleteTimeout'
+      >
+      & FeBsqrCastCtxSlotstoInitiatorType<BlocksKeys, ExecCtx>  // ie mod
     >
   ) {
     super()
     this.engageExecSignals()  // normally should not be overwritten
     this.ctxSignals.sequencerReady ??= new FeReadinessSignaling()
     if (_feIsNotanEmptyObject(initiator)) {
-      const { blockstoSkip, builtinBlockstoSkip, execCtxRef, addtoSkipped,...trimmedInitiator } = initiator
+      const { blockstoSkip, builtinBlockstoSkip, execCtxRef, addtoSkipped, ...trimmedInitiator } = initiator
       Object.assign(this, mergician(this, trimmedInitiator))
     }
+    // catchComm is nor prepared here
     this.blockstoExecasFunctions ??= {} as typeof this.blockstoExecasFunctions
     // _feMakeRecordFeMapLike(this.blockstoExecasFunctions)
     this.blockstoSkip = new Set<BlocksKeys>([
@@ -122,13 +137,13 @@ export class FeBlocksSequencerCtx <
     this.builtinBlockstoSkip = new Set<BlocksKeys>([
       ...(initiator?.builtinBlockstoSkip || []),
       ...(_feIsObject(initiator?.addtoSkipped)
-        ? (initiator.addtoSkipped as Exclude<FeBsqrAddtoSkipped,Array<unknown>>).builtinBlocks || []
+        ? (initiator.addtoSkipped as Exclude<FeBsqrAddtoSkipped<BlocksKeys>, Array<unknown>>).builtinBlocks || []
         : []
       )
     ] as Array<BlocksKeys>)
     if (!_feIsFunction(this.getExecCtx)) {
       if (_feIsObject(initiator?.execCtxRef)) {
-        this.getExecCtx = ()=> initiator?.execCtxRef!
+        this.getExecCtx = () => initiator?.execCtxRef!
       } else {
         throw new Error(
           `Neither getExecCtx or execCtxRef for ${this.sequencerName || '<unnamed seqiencer>'} were specified`
@@ -137,7 +152,7 @@ export class FeBlocksSequencerCtx <
     } else {
       _feAssertIsSyncFunction<ExecCtx>(
         this.getExecCtx,
-        {message: `getExecCtx in ${this.sequencerName || '<unnamed seqiencer>'} is not a function`}
+        { message: `getExecCtx in ${this.sequencerName || '<unnamed seqiencer>'} is not a function` }
       )
     }
     // this.utilities.catchComm ??= @TODO
@@ -151,7 +166,7 @@ export class FeBlocksSequencerCtx <
     const execCtxRef = this.getExecCtx()
     if (_feIsNotanEmptyObject(toMerge)) {
       return Object.assign(execCtxRef, mergician(
-        mergicianOptions||{}
+        mergicianOptions || {}
       )(
         execCtxRef,
         toMerge
@@ -161,7 +176,7 @@ export class FeBlocksSequencerCtx <
   }
 
   engageExecSignals () {
-    const signals = this.execSignals = {...this.blocksKeysDonor} as unknown as typeof this.execSignals
+    const signals = this.execSignals = { ...this.blocksKeysDonor } as unknown as typeof this.execSignals
     // makes assertion work in depth @TODO does it?
     _feMakeRecordFeMapLike(signals)
     signals[$fe]?.forEach?.((_, key) => key !== undefined &&
@@ -192,7 +207,7 @@ export class FeBlocksSequencerCtx <
           }
         }
         signaling.skip({
-          message: `${this.sequencerName} is handling ${blockId} in the specified ${_blockFn? '' : 'built-in'} function call`,
+          message: `${this.sequencerName} is handling ${blockId} in the specified ${_blockFn ? '' : 'built-in'} function call`,
           execSignaling: 'RequestSkipped'
         })
         const ctxfromFn = await (_blockFn || _builtinFn!)(this.getExecCtx())
@@ -217,12 +232,12 @@ export class FeBlocksSequencerCtx <
         return ctxfromWaiting
       }
     } else {
-       signaling.skip({
-         message: `${this.sequencerName} is skipping ${blockId} block`,
-         execSignaling: 'RequestSkipped'
-       })
-       signaling.skipped()
-       return this.getExecCtx()
+      signaling.skip({
+        message: `${this.sequencerName} is skipping ${blockId} block`,
+        execSignaling: 'RequestSkipped'
+      })
+      signaling.skipped()
+      return this.getExecCtx()
     }
   }
 }
