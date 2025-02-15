@@ -125,3 +125,26 @@ export type _BrandofBranded <T> = T extends { __brand: infer B } ? B : never
 export type _WithAssertedBrand <T,
   Brand extends string
 > = T extends { __brand: infer B } ? B extends Brand ? T : never  : never
+
+export type CastSetTtoArrayTinRecord <T> = T extends Record<any,any>
+  ? {
+    [K in keyof T]: T[K] extends Set<infer ST> ? Array<ST> : T[K]
+  }
+  :
+  T
+
+export type CastArrayTtoSetTinRecord <T> = T extends Record<any,any>  // @TODO WIP
+  ? {
+    [K in keyof T]:
+      T[K] extends {
+        [I:string]: unknown
+      }|undefined
+      ? T[K] :
+      T[K] extends Array<infer ST>|undefined
+      ? Set<ST>|undefined :
+      // T[K] extends Array<infer ST>
+      // ? Set<ST> :
+      T[K]
+  }
+  :
+  T
