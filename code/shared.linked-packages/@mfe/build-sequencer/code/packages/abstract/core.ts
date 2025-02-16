@@ -129,7 +129,7 @@ export class BuildSequencer <
     builderCtxRef[$fe].utilities = r.utilities
     // ctx slots are ready at this point, internally and in the fe
     // @TODO if no bundlername, prompt
-    r.utilities.prompt.intro(`${r.builderName || '<missing name>'} builder started`)
+    r.utilities.prompt.log.info(`${r.builderName || '<missing name>'} builder started`)
 
     r.ctxSignals.sequencerReady.pass(r.utilities)  // warning: this is used as readiness signal for the higher order builder
   }

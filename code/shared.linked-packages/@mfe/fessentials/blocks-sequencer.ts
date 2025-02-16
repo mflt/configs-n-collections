@@ -61,7 +61,7 @@ export interface IFeBsqrExecMods <
   BlocksKeys extends FeBsqrBlocksKeysT,
   ExecCtx extends {},
 > {
-  addtoSkipped: FeBsqrAddtoSkipped<BlocksKeys>
+  addtoSkipped?: FeBsqrAddtoSkipped<BlocksKeys>
   // blockstoSkip?: BlocksKeys[] // @TODO typing
   // builtinBlockstoSkip?: Array<BlocksKeys> // @TODO typing
   blockstoExecasFunctions?: Partial<FeBsqrToExecasFunctions<BlocksKeys, ExecCtx>>
@@ -122,6 +122,7 @@ export class FeBlocksSequencerCtx <
       const { blockstoSkip, builtinBlockstoSkip, execCtxRef, addtoSkipped, ...trimmedInitiator } = initiator
       Object.assign(this, mergician(this, trimmedInitiator))
     }
+    this.utilities ??= {} as typeof this.utilities
     this.engageExecSignals()  // normally should not be overwritten
     this.ctxSignals ??= {} as typeof this.ctxSignals
     this.ctxSignals.sequencerReady ??= new FeReadinessSignaling()
@@ -180,11 +181,13 @@ export class FeBlocksSequencerCtx <
     const signals = this.execSignals = { ...this.blocksKeysDonor } as unknown as typeof this.execSignals
     // makes assertion work in depth @TODO does it?
     _feMakeRecordFeMapLike(signals)
-    signals[$fe]?.forEach?.((_, key) => key !== undefined &&
+    // signals[$fe]?.forEach?.((_, key) => { 
+    Object.keys(signals).forEach( key => {
+      key !== undefined &&
       signals[$fe]?.set?.(key,
         new FeExecSignaling()
       )
-    )
+    })
   }
 
   async executeBlock (
