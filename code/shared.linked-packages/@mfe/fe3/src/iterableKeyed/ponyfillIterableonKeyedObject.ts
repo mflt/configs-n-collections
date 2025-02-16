@@ -18,7 +18,11 @@ export function _feMakeRecordFeMapLike <
 > (
   self: Record<string,any>  // @TODO ...
 ): asserts self is FeMapLikeCollectionObject<T> {
-  ponyfillIterableonKeyedObject(self)
+  ponyfillIterableonKeyedObject(
+    self, {
+      iteratorSourceCollection: null,
+      doIterateonKeys: true
+  })
 }
 
 
@@ -288,7 +292,7 @@ export const ponyfillIterableonKeyedObject =
         maplikeMethods.get = key => _getYieldingEry(null, key) || undefined;
       }
 
-      if (!maplikeMethods.forEach) {  // forEach
+      if (!maplikeMethods.forEach) {  // forEach  @TODO fix that it does not work, see buiq signals 
         maplikeMethods.forEach = cb => {
           if (!_feIsFunction(cb)) {
             return;
