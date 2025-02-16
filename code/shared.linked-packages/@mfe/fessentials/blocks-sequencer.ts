@@ -181,9 +181,9 @@ export class FeBlocksSequencerCtx <
     const signals = this.execSignals = { ...this.blocksKeysDonor } as unknown as typeof this.execSignals
     // makes assertion work in depth @TODO does it?
     _feMakeRecordFeMapLike(signals)
-    // signals[$fe]?.forEach?.((_, key) => { 
+    // signals[$fe]?.forEach?.((_, key) => { @TODO make it work by fixing the forEach
     Object.keys(signals).forEach( key => {
-      key !== undefined &&
+      key !== undefined &&  // @TODO if not a question in case of Object.keys
       signals[$fe]?.set?.(key,
         new FeExecSignaling()
       )

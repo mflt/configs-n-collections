@@ -87,8 +87,9 @@ export async function vitexBuilder (
     // Config/bundler: (local vite config)
     try {
       // loading local vite config
-      console.log('TILL')
+      console.log('TILL', r.execSignals.config_c_bundler_local.status)
       await r.execSignals.config_c_bundler_local.tillRequested // returns ctx
+      console.log('TILL AFTER')
       _c.framingMessage =
         `Failed importing the local vite config ts (${ctx[$fe].files?.bundler || '(see the bundler property'})`
       if (!(ctx[$fe].files?.bundler)) {
