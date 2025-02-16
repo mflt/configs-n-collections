@@ -1,13 +1,19 @@
 
+const _IdxofResolve = 0 as const
+const _IdxofReject = 1 as const
+
 type _Resolve <
   FulfillmentValueT = true,
 > =
-  Parameters<ConstructorParameters<typeof Promise<FulfillmentValueT>>[0]>[0]
+  Parameters<
+    ConstructorParameters<typeof Promise<FulfillmentValueT>>[0]
+  >[typeof _IdxofResolve]
 
 type _Reject <
   ErrorReasonT = unknown
 > =
-  (reason?: ErrorReasonT) => void  // Parameters<ConstructorParameters<typeof Promise<FulfillmentValueT>>[0]>[1]
+  (reason?: ErrorReasonT) => void  
+  // Parameters<ConstructorParameters<typeof Promise<FulfillmentValueT>>[0]>[1]
 
 export class FePromisewithResolvers <
   FulfillmentValueT = true,
@@ -20,44 +26,44 @@ export class FePromisewithResolvers <
   public get promise () { return this as Omit<typeof this, 'resolve'|'reject'> }
   public resolve!: _Resolve<FulfillmentValueT>
   public reject!: _Reject<ErrorReasonT>
+  protected _canonical_resolve_reject!: [_Resolve<FulfillmentValueT>, _Reject<ErrorReasonT>]
 
   public constructor () {
     let resolve_reject: [_Resolve<FulfillmentValueT>, _Reject<ErrorReasonT>]
     super((resolve, reject) => {
       resolve_reject = [resolve, reject]
     })
-    this.resolve = resolve_reject![0]
-    this.reject = resolve_reject![1]
+    this._canonical_resolve_reject = resolve_reject!
+    this.resolve = resolve_reject![_IdxofResolve]
+    this.reject = resolve_reject![_IdxofReject]
   }
 }
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
 // https://shaky.sh/promise-with-resolvers/
 
-
-export class FeReadinessSignaling <
+export class FePromise <  // @TODO WIP!
   FulfillmentValueT = true,
   ErrorReasonT = unknown
 > extends FePromisewithResolvers<FulfillmentValueT,ErrorReasonT> {
-  private $status: 'awaited'|'fulfilled'|'failed'|'undefined'|'obsolite' = 'undefined'
-  private $fulfillmentValue: FulfillmentValueT|undefined
-  private $errorReason: ErrorReasonT|undefined
+  protected $status: 'awaited'|'fulfilled'|'failed'|'undefined'|'obsolite' = 'undefined'
+  protected $fulfillmentValue: FulfillmentValueT | PromiseLike<FulfillmentValueT> |undefined
+  protected $errorReason: ErrorReasonT|undefined
   public get status () { return this.$status }
   public get stillAwaited () { return ['awaited','undefined'].includes(this.$status) }
   public get fulfillmentValue () { return this.$fulfillmentValue }
   public get errorReason () { return this.$errorReason }
-  public get tillReady () {
-    return this.promise as Promise<FulfillmentValueT>
-  }
-  public pass (value?: FulfillmentValueT) {
+  public override resolve = (
+    value?: FulfillmentValueT | PromiseLike<FulfillmentValueT>
+  ) => {
     this.$fulfillmentValue = value
     this.$status = 'fulfilled'
-    this.resolve(value || true as FulfillmentValueT)
+    this._canonical_resolve_reject![_IdxofResolve](value || true as FulfillmentValueT)
     return value
   }
-  public fail (err?: ErrorReasonT) {
+  public override reject = (err?: ErrorReasonT) => {
     this.$errorReason = err
     this.$status = 'failed'
-    this.reject(err)
+    this._canonical_resolve_reject![_IdxofReject](err)
     return err
   }
   public makeObsolete (err?: ErrorReasonT) {
@@ -69,7 +75,23 @@ export class FeReadinessSignaling <
   }
   public constructor () {
     super()
-    this.$status = 'awaited'
+    this.$status = 'awaited'  // 'pending'
+  }
+}
+
+export class FeReadinessSignaling <   // @TODO WIP!
+  FulfillmentValueT = true,
+  ErrorReasonT = unknown
+> extends FePromise<FulfillmentValueT,ErrorReasonT> {
+  public get tillReady () {
+    return this.promise as Promise<FulfillmentValueT>
+  }
+  public pass = (value?: FulfillmentValueT) =>
+    this.resolve(value || true as FulfillmentValueT)
+  public fail = (err?: ErrorReasonT) =>
+    this.reject(err)
+  public constructor () {
+    super()
   }
 }
 
@@ -84,8 +106,8 @@ export class FeExecSignaling <
   ExecutionValueT = true|false,
   RequestedValueT = true,
   ErrorReasonT = unknown
-> extends FePromisewithResolvers<ExecutionValueT,ErrorReasonT> {
-  private _requested: PromiseWithResolvers<RequestedValueT>
+> extends FePromise<ExecutionValueT,ErrorReasonT> {
+  protected _requested: PromiseWithResolvers<RequestedValueT>
   public get tillRequested () {
     return this._requested.promise as Promise<RequestedValueT>
   }
@@ -100,17 +122,9 @@ export class FeExecSignaling <
   public get tillDone () {
     return this.promise as Promise<ExecutionValueT>
   }
-  public done (value?: ExecutionValueT) {
-    this.resolve(value || true as ExecutionValueT)
-    return value
-  }
-  public skipped () {
-    return this.done(false as ExecutionValueT)
-  }
-  public fail (err?: FeExecSignalingError & ErrorReasonT) {
-    this.reject(err)
-    return err
-  }
+  public done = (value?: ExecutionValueT) => this.resolve(value || true as ExecutionValueT)
+  public skipped = () => this.done(false as ExecutionValueT)
+  public fail = (err?: FeExecSignalingError & ErrorReasonT) => this.reject(err)
   public constructor () {
     super()
     this._requested = Promise.withResolvers<RequestedValueT>()
