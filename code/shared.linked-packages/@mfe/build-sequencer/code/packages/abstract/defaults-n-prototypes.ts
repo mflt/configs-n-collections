@@ -1,4 +1,4 @@
-import { FeExecSignaling, $fe } from '../../../../fe3/src/index.ts'
+import { FeExecSignaling, $fe } from '../../../../fe-kit/code/packages'
 import type { BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig } from './types.d.ts'
 
 const __BlocksKeysDonor = { // Just to have iterable keys to engage

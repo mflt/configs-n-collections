@@ -1,17 +1,18 @@
-import type { __NID } from '../_integration/types.js';
 import type {
-  _Fe_AnyI, _Fe_AnyI_theOther, FeStringKeyedCollectionObject,
-} from '../_shared/types.js';
+  __NID, _Fe_AnyI, _Fe_AnyI_theOther, FeStringKeyedCollectionObject,
+} from '../core-types/root.types.js';
+import type {
+  FeValuesAnyIterable, IFeValue, /* IFeValueShade,*/ FeValuesCollection, FeShadesEntryComputer
+} from '../core-types/value.i-f.d.ts';
 import {
   _feIsArray, _feIsFunction, _feIsIterable, _feIsMap, _feIsObject, _feAssertIsIterable,
-} from '../utils/probes.js';
+} from '../probes/probes.js';
 import {
   type FeMapLikeCollectionObject, $fe
-} from '../utils/collection.js';
-import type {
-  FeValuesAnyIterable, IFeValue, IFeValueShade, FeValuesCollection, FeShadesEntryComputer
-} from '../triplet/value-shade.i-f.js';
+} from '../collections/collections.js';
 
+
+type IFeValueShade <T extends _Fe_AnyI> = IFeValue<T> // @TODO about it, also entrycomputer
 
 export function _feMakeRecordFeMapLike <
   T extends Record<string,any>  // @TODO unknown instead of any?

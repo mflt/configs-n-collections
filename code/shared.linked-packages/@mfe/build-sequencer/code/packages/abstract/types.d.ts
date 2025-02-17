@@ -1,5 +1,5 @@
 import type { PackageJson } from 'type-fest'
-import type { FeStringKeyedCollectionObject, FeAnyI, $fe } from '../../../../fe3/src/index.ts'
+import type { FeStringKeyedCollectionObject, FeAnyI, $fe } from '../../../../fe-kit/code/packages'
 import type { IFeBsqrBaseUtilities, IFeBsqrExecMods } from '../../../../fessentials/blocks-sequencer.ts'
 import type { BuiqBlocksKeys, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import type { BuildSequencer, IPrompt, IPromptColor } from './core.ts'

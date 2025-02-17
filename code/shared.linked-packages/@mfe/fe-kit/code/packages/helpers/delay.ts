@@ -1,5 +1,5 @@
-import { _feIsNumber, _feIsofBrand } from './probes.js';
-import { _Branded, _BrandofBranded } from './generic.types.js';
+import type { _Branded, _BrandofBranded } from '../core-types/helper.types.d.ts';
+import { _feIsNumber, _feIsofBrand } from '../probes/probes.js';
 
 export type _FeMilliseconds = _Branded<number,'Milliseconds'>
 export type _FeMillisecondsBrand = _BrandofBranded<_FeMilliseconds>

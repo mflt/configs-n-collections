@@ -8,20 +8,6 @@ export type _Fe_GConstructor <T = {}> = new (...args: any[]) => T;
 export type _Fe_Constructor_Abstract = abstract new (...args: any[]) => any;
 export type _Fe_GConstructor_Abstract <T = {}> = abstract new (...args: any[]) => T;
 
-// https://www.typescriptlang.org/docs/handbook/mixins.html#alternative-pattern
-export function applyMixins(derivedCtor: any, constructors: any[]) {
-  constructors.forEach((baseCtor) => {
-    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
-      Object.defineProperty(
-        derivedCtor.prototype,
-        name,
-        Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
-        Object.create(null)
-      );
-    });
-  });
-}
-
 
 type NonConstructorKeys <T> = ({  // @TODO review !
   [P in keyof T]: T[P] extends new ()=> any ? never : T[P] extends abstract new ()=> any ? never : P
@@ -51,16 +37,3 @@ export type _DefineProperty <
         Desc extends { writable: true } ? _DefineProperty_InferValue<Prop, Desc> :
           Readonly<_DefineProperty_InferValue<Prop, Desc>>
 ;
-
-export function _defineProperty <
-  Obj extends object,
-  Key extends PropertyKey,
-  PDesc extends PropertyDescriptor
-> (
-  obj: Obj,
-  prop: Key,
-  val: PDesc
-): asserts obj is Obj & _DefineProperty<Key, PDesc>
-{
-  Object.defineProperty(obj, prop, val);
-}

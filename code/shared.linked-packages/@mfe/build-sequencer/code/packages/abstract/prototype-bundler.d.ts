@@ -1,1 +1,1 @@
-import { FeAnyI } from '../../../../fe3/src/index.ts'
+import { FeAnyI } from '../../../../fe-kit/code/packages'

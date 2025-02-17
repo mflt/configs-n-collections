@@ -1,9 +1,9 @@
 import type {
   __NID, __FeDefaultKeyPropName,
-} from '../_integration/types.js';
+} from '../core-types/root.types.d.ts';
 import type {
   IFeValue, FeValuesArray, FeValuesCollection, FeFindInValuesCollectionFn,
-} from './value-shade.i-f.js';
+} from '../core-types/value.i-f.d.ts';
 
 export const feFindInValuesCollection = <  // generic, @TODO rename, refactor acc to the new types like keyed object
   TValue extends IFeValue,

@@ -1,10 +1,10 @@
 import { mergician, MergicianOptions } from 'mergician'
-import type { FeAnyI } from '../../../../fe3/src/index.ts'
+import type { FeAnyI } from '../../../../fe-kit/code/packages'
 import {
   _feIsNotanEmptyObject, _feIsEmptyObject, FeReadinessSignaling,
   _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction,
   _feIsObject, $fe
-} from '../../../../fe3/src/index.ts'
+} from '../../../../fe-kit/code/packages'
 import {
   FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm, FeBsqrCastCtxSlotstoInitiatorType,
 } from '../../../../fessentials/blocks-sequencer.ts'

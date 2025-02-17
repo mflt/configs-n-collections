@@ -1,4 +1,4 @@
-import type { FeTKeyof } from '../_shared/types.js';
+import type { FeTKeyof } from './root.types.d.ts';
 
 // see also: https://github.com/piotrwitek/utility-types
 // not used for dependency avoiding reasons
@@ -96,10 +96,6 @@ type _Validator<T extends boolean> =
     : [never];
 // * https://catchts.com/infer-arguments
 */
-
-const _isType = <Type>(thing: unknown): thing is Type => true;
-// * https://stackoverflow.com/questions/51528780/typescript-check-typeof-against-custom-type
-
 
 export type _UnreadonlifyConstEnum <T> = {
   -readonly [K in keyof T]: T[K] extends readonly (infer R)[] ? R[] : never

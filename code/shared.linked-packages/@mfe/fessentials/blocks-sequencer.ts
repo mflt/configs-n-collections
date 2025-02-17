@@ -1,11 +1,13 @@
 import { mergician, type MergicianOptions } from 'mergician'
 import type {
   _Branded, _WithAssertedBrand, _FeMilliseconds,
-} from '../fe3/src/index.ts'
+} from '../fe-kit/code/packages'
 import {
-  FeExecSignaling, FeReadinessSignaling, _feAssertIsSyncFunction, _feIsFunction, _feIsObject, _feIsArray,
-  _feIsNotanEmptyObject, _feIsAsyncFunction, _feMakeRecordFeMapLike, $fe, _feDelay, CastArrayTtoSetTinRecord
-} from '../fe3/src/index.ts'
+  FeExecSignaling, FeReadinessSignaling,
+  _feAssertIsSyncFunction, _feIsFunction, _feIsObject, _feIsArray,
+  _feIsNotanEmptyObject, _feIsAsyncFunction, _feMakeRecordFeMapLike, $fe, _feDelay, 
+} from '../fe-kit/code/packages'
+
 
 export class FeCatchComm {
   framingMessage: string | undefined

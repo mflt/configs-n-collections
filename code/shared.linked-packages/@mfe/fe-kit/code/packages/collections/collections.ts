@@ -1,10 +1,9 @@
-import type { __NID } from '../_integration/types.js';
-import type {
-  _Fe_AnyI, FeStringKeyedCollectionObject, FeDoesEntryFit, FeTKeyof,
-} from '../_shared/types.js';
+import type { 
+  __NID, _Fe_AnyI, FeStringKeyedCollectionObject, FeTKeyof,
+} from '../core-types/root.types.js';
 import {
   _feIsNumber, _feIsIterable,
-} from './probes.js';
+} from '../probes/probes.js';
 
 
 // export declare const $fe: unique symbol;
@@ -136,6 +135,11 @@ export function fePrependEntrytoCollection< // works as expected with Arrays onl
   }
   return false;
 }
+
+
+export type FeDoesEntryFit =
+  (ery: _Fe_AnyI) => boolean | undefined
+  ; // tells if an entry fits the criteria for processing
 
 
 export function feForEachinCollection<

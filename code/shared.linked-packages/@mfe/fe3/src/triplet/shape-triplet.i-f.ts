@@ -3,14 +3,17 @@ import type {
 } from '../_integration/types.js';
 import type {
   _Fe_AnyI, FeObjectwithNamedKeyProp, _Fe_AnyI_theOther,
-} from '../_shared/types.js';
-import type { _ExtractTypesUnionfromIndexed, } from '../utils/generic.types.js';
-import type { feGetCollectionEntry, } from '../utils/collection.js';
-import type { IFeReactiveBeat } from '../beat/beat.i-f.js';
+} from '../../../fe-kit/code/packages/core-types/root.types.d.ts';
 import type {
-  IFeValue, IFeValueShade, FeValueShadesArray, FeValueShadesMap, FeValueShadesWeakmap,
+  IFeValue,
+} from '../../../fe-kit/code/packages/core-types/value.i-f.d.ts';
+import type { _ExtractTypesUnionfromIndexed, } from '../../../fe-kit/code/packages/core-types/helper.types.d.ts';
+import type { feGetCollectionEntry, } from '../../../fe-kit/code/packages/collections/collections.js';
+import type {
+  IFeValueShade, FeValueShadesArray, FeValueShadesMap, FeValueShadesWeakmap,
   FeValueShadesCollection, FeValueShadesIterableObject, IFeValueShadewithNamedKeyProp,
-} from './value-shade.i-f.js';
+} from './shade.i-f.js';
+import type { IFeReactiveBeat } from '../beat/beat.i-f.js';
 
 
 // Shapes are value shades with view/templating types

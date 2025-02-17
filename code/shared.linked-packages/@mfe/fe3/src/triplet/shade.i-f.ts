@@ -1,49 +1,12 @@
-import type {
+import type { 
   __NID, __FeDefaultKeyPropName,
-} from '../_integration/types.js';
-import type {
-  _Fe_AnyI, FeObjectwithNamedKeyProp, FeStringKeyedCollectionObject, _Fe_AnyI_theOther,
-} from '../_shared/types.js';
-import type { IFeReactiveBeat, } from '../beat/beat.i-f.js';
+  _Fe_AnyI, _Fe_AnyI_theOther, FeObjectwithNamedKeyProp, FeStringKeyedCollectionObject, 
+} from '../../../fe-kit/code/packages/core-types/root.types.js';
+import type { 
+  IFeValue, 
+} from '../../../fe-kit/code/packages/core-types/value.i-f.js';
+import type { IFeReactiveBeat } from '../beat/beat.i-f.js';
 
-// Frankie viewmodel core (FeVM), instead of Frankie you can say Ferrum (chemical Fe)
-
-// The main concept behind FeVM is to provide viewmodel UI collections strongly associated with data collections
-// from the underlying (business) model.
-// In other words a UI driven by data (just another attempt to implement this classic UI task).
-// Controlling data source is assumed as a collection of data of same type (records or docs), we call it values.
-// Supported values (values in plural meaning the collection) are Arrays, Maps, WeakMaps and keyed (also iterable) objects.
-// Supported value (the element of the collection) can be anything.
-// This library assumes values collections as external entities and never mutes those
-// -- well except a few top level optional convenience methods thru which it is handy to eg. add now values to the collection.
-// It is also assumed that UI updates are triggered by changes in the underlying value collections ('values', plural).
-// The FeVM library implement "parasite" collections shades and shapes where a shade or a shape extends a value
-// with props which are not part of the data model but are related to the view-model level, or call it UI.
-// Each value then has its corresponding shape or shade. The association of values and shades (shapes) we call the strand,
-// please recall DNS for the logic of this naming.
-// A shade carries props which are not part of the corresponding value and help UI processing (eg. the hash of a value),
-// when a shade starts to operate specific UI related concepts (like an HTML element eg.) we designate that as shape.
-// Strand knows shapes, as strands are assume to incorporate UI related templates and actions.
-// (so shapes is an intermediary concept and belongs more to the internal details of FEVM conceptual structuring.)
-// Strands support reactivity by implementing beats which is a home-made signal (see reactive beat),
-// and shades by default carry its own beat field which is mostly not functional.
-// It is assumed that the user program implements the strand class merged with a reactive store class (like Exome),
-// however internally FeVM, or our UI framework based on it, the Frankie/Frankenstein do not use external store mechanisms,
-// as developers using it are assumed to be opinionated about the stores of their choice. We provide a helper to merge
-// a strand with your store class by utilizing a pattern suggested by the Typescript documentation.
-// Note: collections are always referred to by plural words. Like we say SlicesScroller not SliceScroller.
-// Also our specific speak in camel-case naming is to start prepositions (in, with) by lower case, bear with it please :)
-// Though its exceptions are easily made when saying InMap or OnValueReset helps readability, as we see it.
-// Also we use term entry (ery) when referring to an item or an element when it's not specifically a value or a shape.
-// Term payload we use when referring to an object whose type is not important, like the portion of the value used to produce a unique hash.
-
-
-export type IFeValue<
-  NamedI extends _Fe_AnyI | string = _Fe_AnyI  // string is edge case, interface is the targeted subject
-> = NamedI extends string ? string : NamedI;
-// any interface or a named business interface,
-// fully external to Fe and readonly, immutable from out pov,
-// and muting externally which we are to be informed of
 
 export type FeShadeMarkers = {
   // flags to indicate IFeItem association with values and so
@@ -55,71 +18,6 @@ export type FeShadeMarkers = {
   valueShadesInArray?: boolean,
   valueShadesInWeakmap?: boolean,
 };
-
-// an intermediate form before defining an item
-// _ signifies that it should not be used, use either raw or item form
-export type IFeValuewithNamedKeyProp< // could've been named valueItem but Item is reserved to the derivative class
-  TValue extends IFeValue,
-  StringKeyPropName extends string = __FeDefaultKeyPropName, // @TODO also obj in case of a WeakMap, see IFeShade
-> =
-  FeObjectwithNamedKeyProp<IFeValue<TValue>, StringKeyPropName, __NID>
-  ;
-// any or specified interface with unique id
-
-// collections:
-
-export type FeValuesArray<
-  TValue extends Exclude<IFeValue, string>,
-  StringKeyPropName extends string = __FeDefaultKeyPropName, // undefined 'id' has no meaning here
-> =
-  IFeValuewithNamedKeyProp<TValue, StringKeyPropName>[] | []
-  ; // collection of keyed values
-
-export type FeValuesMap<
-  TValue extends IFeValue
-> = Map<__NID, TValue>; // collection of raw values
-
-export type FeValuesWeakmap<
-  TValue extends IFeValue
-> = WeakMap<_Fe_AnyI, TValue>; // collection of raw values indexed by themselves
-
-export type FeValuesIterableObject<
-  TValue extends IFeValue,
-  KeyPropType extends string = string
-> =
-  FeStringKeyedCollectionObject<TValue, KeyPropType>
-  & Iterable<TValue>;
-
-export type FeValuesAnyIterable<
-  TValue extends IFeValue,
-  StringKeyPropName extends string = __FeDefaultKeyPropName  // @TODO
-> = Iterable<TValue | [string, TValue]>;
-//* note the tuple here
-
-// @TODO WeakMap and Set and Shade embedded
-
-export type FeValuesCollection< // Keyed values' collection
-  TValue extends IFeValue,
-  AssociationKeyTypeOrName extends string | number | _Fe_AnyI | undefined = undefined,
-> =
-  AssociationKeyTypeOrName extends undefined
-  ?
-  FeValuesMap<TValue>
-  :
-  AssociationKeyTypeOrName extends string
-  ? // @TODO not true
-  FeValuesIterableObject<TValue> | FeValuesArray<TValue, AssociationKeyTypeOrName> | FeValuesAnyIterable<TValue>
-  :
-  AssociationKeyTypeOrName extends _Fe_AnyI
-  ?
-  FeValuesWeakmap<TValue>
-  :
-  AssociationKeyTypeOrName extends number
-  ?
-  FeValuesArray<TValue>
-  :
-  never
-  ;
 
 // Shade
 
@@ -220,25 +118,12 @@ export type FeValueShadesCollection< // Keyed value-shades' collection
   never
   ;
 
-export type FeShadesEntryComputer<
-  TValue extends IFeValue,
-  TYieldedResult extends IFeValueShade<_Fe_AnyI_theOther> | IFeValue<_Fe_AnyI_theOther>,
-  //* note that this may not follow the TValue, as the TValue may represent a derivative type of the shade's value, like [string,TValue]
-  //* _Fe_AnyI_theOther allows to signify that this type differs from the _Fe_AnyI type behind the TValue
-  KeyPropType extends string = string,
-> = (
-  valueEntry: TValue | null | undefined,
-  key?: __NID,
-  iterationIdx?: number,
-) => TYieldedResult | null;
-
-
 // *IFeItem* is an alternative to IFeShade interface behind a view element which can cary the business logic related model data (values)
 // by obj reference, id association or in itself. It can also convey any helper property or method.
 /* @TODO xox Marker is not important (?) Marker may contain valueByRef, valueById, valueByString props which or their lack of specifies the mode of association
   of this view related item with value item. */
 
-export class CFeItem<
+  export class CFeItem<
   TValue extends IFeValue,
   TValueShade extends IFeValueShade<TValue, StringKeyPropName>,
   StringKeyPropName extends string = __FeDefaultKeyPropName
@@ -293,18 +178,3 @@ export type Fe2ItemFn< // in-strand
 */
 
 // export type CStrandvalueExtender = (value: PromptStrandsvalue);
-
-// Functions
-
-export type FeFindInValuesCollectionFn< // in-strand
-  TValue extends IFeValue,
-// IdKey extends string | undefined = __FeDefaultKeyPropName
-> =
-  (idxOrItem: __NID | number | TValue) => TValue;  // can be an object itself in a pass tru case, @TODO see also WeakMap case
-// number/idx is not implemented yet @TODO
-
-// @TODO toShade
-
-/* export type FeCellPyl2ShadeFn<TCellPyl extends IFeCellNothingYet> = // @TODO ?
-  (idxOrPyl: __IFeCustomCell['id'] | number | TCellPyl) => __IFeCustomCell
-  ; */

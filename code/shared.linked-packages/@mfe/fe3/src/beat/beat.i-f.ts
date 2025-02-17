@@ -1,5 +1,5 @@
 import type { __NID } from '../_integration/types.js';
-import { _feIsNumber, } from '../utils/probes.js';
+import { _feIsNumber, } from '../../../fe-kit/code/packages/probes/probes.js';
 
 
 export type IFeReactiveBeat<

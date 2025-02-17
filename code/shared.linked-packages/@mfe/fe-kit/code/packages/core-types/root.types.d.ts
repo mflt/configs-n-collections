@@ -1,8 +1,30 @@
-import type { __NID } from '../_integration/types.js';
-// this file contains functions which dont strictly implement Fe concepts
+// This file contains types which dont strictly implement Fe concepts
+
+// import type { _X_NID } from '../../../../fe3/src/_integration/types.js';
+// type _X_NID = string|symbol|object
+
+export type __NID <
+  _NID extends string = string
+> = 
+  [_X_NID] extends [Function] 
+  ? _NID 
+  : _X_NID
+  ;
+// This hack serves a solution to use an external UID for all keys uniquely identifying 
+// / objects. @TODO (if it wasn't a .d.ts an unresolved type error should arise)
+// / using Function in condition is a hack, other types may also fit the purpose tho
+
+export type __FeDefaultKeyPropName <
+ _FeDefaultKeyPropName extends string = string
+> = 
+  [_X_FeDefaultKeyPropName] extends [Function] 
+  ? _FeDefaultKeyPropName 
+  : _X_FeDefaultKeyPropName
+  ;  
+// cf. _FeDefaultKeyPropName
 
 export type FeTKeyof = keyof any;
-export type FeTEmptyObject = Record<string,never>;  // @TODO cf {}
+export type FeTEmptyObject = Record<string|symbol,never>;  // @TODO cf {}
 
 export type _Fe_AnyI = {  // @TODO infer keys from T maybe
   [VK: string]: any,  // @TODO unknown
@@ -76,8 +98,3 @@ export type _FeIdxPartofIinclNum< // of an interface
 export type _FeSilentIdxKeyInclNum< // @TODO
   IdKey extends string | number | undefined = _FeDefaultKeyPropName,
 > = IdKey;*/
-
-
-export type FeDoesEntryFit =
-  (ery: _Fe_AnyI) => boolean | undefined
-  ; // tells if an entry fits the criteria for processing

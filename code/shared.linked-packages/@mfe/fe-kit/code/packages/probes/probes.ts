@@ -1,4 +1,4 @@
-import { _Branded, _BrandofBranded } from './generic.types';
+import type { _Branded, _BrandofBranded } from '../core-types/helper.types.d.ts';
 
 export const _feIsNumber = (num: number): num is number =>
   +num === +num;
@@ -31,7 +31,7 @@ export const _feIsAsyncFunction = <
 > (that: unknown): that is (...args: Args)=>Promise<P> =>
   that?.constructor?.name === 'AsyncFunction'; // @TODO return type ? probably done
 
-export const _feIsIterable = <T>(that: unknown): that is Iterable<T> => (
+export const _feIsIterable = <T> (that: unknown): that is Iterable<T> => (
   !!that
   && !!((that as Iterable<T>)[Symbol.iterator])
   && (that as Iterable<T>)[Symbol.iterator] instanceof Function  // @TODO review casting any or checking iterator otherwise
@@ -41,7 +41,7 @@ export const _feIsIterable = <T>(that: unknown): that is Iterable<T> => (
 //* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterator_protocol
 //* ... like the below:
 
-export const _feIsIterableTest = <T>(that: unknown): that is Iterable<T> => {
+export const _feIsIterableTest = <T> (that: unknown): that is Iterable<T> => {
   if (_feIsIterable(that)) {
     try {
       const iterator = (that as Iterable<T>)?.[Symbol.iterator]?.();
@@ -55,7 +55,7 @@ export const _feIsIterableTest = <T>(that: unknown): that is Iterable<T> => {
   return false;
 };
 
-export const _feIsofBrand = <T>(
+export const _feIsofBrand = <T> (
   that: _Branded<T,string>,
   brand: string
 ): that is _Branded<T, typeof that['__brand']> => {
@@ -146,4 +146,31 @@ export function _feAssertIsIterable <T> (
       `Expected ${labelOrMessage || 'label'} to be iterable, but received ${that}`
     );
   }
+}
+
+export default {
+
+  isNumber: _feIsNumber,
+  isString: _feIsString,
+  isMap: _feIsMap,
+  isWeakMap: _feIsWeakMap,
+  isArray: _feIsArray,
+  isSet: _feIsSet,
+  isObject: _feIsObject,
+  isEmptyObject: _feIsEmptyObject,
+  isNotanEmptyObject: _feIsNotanEmptyObject,
+  isFunction: _feIsFunction,
+  isAsyncFunction: _feIsAsyncFunction,
+  isIterable: _feIsIterable,
+
+  isIterableTest: _feIsIterableTest,
+
+  isofBrand: _feIsofBrand,
+
+  assertIsDefined: _feAssertIsDefined,
+  assertIsString: _feAssertIsString,
+  assertIsObject: _feAssertIsObject,
+  assertIsSyncFunction: _feAssertIsSyncFunction,
+  assertIsAsyncFunction: _feAssertIsAsyncFunction,
+  assertIsIterable: _feAssertIsIterable,
 }

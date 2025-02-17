@@ -3,7 +3,7 @@ import {
   type FeExecSignalingError, type FeExecSignalingErrorCodes,
   _feIsObject, _feIsEmptyObject, $fe,
   _feAssertIsObject, _feAssertIsAsyncFunction,
-} from '../../../../fe3/src/index.ts'
+} from '../../../../fe-kit/code/packages'
 import type {
   VitexExecCtx, BuiqExitCode, VitexBuilderProps, ViteLocalConfig,
   ViteSharedConfig, VitexSpecificFePart
