@@ -6,7 +6,7 @@ import { mergician } from 'mergician'
 // import { type InlineConfig } from 'vite'
 import { _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction
-} from '../../../../fe-kit/code/packages'
+} from '../../../../_fe/code/packages'
 import {
   FeBuildRunner, BuiqBuilderExecCtx, BuiqExitCode,
   BuiqBundlerConfigPrototype, FeBuilderStepsKeys, IBuiqBaseUtilities,

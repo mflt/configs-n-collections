@@ -1,5 +1,5 @@
 import type { UserConfig, InlineConfig } from 'vite'
-import type { $fe } from '../../../../fe-kit/code/packages'
+import type { $fe } from '../../../../_fe/code/packages'
 import type {
   BuiqBuilderExecCtx, BuiqExitCode,
   BuiqLocalBundlerConfig, BuiqSharedBundlerConfig, BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig,

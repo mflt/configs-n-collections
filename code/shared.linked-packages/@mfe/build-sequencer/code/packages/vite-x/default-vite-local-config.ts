@@ -4,7 +4,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { commonConfig, type CommonConfigProps } from '../../shared.config/vite.common-config'
 // import localConfig from './config/app.static-config.toml'
 // import { getAppConfig } from './helpers/config/getAppConfig'
-import { _feIsObject } from '../../shared.linked-packages/@mfe/fe3/src'
+import { _feIsObject } from '../../../../_fe/code/packages'
 
 
 export async function viteConfig ({ mode }) {

@@ -173,4 +173,30 @@ export default {
   assertIsSyncFunction: _feAssertIsSyncFunction,
   assertIsAsyncFunction: _feAssertIsAsyncFunction,
   assertIsIterable: _feAssertIsIterable,
+} as {
+
+  isNumber: typeof _feIsNumber,
+  isString: typeof _feIsString,
+  isMap: typeof _feIsMap,
+  isWeakMap: typeof _feIsWeakMap,
+  isArray: typeof _feIsArray,
+  isSet: typeof _feIsSet,
+  isObject: typeof _feIsObject,
+  isEmptyObject: typeof _feIsEmptyObject,
+  isNotanEmptyObject: typeof _feIsNotanEmptyObject,
+  isFunction: typeof _feIsFunction,
+  isAsyncFunction: typeof _feIsAsyncFunction,
+  isIterable: typeof _feIsIterable,
+
+  isIterableTest: typeof _feIsIterableTest,
+
+  isofBrand: typeof _feIsofBrand,
+
+  // this whole typing overhead is necessiated by TS2775
+  assertIsDefined: typeof _feAssertIsDefined,
+  assertIsString: typeof _feAssertIsString,
+  assertIsObject: typeof _feAssertIsObject,
+  assertIsSyncFunction: typeof _feAssertIsSyncFunction,
+  assertIsAsyncFunction: typeof _feAssertIsAsyncFunction,
+  assertIsIterable: typeof _feAssertIsIterable,
 }

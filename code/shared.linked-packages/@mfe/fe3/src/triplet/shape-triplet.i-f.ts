@@ -3,12 +3,12 @@ import type {
 } from '../_integration/types.js';
 import type {
   _Fe_AnyI, FeObjectwithNamedKeyProp, _Fe_AnyI_theOther,
-} from '../../../fe-kit/code/packages/core-types/root.types.d.ts';
+} from '../../../_fe/code/packages/core-types/root.types.d.ts';
 import type {
   IFeValue,
-} from '../../../fe-kit/code/packages/core-types/value.i-f.d.ts';
-import type { _ExtractTypesUnionfromIndexed, } from '../../../fe-kit/code/packages/core-types/helper.types.d.ts';
-import type { feGetCollectionEntry, } from '../../../fe-kit/code/packages/collections/collections.js';
+} from '../../../_fe/code/packages/core-types/value.i-f.d.ts';
+import type { _ExtractTypesUnionfromIndexed, } from '../../../_fe/code/packages/core-types/helper.types.d.ts';
+import type { feGetCollectionEntry, } from '../../../_fe/code/packages/collections/collections.js';
 import type {
   IFeValueShade, FeValueShadesArray, FeValueShadesMap, FeValueShadesWeakmap,
   FeValueShadesCollection, FeValueShadesIterableObject, IFeValueShadewithNamedKeyProp,

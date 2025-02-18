@@ -1,4 +1,4 @@
-import { FeExecSignaling, $fe } from '../../../../fe-kit/code/packages'
+import { FeExecSignaling, $fe } from '../../../../_fe/code/packages'
 import { _BaseBuilderConfig } from '../abstract/defaults-n-prototypes.ts'
 import type { VitexExecCtx } from './types.d.ts'
 

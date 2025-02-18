@@ -1,10 +1,10 @@
 import type { 
   __NID, __FeDefaultKeyPropName,
   _Fe_AnyI, _Fe_AnyI_theOther, FeObjectwithNamedKeyProp, FeStringKeyedCollectionObject, 
-} from '../../../fe-kit/code/packages/core-types/root.types.js';
+} from '../../../_fe/code/packages/core-types/root.types.js';
 import type { 
   IFeValue, 
-} from '../../../fe-kit/code/packages/core-types/value.i-f.js';
+} from '../../../_fe/code/packages/core-types/value.i-f.js';
 import type { IFeReactiveBeat } from '../beat/beat.i-f.js';
 
 

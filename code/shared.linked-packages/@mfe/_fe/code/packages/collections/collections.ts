@@ -9,7 +9,7 @@ import {
 // export declare const $fe: unique symbol;
 export const $fe = Symbol.for('@feProps');
 
-export type FeMapLikeCollectionObject<
+export type FeMapLikeCollectionObject <
   T extends _Fe_AnyI,
   KeyPropType extends FeTKeyof = string, // @TODO
 > =
@@ -32,12 +32,12 @@ export type FeMapLikeCollectionObject<
 } & Iterable<T>
   ;
 
-type TFeAnyCollection<
+type TFeAnyCollection <
   T extends _Fe_AnyI = _Fe_AnyI
 > = Array<T> | Map<__NID, T> | WeakMap<_Fe_AnyI, T> | FeStringKeyedCollectionObject<T>;
 
 
-export const feAssertStringKeyedCollectionObject = <
+export const feAssertStringKeyedCollectionObject = <  // @TODO do really assert
   T extends _Fe_AnyI,
   StringKeyPropName extends FeTKeyof = string,  // @TODO
 >(
@@ -52,7 +52,7 @@ export const feAssertStringKeyedCollectionObject = <
 // @TODO check if the prop is the one holding the T type (FeStringKeyedObject) or it just has a prop in its interface (FeObjectwithNamedKeyProp)
 
 
-export function feGetCollectionEntry<
+export function feGetCollectionEntry <
   T extends _Fe_AnyI = _Fe_AnyI
 >(
   collection: TFeAnyCollection<T> | undefined,
@@ -76,7 +76,7 @@ export function feGetCollectionEntry<
   return undefined;
 }
 
-export function feSetCollectionEntry<
+export function feSetCollectionEntry <
   T extends _Fe_AnyI = _Fe_AnyI
 >(
   collection: TFeAnyCollection<T>,
@@ -109,7 +109,7 @@ export function feSetCollectionEntry<
   return false;
 }
 
-export function fePrependEntrytoCollection< // works as expected with Arrays only at this point
+export function fePrependEntrytoCollection < // works as expected with Arrays only at this point
   T extends _Fe_AnyI = _Fe_AnyI
 >(
   collection: TFeAnyCollection<T>,
@@ -142,7 +142,7 @@ export type FeDoesEntryFit =
   ; // tells if an entry fits the criteria for processing
 
 
-export function feForEachinCollection<
+export function feForEachinCollection <
   T extends _Fe_AnyI = _Fe_AnyI,  // @TODO no string
   StringKeyPropName extends FeTKeyof = string,  // @TODO
 >(
@@ -199,4 +199,12 @@ export function feForEachinCollection<
     } // else other iterable @TODO
   }
   return false;
+}
+
+export default {
+  assertStringKeyedCollectionObject: feAssertStringKeyedCollectionObject,
+  getCollectionEntry: feGetCollectionEntry,
+  setCollectionEntry: feSetCollectionEntry,
+  prependEntrytoCollection: fePrependEntrytoCollection,
+  forEachinCollection: feForEachinCollection,
 }

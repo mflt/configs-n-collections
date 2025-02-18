@@ -1,12 +1,12 @@
 import { mergician, type MergicianOptions } from 'mergician'
 import type {
   _Branded, _WithAssertedBrand, _FeMilliseconds,
-} from '../fe-kit/code/packages'
+} from '../_fe/code/packages'
 import {
   FeExecSignaling, FeReadinessSignaling,
   _feAssertIsSyncFunction, _feIsFunction, _feIsObject, _feIsArray,
   _feIsNotanEmptyObject, _feIsAsyncFunction, _feMakeRecordFeMapLike, $fe, _feDelay, 
-} from '../fe-kit/code/packages'
+} from '../_fe/code/packages'
 
 
 export class FeCatchComm {

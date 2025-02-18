@@ -1,13 +1,8 @@
 import { mergician, MergicianOptions } from 'mergician'
-import type { FeAnyI } from '../../../../fe-kit/code/packages'
-import {
-  _feIsNotanEmptyObject, _feIsEmptyObject, FeReadinessSignaling,
-  _feAssertIsObject, _feAssertIsAsyncFunction, _feIsAsyncFunction,
-  _feIsObject, $fe
-} from '../../../../fe-kit/code/packages'
+import { _fe, $fe, FeReadinessSignaling } from '../../../../_fe/code/packages'
 import {
   FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm, FeBsqrCastCtxSlotstoInitiatorType,
-} from '../../../../fessentials/blocks-sequencer.ts'
+} from '../../../../feware/blocks-sequencer.ts'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
@@ -109,12 +104,12 @@ export class BuildSequencer <
         execCtxRef: builderCtxRef
       }
     )
-    if (!builderCtxRef || _feIsEmptyObject(builderCtxRef)) {
+    if (!builderCtxRef || _fe.isEmptyObject(builderCtxRef)) {
       throw new Error(
         `${!builderCtxRef ? 'Undefined' : 'Empty'} builder/exec context objects are not allowed`  // @TODO
       )
     }
-    _feAssertIsObject(builderCtxRef,
+    _fe.assertIsObject(builderCtxRef,
       {message: `Builder/exec context should be a non-empty object`}
     )
     builderCtxRef.local ??= {} as BundlerLocalConfig
@@ -155,7 +150,7 @@ export class BuildSequencer <
     // this.execSignals.pre.tillDone // returns ctx
 
 
-    _feAssertIsObject(proc)
+    _fe.assertIsObject(proc)
 
     const builderConfig = await builderConfigPreps.pre({})
     // loadConfig({...props, catchComm: _catch})
@@ -193,7 +188,7 @@ export class BuildSequencer <
         'If this is not how you intended it to be, please check the defaults and other related settings.')
     } else {
       const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
-      _feAssertIsAsyncFunction<InlineConfig,[ViteLocalConfigFnProps]>(
+      _fe.assertIsAsyncFunction<InlineConfig,[ViteLocalConfigFnProps]>(
         viteLocalConfigFn,
         {message: 'Local vite config is not a function'}
       )

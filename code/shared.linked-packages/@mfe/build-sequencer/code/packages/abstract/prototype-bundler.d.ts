@@ -1,1 +1,1 @@
-import { FeAnyI } from '../../../../fe-kit/code/packages'
+import { FeAnyI } from '../../../../_fe/code/packages'
