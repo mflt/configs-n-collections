@@ -1,19 +1,24 @@
 {
   "compilerOptions": {
-    "rootDir": "./code",
+    "rootDir": "./code/packages",
     "outDir": "./_build",
     "module": "esnext",
     "target": "esnext",
-    "lib": [
-      "ESNext",
-    ],
+    "lib": [ "ESNext", ],
+    /* Type checking */
+    "strict": true, // * set by tsc itself
+    /* Comleteness */
+    "skipLibCheck": true, // * set by tsc itself
+    /* Bundler mode */
     "moduleResolution": "bundler",
     "moduleDetection": "force", // * suggested by bun
+    /* Emit */
     "declaration": true,
-    "experimentalDecorators": true, // * for lit
-    "strict": true, // * explicitly set in the init-ed version by tsc itself
-    "forceConsistentCasingInFileNames": true, // * explicitly set in the init-ed version by tsc itself
-    "skipLibCheck": true, // * explicitly set in the init-ed version by tsc itself
+    /* Interop constraints */
+    // "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true, // * set by tsc itself
+    /* Etc */
+    // "experimentalDecorators": true, // * for lit    
   },
   "include": [
     "code/**/*.ts"

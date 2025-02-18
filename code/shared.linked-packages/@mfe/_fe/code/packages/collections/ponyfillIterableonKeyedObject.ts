@@ -168,7 +168,8 @@ export const ponyfillIterableonKeyedObject = <
         if (_feIsFunction(options?.sortKeysComparer)) {
           objectKeys = objectKeys.sort(options!.sortKeysComparer);
         }
-        sourceIterator = objectKeys?.[Symbol.iterator]?.() as typeof sourceIterator;  // @TODO
+        sourceIterator = objectKeys?.[Symbol.iterator]?.() as unknown as typeof sourceIterator;  
+        // @TODO, unknown was recently added to get rid of the tsc error message
       }
       if (!_feIsFunction(sourceIterator.next)) {
         throw ('could not prepare source (values) or keys iterator');  // @TODO

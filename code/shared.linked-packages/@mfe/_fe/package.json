@@ -1,6 +1,6 @@
 {
-  "name": "@mfe/_fe",
-  "version": "0.9.0",
+  "name": "@mflt/_fe",
+  "version": "0.8.11",
   "description": "",
   "type": "module",
   "module": "_build/index.js",
@@ -13,21 +13,17 @@
       "node": "./_build/index.js",
       "default": "./_build/index.js"
     },
-    "./utils": {
-      "types": "./_build/utils/index.d.ts",
-      "import": "./_build/utils/index.js"
+    "./probes": {
+      "types": "./_build/probes/probes.d.ts",
+      "import": "./_build/probes/probes.js"
     },
-    "./triplet": {
-      "types": "./_build/triplet/index.d.ts",
-      "import": "./_build/triplet/index.js"
+    "./promises": {
+      "types": "./_build/promises/promises.d.ts",
+      "import": "./_build/promises/promises.js"
     },
-    "./iterableKeyed": {
-      "types": "./_build/iterableKeyed/ponyfillIterableonKeyedObject.d.ts",
-      "import": "./_build/iterableKeyed/ponyfillIterableonKeyedObject.js"
-    },
-    "./beat": {
-      "types": "./_build/beat/beat.i-f.d.ts",
-      "import": "./_build/beat/beat.i-f.js"
+    "./collections": {
+      "types": "./_build/collections/index.d.ts",
+      "import": "./_build/collections/index.js"
     }
   },
   "files": [
@@ -37,6 +33,8 @@
   ],
   "scripts": {
     "build:ts": "bun tsc --build --pretty",
+    "npmjs:login": "bunx npm login",
+    "publish:npmjs": "bun publish",
     "dev:publish-link": "bun link",
     "dev:publish-unlink": "bun unlink"
   },

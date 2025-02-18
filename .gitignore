@@ -59,3 +59,4 @@ patches/*
 \[build\]
 \[dist\]
 .tsbuildinfo
+_build
