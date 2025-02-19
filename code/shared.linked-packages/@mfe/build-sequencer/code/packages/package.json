@@ -22,6 +22,8 @@
     "build": "bun run ../../shared.config/build.ts"
   },
   "dependencies": {
+    "@mflt/_fe": "latest",
+    "@mflt/feware": "latest"
   },
   "peerDependencies": {
     "@clack/prompts": "latest",

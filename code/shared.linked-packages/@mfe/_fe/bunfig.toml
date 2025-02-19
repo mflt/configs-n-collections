@@ -1,3 +1,0 @@
-telemetry = false
-[install.scopes]
-mflt = { token = "$npm_token", url = "https://registry.npmjs.com/" }
