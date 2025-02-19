@@ -1,1 +1,1 @@
-import { FeAnyI } from '../../../../_fe/code/packages'
+import { FeAnyI } from '@mflt/_fe'

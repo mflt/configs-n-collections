@@ -1,6 +1,5 @@
 {
   "name": "@mfe/gc-collections",
-  "private": false,
   "version": "1000.0.0",
   "type": "module",
   "module": "./[dist]/esm/index.js",
@@ -29,6 +28,8 @@
     "xxcheck": "tsc -b tsconfig.json"
   },
   "dependencies": {
+    "@mflt/_fe": "latest",
+    "@mflt/feware": "latest",
     "rehype-katex": "latest",
     "remark": "latest",
     "remark-gfm": "latest",
@@ -39,10 +40,10 @@
     "zod": "latest"
   },
   "peerDependencies": {
-    "@clack/prompts": "latest",
-    "@google-cloud/local-auth": "latest",
-    "fast-safe-stringify": "latest",
-    "googleapis": "latest"
+    "@clack/prompts": "*",
+    "@google-cloud/local-auth": "*",
+    "fast-safe-stringify": "*",
+    "googleapis": "*"
   },
   "devDependencies": {
     "@google-cloud/local-auth": "latest",

@@ -1,6 +1,5 @@
 {
   "name": "buiq",
-  "private": false,
   "version": "0.1.0",
   "type": "module",
   "module": "./[dist]/esm/index.js",
@@ -26,8 +25,8 @@
     "@mflt/feware": "latest"
   },
   "peerDependencies": {
-    "@clack/prompts": "latest",
-    "fast-safe-stringify": "latest"
+    "@clack/prompts": "*",
+    "fast-safe-stringify": "*"
   },
   "devDependencies": {
     "@types/bun": "latest",

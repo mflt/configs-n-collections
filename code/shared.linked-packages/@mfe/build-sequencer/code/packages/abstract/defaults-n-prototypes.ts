@@ -1,5 +1,7 @@
-import { FeExecSignaling, $fe } from '../../../../_fe/code/packages'
-import type { BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig } from './types.d.ts'
+import { FeExecSignaling, $fe } from '@mflt/_fe'
+import type {
+  BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig, BuiqLocalBundlerConfig, BuiqBundlerSpecificFePartFather
+} from './types.ts'
 
 const __BlocksKeysDonor = { // Just to have iterable keys to engage
   config_a_local: {},
@@ -24,18 +26,22 @@ export const _BlocksKeysDonor = __BlocksKeysDonor as unknown as Record<
 
 export const _BaseBuilderConfig = { // we omitted the $fe here
   local: {
+    bundlerName: '<someBundler>',
+    '<someBundler>': {},
     bundleName: '',
     files: {
       cwd: './',
       buiq: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
-  } satisfies BuiqAbstractLocalFeConfig,
+  } satisfies BuiqAbstractLocalFeConfig<'<someBundler>',BuiqLocalBundlerConfig<unknown,unknown>,BuiqBundlerSpecificFePartFather>,
   shared: {
+    bundlerName: '<someBundler>',
+    '<someBundler>': {},
     files: {
       cwd: '..'
     }
-  } satisfies BuiqAbstractSharedFeConfig,
+  } satisfies BuiqAbstractSharedFeConfig<'<someBundler>',BuiqLocalBundlerConfig<unknown,unknown>,BuiqBundlerSpecificFePartFather>,
 }
 
 export const BuiqExitCodeVariants = {

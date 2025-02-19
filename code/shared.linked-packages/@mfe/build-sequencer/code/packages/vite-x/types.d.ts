@@ -4,7 +4,7 @@ import type {
   BuiqBuilderExecCtx, BuiqExitCode,
   BuiqLocalBundlerConfig, BuiqSharedBundlerConfig, BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig,
   BuiqBundlerConfigFnCtx, BuiqBuilderProps
-} from '../abstract/types.d.ts'
+} from '../abstract/types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
 export type { BuiqExitCode }

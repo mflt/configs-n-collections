@@ -1,7 +1,7 @@
 {
   "name": "@mflt/configs-n-collections",
   "workspaces": [
-    "./code/packages/gc-collections/*",
+    "./code/packages/gc-collections",
     "./code/packages/config-helpers/*",
     "./code/shared.linked-packages/**/*",
     "./code/shared.kits/**/*",

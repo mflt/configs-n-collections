@@ -1,14 +1,14 @@
 import { mergician, MergicianOptions } from 'mergician'
-import { _fe, $fe, FeReadinessSignaling } from '../../../../_fe/code/packages'
+import { _fe, $fe, FeReadinessSignaling } from '@mflt/_fe'
 import {
   FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm, FeBsqrCastCtxSlotstoInitiatorType,
-} from '../../../../feware/blocks-sequencer.ts'
+} from '@mflt/feware'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
   BuiqBuilderExecCtx, BuiqExitCode, BuiqBlocksKeys, BuiqLocalBundlerConfig, BuiqSharedBundlerConfig,
   BuiqBundlerSpecificFePartFather, IBuiqBaseUtilities, BuiqEexecMods,
-} from './types.d.ts'
+} from './types.ts'
 import { _BlocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
 
@@ -55,7 +55,10 @@ export class BuildSequencer <
 >
 {
   get builderName () { return this.sequencerName }
-  get getBuilderCtx () { return this.getExecCtx }
+  get getBuilderCtx () {
+    return this.getExecCtx as unknown as ReturnType<typeof this.getExecCtx>
+    // @TODO this annoying explicit typing was needed due to $fe in the return type
+  }
 
   assigntoBuilderCtx (
     toMerge: Partial<BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>>,
@@ -64,7 +67,8 @@ export class BuildSequencer <
     return this.assigntoExecCtx(
       toMerge,
       mergicianOptions
-    )
+    ) as unknown as ReturnType<typeof this.assigntoExecCtx>
+    // @TODO this annoying explicit typing was needed due to $fe in the return type
   }
 
   constructor(

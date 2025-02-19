@@ -6,11 +6,11 @@ import { mergician } from 'mergician'
 // import { type InlineConfig } from 'vite'
 import { _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction
-} from '../../../../_fe/code/packages'
+} from '@mflt/_fe'
 import {
   FeBuildRunner, BuiqBuilderExecCtx, BuiqExitCode,
   BuiqBundlerConfigPrototype, FeBuilderStepsKeys, IBuiqBaseUtilities,
-} from './types'
+} from './types.ts'
 // import defaultsProfiles from './defaults-profiles.ts'
 
 
