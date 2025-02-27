@@ -1,10 +1,10 @@
-import { FeExecSignaling, $fe } from '../../../../_fe/code/packages'
+import { FeExecSignaling, $fe } from '@mflt/_fe'
 import { _BaseBuilderConfig } from '../abstract/defaults-n-prototypes.ts'
-import type { VitexExecCtx } from './types.d.ts'
+import type { VitexPassthruCtl } from './types.d.ts'
 
 export type DefaultsProfileNames = 'base-vite'
 
-export const _DefaultProfiles: Record<string,VitexExecCtx> = {
+export const _DefaultProfiles: Record<string,VitexPassthruCtl> = {
   'base-vite': {
     'vite-x': {
       addPeerDependenciestoExternals: true,

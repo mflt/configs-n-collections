@@ -18,12 +18,12 @@ export type { BuildSequencer, IPrompt, IPromptColor }
 // The additional block comes after the bundler run, it can be anything, and its configuration is part of
 // BuilderExtensionProps (no type prescriptions)
 
-export type BuiqBuilderExecCtx <
-  // the builder context
+export type BuiqBuilderPassthruCtl <
+  // the builder steps config prop and result
   // this/descendants evaluate as we process config inputs in sequence
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
-  BundlerLocalConfig extends BuiqLocalBundlerConfig<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedConfig extends BuiqSharedBundlerConfig<unknown,unknown>,
+  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
+  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
   // * bundler is the external tool driven by us
   // * it has two slots, local and shared, see below
   // * both slots have extension subslots per stage
@@ -38,15 +38,15 @@ export type BuiqBuilderExecCtx <
     // for the two stages of config computations aka loading (where shared stage comes first)
     local: BundlerLocalConfig,
     shared: BundlerSharedConfig,
-    [$fe]: BuiqBuilderFeConfig<BundlerSpecificFePart>
+    [$fe]: BuiqBuilderFePayload<BundlerSpecificFeSlots>
   }
   & BuilderExecExtensionSlots
 
 
-export type BuiqBundlerSpecificFePartFather = {
+export type BuiqBundlerSpecificFeSlotsFather = {
   [TypeSignatureSlot in string as 'bundlerName']: string
 }
-type _BSFePF = BuiqBundlerSpecificFePartFather
+type _BSFeSlF = BuiqBundlerSpecificFeSlotsFather
 
 export type BuiqExitCode = (typeof BuiqExitCodeVariants)[keyof typeof BuiqExitCodeVariants]
 
@@ -62,7 +62,7 @@ export type BuiqConfigFilesPaths = {  // @TODO path type
   buiq?: string,  // builder-sequencer config, toml
   tsc?: string, // tsconfig, json
   bundler?: string, // the user package's bundler's configuration, like vite config
-  additional?: string,  // like tailwind or a bunch of such things
+  additional?: string|string[],  // like tailwind or a bunch of such things
 }
 
 export type BuiqUtilityFePart = { // does not come from a config file
@@ -82,21 +82,21 @@ export type BuiqSharedFePart = {
     cwd: (params: ParamsArg) => string
   }
 }
-export type BuiqCommonFeConfig <
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather = _BSFePF
+export type BuiqCommonFePayload <
+  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather = _BSFeSlF
 > =
-  & BundlerSpecificFePart
+  & BundlerSpecificFeSlots
   & BuiqUtilityFePart
 // * all partial except utility
-export type BuiqBuilderFeConfig <
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather = _BSFePF
+export type BuiqBuilderFePayload <
+  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather = _BSFeSlF
 > =
   & BuiqLocalFePart
   & BuiqSharedFePart
-  & BuiqCommonFeConfig<BundlerSpecificFePart>
+  & BuiqCommonFePayload<BundlerSpecificFeSlots>
 // * all partial except utility
 
-export type BuiqLocalBundlerConfig <
+export type BuiqLocalBundlerSetup <
   BundlerLocalConfig extends FeAnyI|unknown, // should not be undefined / unknown in real usecases
   LocalExtensionSlots extends FeAnyI|unknown = {}  // subslots rather
 > =
@@ -105,7 +105,7 @@ export type BuiqLocalBundlerConfig <
   & LocalExtensionSlots
   // @TODO Add TypeSignature slot
 
-export type BuiqSharedBundlerConfig <
+export type BuiqSharedBundlerSetup <
   BundlerSharedConfig extends FeAnyI|unknown,
   SharedExtensionSlots extends FeAnyI|unknown = {}
 > =
@@ -113,61 +113,61 @@ export type BuiqSharedBundlerConfig <
   & BundlerSharedConfig
   & SharedExtensionSlots
 
-export type BuiqBundlerConfigFnCtx <
-  BundlerConfig extends BuiqSharedBundlerConfig<unknown,unknown> | BuiqLocalBundlerConfig<unknown,unknown>,
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather = _BSFePF,
+export type BuiqBundlerConfigwFePayload <
+  BundlerConfig extends BuiqSharedBundlerSetup<unknown,unknown> | BuiqLocalBundlerSetup<unknown,unknown>,
+  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather = _BSFeSlF,
 > =
   & BundlerConfig
   & {
-    [$fe]: BuiqBuilderFeConfig<BundlerSpecificFePart>
+    [$fe]: BuiqBuilderFePayload<BundlerSpecificFeSlots>
 }
 
-export type BuiqAbstractLocalFeConfig <
+export type BuiqAbstractLocalFeSetup <
   // to be used in a builder config file
   BundlerName extends string,
-  LocalBundlerConfig extends BuiqLocalBundlerConfig<unknown,unknown>,
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
+  LocalBundlerConfig extends BuiqLocalBundlerSetup<unknown,unknown>,
+  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
 > =
   & BuiqLocalFePart
-  & BundlerSpecificFePart
+  & BundlerSpecificFeSlots
   & {
     [BundlerNameKey in `${BundlerName}`]: LocalBundlerConfig
 }
-export type BuiqAbstractSharedFeConfig <
+export type BuiqAbstractSharedFeSetup <
   // to be used in a builder config file
   BundlerName extends string,
-  SharedBundlerConfig extends BuiqSharedBundlerConfig<unknown,unknown>,
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
+  SharedBundlerConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
+  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
 > =
   & BuiqSharedFePart
-  & BundlerSpecificFePart
+  & BundlerSpecificFeSlots
   & {
     [BundlerNameKey in `${BundlerName}`]: SharedBundlerConfig
 }
 
-export type BuiqBuilderProps <
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
-  BundlerLocalConfig extends BuiqLocalBundlerConfig<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedConfig extends BuiqSharedBundlerConfig<unknown,unknown>,
+export type BuiqBuilderSlotsAndOptions <
+  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
+  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
 > =
-  & Partial<BundlerSpecificFePart>
+  & Partial<BundlerSpecificFeSlots>
   & {
-    execMods?: BuiqEexecMods<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>
+    execMods?: BuiqEexecMods<BundlerSpecificFeSlots,BundlerLocalConfig,BundlerSharedConfig>
   }
 
 export type BuiqEexecMods <
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
-  BundlerLocalConfig extends BuiqLocalBundlerConfig<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedConfig extends BuiqSharedBundlerConfig<unknown,unknown>,
+  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
+  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
 > =
   & IFeBsqrExecMods<
       BuiqBlocksKeys,
-      BuiqBuilderExecCtx<
-        BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig
+      BuiqBuilderPassthruCtl<
+        BundlerSpecificFeSlots,BundlerLocalConfig,BundlerSharedConfig
     >
   >
   & {
-    getBuilderCtx: ()=> BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>
+    getBuilderPassthruCtl: ()=> BuiqBuilderPassthruCtl<BundlerSpecificFeSlots,BundlerLocalConfig,BundlerSharedConfig>
   }
 
 type ParamsArg = FeStringKeyedCollectionObject<FeAnyI|string>  // command line params arg is a parsable obj
@@ -182,5 +182,5 @@ type ParamsArg = FeStringKeyedCollectionObject<FeAnyI|string>  // command line p
 //   // initialCtx?: Partial<BuiqBuilderExecCtx<_BSFePF,{},{}>>
 // }
 type _AbstractBundlerConfigFn = (
-  props: BuiqBundlerConfigFnCtx<{}>
-) => Promise<BuiqBundlerConfigFnCtx<{}>>
+  props: BuiqBundlerConfigwFePayload<{}>
+) => Promise<BuiqBundlerConfigwFePayload<{}>>

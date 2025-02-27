@@ -5,8 +5,8 @@ import {
   _feAssertIsObject, _feAssertIsAsyncFunction,
 } from '@mflt/_fe'
 import type {
-  VitexExecCtx, BuiqExitCode, VitexBuilderProps, ViteLocalConfig,
-  ViteSharedConfig, VitexSpecificFePart
+  VitexPassthruCtl, BuiqExitCode, VitexBuilderSlotsAndOptions, ViteLocalSetup,
+  ViteSharedSetup, VitexSpecificFeSlotsAndOptions
 } from './types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 import { BuildSequencer, prompt, color, builderEntryLoaded } from '../abstract/core.ts'
@@ -32,19 +32,19 @@ export { prompt, color, builderEntryLoaded, $fe }
 builderEntryLoaded.pass('vite-x')
 
 export async function vitexBuilder (
-  props: VitexBuilderProps
+  props: VitexBuilderSlotsAndOptions
 ): Promise<BuiqExitCode> {
 
   const { execMods, ...propsFeInit  } = props
   const ctx = {
     // local and shared slots are treated by the core
     [$fe]: propsFeInit,
-  } as VitexExecCtx
+  } as VitexPassthruCtl
 
-  const r = new BuildSequencer<
-    VitexSpecificFePart,
-    ViteLocalConfig,
-    ViteSharedConfig
+  const r = new BuildSequencer< // 
+    VitexSpecificFeSlotsAndOptions,
+    ViteLocalSetup,
+    ViteSharedSetup
   >(
     'vite-x', // '_',
     // @TODO let there be a builder kind, like 'vite' and sub like 'vxrn'
@@ -81,14 +81,14 @@ export async function vitexBuilder (
 
   async function level1 () {
     // Provides:
-    // * config_c_bundler_local
-    // * config_d_bundler_shared
+    // * setup_c_bundler_local
+    // * setup_d_bundler_shared
 
     // Config/bundler: (local vite config)
     try {
       // loading local vite config
-      console.log('TILL', r.execSignals.config_c_bundler_local.status)
-      await r.execSignals.config_c_bundler_local.tillRequested // returns ctx
+      console.log('TILL', r.execSignals.setup_c_bundler_local.status)
+      await r.execSignals.setup_c_bundler_local.tillRequested // returns ctx
       console.log('TILL AFTER')
       _c.framingMessage =
         `Failed importing the local vite config ts (${ctx[$fe].files?.bundler || '(see the bundler property'})`
@@ -97,12 +97,12 @@ export async function vitexBuilder (
           'If this is not how you intended it to be, please check the defaults and other related settings.')
       } else {
         const viteLocalConfigFn = await import(ctx[$fe].files?.bundler)
-        _feAssertIsAsyncFunction<InlineConfig,[ViteLocalConfig]>(
+        _feAssertIsAsyncFunction<InlineConfig,[ViteLocalSetup]>(
           viteLocalConfigFn,
           {message: 'Local vite config is not a function'}
         )
       }
-      r.execSignals.config_c_bundler_local.done(ctx)
+      r.execSignals.setup_c_bundler_local.done(ctx)
     } catch(err) {
       if (!(err as FeExecSignalingError).execSignaling)
         throw err
@@ -111,7 +111,7 @@ export async function vitexBuilder (
     // Config/bundler: (shared/common vite config)
     try {
       // loading shared vite config
-      await r.execSignals.config_d_bundler_shared.tillRequested // returns ctx
+      await r.execSignals.setup_d_bundler_shared.tillRequested // returns ctx
       _c.framingMessage =
         `Failed consuming a proper common (not the local one) vite config ts (provided by the user script)`
       if (props?.viteSharedConfigFn === null) {
@@ -119,13 +119,13 @@ export async function vitexBuilder (
         p.log.warn('Common vite config (which isn\'t the local one) ts was not provided (by the user scipt)')
       } else {
         // const viteCommonConfigFn = await import(ctx.shared.files.bundler) // @TODO implement the loading case
-        _feAssertIsAsyncFunction<UserConfig,[ViteSharedConfig]>(
+        _feAssertIsAsyncFunction<UserConfig,[ViteSharedSetup]>(
           props?.viteSharedConfigFn,
           {message: 'What was proviced as a common vite config is not a function (specify as null if omitted)'}
         )
       }
 
-      r.execSignals.config_d_bundler_shared.done(ctx)
+      r.execSignals.setup_d_bundler_shared.done(ctx)
     } catch(err) {
       if (!(err as FeExecSignalingError).execSignaling)
         throw err

@@ -1,16 +1,16 @@
 import { FeExecSignaling, $fe } from '@mflt/_fe'
 import type {
-  BuiqAbstractLocalFeConfig, BuiqAbstractSharedFeConfig, BuiqLocalBundlerConfig, BuiqBundlerSpecificFePartFather
+  BuiqAbstractLocalFeSetup, BuiqAbstractSharedFeSetup, BuiqLocalBundlerSetup, BuiqBundlerSpecificFeSlotsFather
 } from './types.ts'
 
 const __BlocksKeysDonor = { // Just to have iterable keys to engage
-  config_a_local: {},
-  config_b_shared: {},
-  config_c_bundler_local: {},
+  setup_a_local: {},
+  setup_b_shared: {},
+  setup_c_bundler_local: {},
   // / local bundler comes first in order to provide inputs for the shared one
   // / which like in case of vite is evaluated then first
-  config_d_bundler_shared: {},
-  config_e_additional: {},
+  setup_d_bundler_shared: {},
+  setup_e_additional: {},
   preps: {},
   compile: {},
   bundler: {},
@@ -34,14 +34,14 @@ export const _BaseBuilderConfig = { // we omitted the $fe here
       buiq: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
-  } satisfies BuiqAbstractLocalFeConfig<'<someBundler>',BuiqLocalBundlerConfig<unknown,unknown>,BuiqBundlerSpecificFePartFather>,
+  } satisfies BuiqAbstractLocalFeSetup<'<someBundler>',BuiqLocalBundlerSetup<unknown,unknown>,BuiqBundlerSpecificFeSlotsFather>,
   shared: {
     bundlerName: '<someBundler>',
     '<someBundler>': {},
     files: {
       cwd: '..'
     }
-  } satisfies BuiqAbstractSharedFeConfig<'<someBundler>',BuiqLocalBundlerConfig<unknown,unknown>,BuiqBundlerSpecificFePartFather>,
+  } satisfies BuiqAbstractSharedFeSetup<'<someBundler>',BuiqLocalBundlerSetup<unknown,unknown>,BuiqBundlerSpecificFeSlotsFather>,
 }
 
 export const BuiqExitCodeVariants = {

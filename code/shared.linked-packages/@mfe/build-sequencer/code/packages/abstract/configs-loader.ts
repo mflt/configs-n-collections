@@ -8,19 +8,23 @@ import { _feIsNotanEmptyObject, _feIsEmptyObject,
   _feAssertIsObject, _feAssertIsAsyncFunction
 } from '@mflt/_fe'
 import {
-  FeBuildRunner, BuiqBuilderExecCtx, BuiqExitCode,
-  BuiqBundlerConfigPrototype, FeBuilderStepsKeys, IBuiqBaseUtilities,
+  BuildSequencer,
+  BuiqBundlerSpecificFeSlotsFather, BuiqLocalBundlerSetup, BuiqSharedBundlerSetup,
 } from './types.ts'
 // import defaultsProfiles from './defaults-profiles.ts'
 
 
 export async function loadBuilderConfigs <
-  BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,
-  BuilderExtensionProps extends FeAnyI|void = void,
+  BundlerSpecificFePart extends BuiqBundlerSpecificFeSlotsFather,
+  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>,
+  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
+  // BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,
+  // BuilderExtensionProps extends FeAnyI|void = void,
 > (
-  runnerCtx: FeBuildRunner<
-    BundlerConfig,
-    BuilderExtensionProps
+  runnerCtx: BuildSequencer<
+    BundlerSpecificFePart,
+    BundlerLocalConfig,
+    BundlerSharedConfig
   >
 ): Promise<BuilderEffectiveConfig> {
 
@@ -29,22 +33,22 @@ export async function loadBuilderConfigs <
     catchComm: _c,
     prompt: p,
     color: co
-  } = r.utilities
+  } = r. utilities
 
   const {
     defaultsProfileName = 'base'
-  } = r.getBuilderCtx()
+  } = r.getBuilderPassthruCtl
 
   let buildLocalConfig = {} as BuilderEffectiveLocalConfig
 
-  if (!_feIsNotanEmptyObject(defaultsProfiles[defaultsProfileName])) {
-    p.log.warn(
-      `Builder defaults of profile named '${defaultsProfileName}' are not a valid object ` +
-      '(see defaults-profiles.ts in the package)')
-  }
+  // if (!_feIsNotanEmptyObject(defaultsProfiles[defaultsProfileName])) {
+  //   p.log.warn(
+  //     `Builder defaults of profile named '${defaultsProfileName}' are not a valid object ` +
+  //     '(see defaults-profiles.ts in the package)')
+  // }
 
-  await r.executeBlock('config_c_bundler_local')
-  await r.executeBlock('config_d_bundler_shared')
+  await r.executeBlock('setup_a_local')
+  await r.executeBlock('setup_b_shared')
 
 
   // the below two configs are assumed to be loaded by the caller
@@ -117,7 +121,7 @@ export async function loadBuilderConfigs <
   }
 
   buildLocalConfig.cwd = process.cwd()
-  buildLocalConfig.buildCommonConfig = props.buildCommonConfig
+  buildLocalConfig.buildCommonConfig = .buildCommonConfig
   buildLocalConfig.viteCommonConfigFn = props.viteCommonConfigFn
 
   _c.framingMessage = `Failed loading the local/cwd package.json`

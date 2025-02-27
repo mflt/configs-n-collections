@@ -7,9 +7,9 @@ import { ViteToml as tomlPlugin } from 'vite-plugin-toml'
 // import { getSharedConfig } from '../shared.lib/getSharedConfig'
 // import type { SharedAssetsPaths } from './types/shared-assets-and-content'  // pending support with ${configDir}
 // import type { _getAppConfig } from './helpers/config/_getAppConfig'
-import { type VitexLocalConfigFnCtx, $fe } from '../shared.linked-packages/@mfe/build-sequencer/code/packages/vite-x'
+import { type VitexLocalConfigwFePayload, $fe } from '../shared.linked-packages/@mfe/build-sequencer/code/packages/vite-x'
 
-export const viteCommonConfigFn = async (props: VitexLocalConfigFnCtx): Promise<VitexLocalConfigFnCtx> => {
+export const viteCommonConfigFn = async (props: VitexLocalConfigwFePayload): Promise<VitexLocalConfigwFePayload> => {
 
   // test props for supporting all the $fe non-optionals
 

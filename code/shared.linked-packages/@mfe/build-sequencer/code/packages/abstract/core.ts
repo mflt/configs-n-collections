@@ -6,8 +6,8 @@ import {
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BuiqBuilderExecCtx, BuiqExitCode, BuiqBlocksKeys, BuiqLocalBundlerConfig, BuiqSharedBundlerConfig,
-  BuiqBundlerSpecificFePartFather, IBuiqBaseUtilities, BuiqEexecMods,
+  BuiqBuilderPassthruCtl, BuiqExitCode, BuiqBlocksKeys, BuiqLocalBundlerSetup, BuiqSharedBundlerSetup,
+  BuiqBundlerSpecificFeSlotsFather, IBuiqBaseUtilities, BuiqEexecMods,
 } from './types.ts'
 import { _BlocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
@@ -41,33 +41,33 @@ export const builderEntryLoaded = new FeReadinessSignaling<string>();
 })()
 
 export class BuildSequencer <
-  BundlerSpecificFePart extends BuiqBundlerSpecificFePartFather,
-  BundlerLocalConfig extends BuiqLocalBundlerConfig<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedConfig extends BuiqSharedBundlerConfig<unknown,unknown>,
+  BundlerSpecificFePart extends BuiqBundlerSpecificFeSlotsFather,
+  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
   // * keep in sync w/ BuiqBuilderExecCtx
 > extends FeBlocksSequencerCtx<
-  BuiqBlocksKeys,
-  BuiqBuilderExecCtx<
-    BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig
-    // the extension slots are not relevant in this abstract/bundler-independent context
-  >,
-  IBuiqBaseUtilities  // additional utils add to BuilderExtensionProps
+    BuiqBlocksKeys,
+    BuiqBuilderPassthruCtl<
+      BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig
+      // the extension slots are not relevant in this abstract/bundler-independent context
+    >,
+    IBuiqBaseUtilities  // additional utils add to BuilderExtensionProps
 >
 {
   get builderName () { return this.sequencerName }
-  get getBuilderCtx () {
-    return this.getExecCtx as unknown as ReturnType<typeof this.getExecCtx>
+  get getBuilderPassthruCtl () {
+    return this.getPassthruCtl as unknown as ReturnType<typeof this.getPassthruCtl>
     // @TODO this annoying explicit typing was needed due to $fe in the return type
   }
 
-  assigntoBuilderCtx (
-    toMerge: Partial<BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>>,
+  assigntoBuilderPassthruCtl (
+    toMerge: Partial<BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>>,
     mergicianOptions?: MergicianOptions
   ) {
-    return this.assigntoExecCtx(
+    return this.assigntoPassthruCtl(
       toMerge,
       mergicianOptions
-    ) as unknown as ReturnType<typeof this.assigntoExecCtx>
+    ) as unknown as ReturnType<typeof this.assigntoPassthruCtl>
     // @TODO this annoying explicit typing was needed due to $fe in the return type
   }
 
@@ -78,25 +78,25 @@ export class BuildSequencer <
     //     FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
     //   >
     // >[1] | '_',  // @TODO named one?
-    builderCtxRef: BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,  // which is ExecCtx
+    builderPassthruCtl: BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,
     initiator?: Partial<
       & Pick<
         IFeBlocksSequencerCtx<
           BuiqBlocksKeys,
-          BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,
+          BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,
           IBuiqBaseUtilities
         >,
         'utilities'|'waitingforRequestedBlocktoCompleteTimeout'
       >
       & Omit<FeBsqrCastCtxSlotstoInitiatorType<
-          BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>
+          BuiqBlocksKeys,BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>
         >,
-        'execCtxRef'  // this one comes as a direct prop
+        'passthruCtlRef'  // this one comes as a direct prop
       >
       & {
-        getBuilderCtx: FeBlocksSequencerCtx<
-          BuiqBlocksKeys,BuiqBuilderExecCtx<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,IBuiqBaseUtilities
-        >['getExecCtx']
+        getBuilderPassthruCtl: FeBlocksSequencerCtx<
+          BuiqBlocksKeys,BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,IBuiqBaseUtilities
+        >['getPassthruCtl']
       }
     >
   ) {
@@ -105,27 +105,27 @@ export class BuildSequencer <
       builderName,
       _BlocksKeysDonor, {
         ...initiator,
-        execCtxRef: builderCtxRef
+        passthruCtlRef: builderPassthruCtl
       }
     )
-    if (!builderCtxRef || _fe.isEmptyObject(builderCtxRef)) {
+    if (!builderPassthruCtl || _fe.isEmptyObject(builderPassthruCtl)) {
       throw new Error(
-        `${!builderCtxRef ? 'Undefined' : 'Empty'} builder/exec context objects are not allowed`  // @TODO
+        `${!builderPassthruCtl ? 'Undefined' : 'Empty'} builder/exec context objects are not allowed`  // @TODO
       )
     }
-    _fe.assertIsObject(builderCtxRef,
+    _fe.assertIsObject(builderPassthruCtl,
       {message: `Builder/exec context should be a non-empty object`}
     )
-    builderCtxRef.local ??= {} as BundlerLocalConfig
-    builderCtxRef.shared ??= {} as BundlerSharedConfig
-    builderCtxRef[$fe].meta = import.meta
+    builderPassthruCtl.local ??= {} as BundlerLocalConfig
+    builderPassthruCtl.shared ??= {} as BundlerSharedConfig
+    builderPassthruCtl[$fe].meta = import.meta
     const r = this
-    // r.getExecCtx ??= initiator?.getBuilderCtx || (() => builderCtx)
+    // r.getPassthruCtl ??= initiator?.getBuilderPassthruCtl || (() => builderPassthruCtlRef)
     r.utilities.catchComm ??= catchComm
     r.utilities.resolve ??= resolve
     r.utilities.prompt ??= prompt
     r.utilities.color ??= color
-    builderCtxRef[$fe].utilities = r.utilities
+    builderPassthruCtl[$fe].utilities = r.utilities
     // ctx slots are ready at this point, internally and in the fe
     // @TODO if no bundlername, prompt
     r.utilities.prompt.log.info(`${r.builderName || '<missing name>'} builder started`)
@@ -134,8 +134,9 @@ export class BuildSequencer <
 
   async loadConfigs () {
     return loadBuilderConfigs<
-      BundlerConfig,
-      BuilderExtensionProps
+      BundlerSpecificFePart,
+      BundlerLocalConfig,
+      BundlerSharedConfig
     >(this)
   }
 
