@@ -5,7 +5,7 @@ import {
   _feAssertIsObject, _feAssertIsAsyncFunction,
 } from '@mflt/_fe'
 import type {
-  VitexPassthruCtl, BuiqExitCode, VitexBuilderSlotsAndOptions, ViteLocalSetup,
+  VitexJobTerms, BuiqExitCode, VitexBuilderSlotsAndOptions, ViteLocalSetup,
   ViteSharedSetup, VitexSpecificFeSlotsAndOptions
 } from './types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
@@ -39,7 +39,7 @@ export async function vitexBuilder (
   const ctx = {
     // local and shared slots are treated by the core
     [$fe]: propsFeInit,
-  } as VitexPassthruCtl
+  } as VitexJobTerms
 
   const r = new BuildSequencer< // 
     VitexSpecificFeSlotsAndOptions,
@@ -57,11 +57,8 @@ export async function vitexBuilder (
     }
   )
 
-  const {
-    catchComm: _c,
-    prompt: p,
-    color: co
-  } = await r.ctxSignals.sequencerReady.tillReady // returns utilities
+  const sq = this
+  const squ = await sq.ctxSignals.sequencerReady.tillReady // returns utilities
 
   try {
     // @TODO run a check if level1 has blocks ordered properly, and other structural checks
@@ -70,8 +67,8 @@ export async function vitexBuilder (
     // * see __BlocksKeysDonor in the abstract defaults
     // *
 
-    // await r.loadConfigs()
-    // return await r.exec()
+    // await sq.loadConfigs()
+    // return await sq.exec()
     return 111
   } catch(err) {
     return BuiqExitCodeVariants.error
@@ -87,13 +84,13 @@ export async function vitexBuilder (
     // Config/bundler: (local vite config)
     try {
       // loading local vite config
-      console.log('TILL', r.execSignals.setup_c_bundler_local.status)
-      await r.execSignals.setup_c_bundler_local.tillRequested // returns ctx
+      console.log('TILL', sq.execSignals.setup_c_bundler_local.status)
+      await sq.execSignals.setup_c_bundler_local.tillRequested // returns ctx
       console.log('TILL AFTER')
-      _c.framingMessage =
+      squ.c4.throwwith =
         `Failed importing the local vite config ts (${ctx[$fe].files?.bundler || '(see the bundler property'})`
       if (!(ctx[$fe].files?.bundler)) {
-        p.log.warn('Local vite config ts can not be determined. \n' +
+        squ.prompt.log.warn('Local vite config ts can not be determined. \n' +
           'If this is not how you intended it to be, please check the defaults and other related settings.')
       } else {
         const viteLocalConfigFn = await import(ctx[$fe].files?.bundler)
@@ -102,7 +99,7 @@ export async function vitexBuilder (
           {message: 'Local vite config is not a function'}
         )
       }
-      r.execSignals.setup_c_bundler_local.done(ctx)
+      sq.execSignals.setup_c_bundler_local.done(ctx)
     } catch(err) {
       if (!(err as FeExecSignalingError).execSignaling)
         throw err
@@ -111,8 +108,8 @@ export async function vitexBuilder (
     // Config/bundler: (shared/common vite config)
     try {
       // loading shared vite config
-      await r.execSignals.setup_d_bundler_shared.tillRequested // returns ctx
-      _c.framingMessage =
+      await sq.execSignals.setup_d_bundler_shared.tillRequested // returns ctx
+      squ.c4.throwwith =
         `Failed consuming a proper common (not the local one) vite config ts (provided by the user script)`
       if (props?.viteSharedConfigFn === null) {
         // @TODO implement loading config from file in dyn import mode
@@ -125,7 +122,7 @@ export async function vitexBuilder (
         )
       }
 
-      r.execSignals.setup_d_bundler_shared.done(ctx)
+      sq.execSignals.setup_d_bundler_shared.done(ctx)
     } catch(err) {
       if (!(err as FeExecSignalingError).execSignaling)
         throw err
@@ -135,7 +132,7 @@ export async function vitexBuilder (
     if (ctx.viteCommonConfigFn !== null) { // if not a function, that should've caused panic above
       p.log.step(`evaluating common config`)
 
-      _c.framingMessage = `Failed at vite-common-config function`
+      squ.c4.throwwith = `Failed at vite-common-config function`
       builderConfig.viteCommonConfig = props.viteCommonConfigFn // assumed to be a function if not null
         ?
         await props.viteCommonConfigFn({
@@ -148,14 +145,14 @@ export async function vitexBuilder (
         {}
     }
 
-    // r.execSignals.pre.done(ctx)
+    // sq.execSignals.pre.done(ctx)
 
   // async function local (
   //   ctx: __BuilderCtx
   // ) {
 
 
-      _c.framingMessage = `Failed at vite-local-config function`
+      squ.c4.throwwith = `Failed at vite-local-config function`
       viteConfig = await viteLocalConfigFn({
         mode: 'build',
         config: builderConfig,

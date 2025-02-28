@@ -1,13 +1,14 @@
 import { mergician, MergicianOptions } from 'mergician'
 import { _fe, $fe, FeReadinessSignaling } from '@mflt/_fe'
 import {
-  FeBlocksSequencerCtx, IFeBlocksSequencerCtx, FeCatchComm, FeBsqrCastCtxSlotstoInitiatorType,
+  FeJobBlocksSequencerAsyncCtx, IFeJobBlocksSequencerAsyncCtx, 
+  FeCat4, FeJbsqCastCtxSlotstoInitiatorType,
 } from '@mflt/feware'
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BuiqBuilderPassthruCtl, BuiqExitCode, BuiqBlocksKeys, BuiqLocalBundlerSetup, BuiqSharedBundlerSetup,
-  BuiqBundlerSpecificFeSlotsFather, IBuiqBaseUtilities, BuiqEexecMods,
+  BuiqBuilderJobTerms, BuiqExitCode, BuiqBlocksKeys, BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart,
+  BuiqMinimalBundlerSpecificOwnJobTerms, IBuiqBaseUtilities, BuiqExecMods,
 } from './types.ts'
 import { _BlocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
@@ -16,7 +17,7 @@ export { prompt, color }
 export type IPrompt = typeof prompt
 export type IPromptColor = typeof color
 
-const catchComm = new FeCatchComm()
+const c4 = new FeCat4()
 
 Error.stackTraceLimit = Number.POSITIVE_INFINITY  // @TODO why is this
 
@@ -41,33 +42,33 @@ export const builderEntryLoaded = new FeReadinessSignaling<string>();
 })()
 
 export class BuildSequencer <
-  BundlerSpecificFePart extends BuiqBundlerSpecificFeSlotsFather,
-  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
-  // * keep in sync w/ BuiqBuilderExecCtx
-> extends FeBlocksSequencerCtx<
+  BundlerSpecificFePart extends BuiqMinimalBundlerSpecificOwnJobTerms,
+  BundlerLocalSetup extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedSetup extends BuiqSharedSetupBundlerNativePart<unknown,unknown>,
+  // * keep in sync w/ BuiqBuilderJobTerms
+> extends FeJobBlocksSequencerAsyncCtx<
     BuiqBlocksKeys,
-    BuiqBuilderPassthruCtl<
-      BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig
+    BuiqBuilderJobTerms<
+      BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup
       // the extension slots are not relevant in this abstract/bundler-independent context
     >,
     IBuiqBaseUtilities  // additional utils add to BuilderExtensionProps
 >
 {
   get builderName () { return this.sequencerName }
-  get getBuilderPassthruCtl () {
-    return this.getPassthruCtl as unknown as ReturnType<typeof this.getPassthruCtl>
+  get getBuilderJobTerms () {
+    return this.getJobTerms as unknown as ReturnType<typeof this.getJobTerms>
     // @TODO this annoying explicit typing was needed due to $fe in the return type
   }
 
-  assigntoBuilderPassthruCtl (
-    toMerge: Partial<BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>>,
+  assigntoBuilderJobTerms (
+    toMerge: Partial<BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>>,
     mergicianOptions?: MergicianOptions
   ) {
-    return this.assigntoPassthruCtl(
+    return this.assigntoJobTerms(
       toMerge,
       mergicianOptions
-    ) as unknown as ReturnType<typeof this.assigntoPassthruCtl>
+    ) as unknown as ReturnType<typeof this.assigntoJobTerms>
     // @TODO this annoying explicit typing was needed due to $fe in the return type
   }
 
@@ -78,25 +79,25 @@ export class BuildSequencer <
     //     FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
     //   >
     // >[1] | '_',  // @TODO named one?
-    builderPassthruCtl: BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,
+    builderJobTerms: BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,
     initiator?: Partial<
       & Pick<
-        IFeBlocksSequencerCtx<
+        IFeJobBlocksSequencerAsyncCtx<
           BuiqBlocksKeys,
-          BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,
+          BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,
           IBuiqBaseUtilities
         >,
         'utilities'|'waitingforRequestedBlocktoCompleteTimeout'
       >
-      & Omit<FeBsqrCastCtxSlotstoInitiatorType<
-          BuiqBlocksKeys,BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>
+      & Omit<FeJbsqCastCtxSlotstoInitiatorType<
+          BuiqBlocksKeys,BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>
         >,
-        'passthruCtlRef'  // this one comes as a direct prop
+        'jobTermsRef'  // this one comes as a direct prop
       >
       & {
-        getBuilderPassthruCtl: FeBlocksSequencerCtx<
-          BuiqBlocksKeys,BuiqBuilderPassthruCtl<BundlerSpecificFePart,BundlerLocalConfig,BundlerSharedConfig>,IBuiqBaseUtilities
-        >['getPassthruCtl']
+        getBuilderJobTerms: FeJobBlocksSequencerAsyncCtx<
+          BuiqBlocksKeys,BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,IBuiqBaseUtilities
+        >['getJobTerms']
       }
     >
   ) {
@@ -105,49 +106,46 @@ export class BuildSequencer <
       builderName,
       _BlocksKeysDonor, {
         ...initiator,
-        passthruCtlRef: builderPassthruCtl
+        jobTermsRef: builderJobTerms
       }
     )
-    if (!builderPassthruCtl || _fe.isEmptyObject(builderPassthruCtl)) {
+    if (!builderJobTerms || _fe.isEmptyObject(builderJobTerms)) {
       throw new Error(
-        `${!builderPassthruCtl ? 'Undefined' : 'Empty'} builder/exec context objects are not allowed`  // @TODO
+        `${!builderJobTerms ? 'Undefined' : 'Empty'} builder/exec context objects are not allowed`  // @TODO
       )
     }
-    _fe.assertIsObject(builderPassthruCtl,
-      {message: `Builder/exec context should be a non-empty object`}
+    _fe.assertIsObject(builderJobTerms,
+      {message: `Builder/exec context (job terms) should be a non-empty object`}
     )
-    builderPassthruCtl.local ??= {} as BundlerLocalConfig
-    builderPassthruCtl.shared ??= {} as BundlerSharedConfig
-    builderPassthruCtl[$fe].meta = import.meta
-    const r = this
-    // r.getPassthruCtl ??= initiator?.getBuilderPassthruCtl || (() => builderPassthruCtlRef)
-    r.utilities.catchComm ??= catchComm
-    r.utilities.resolve ??= resolve
-    r.utilities.prompt ??= prompt
-    r.utilities.color ??= color
-    builderPassthruCtl[$fe].utilities = r.utilities
+    builderJobTerms.local ??= {} as BundlerLocalSetup
+    builderJobTerms.shared ??= {} as BundlerSharedSetup
+    builderJobTerms[$fe].meta = import.meta
+    const sq = this
+    // exe.getJobTerms ??= initiator?.getBuilderJobTerms || (() => builderJobTermsRef)
+    sq.utilities.c4 ??= c4
+    sq.utilities.resolve ??= resolve
+    sq.utilities.prompt ??= prompt
+    sq.utilities.log ??= prompt?.log
+    sq.utilities.color ??= color
+    builderJobTerms[$fe].utilities = sq.utilities
     // ctx slots are ready at this point, internally and in the fe
     // @TODO if no bundlername, prompt
-    r.utilities.prompt.log.info(`${r.builderName || '<missing name>'} builder started`)
-    r.ctxSignals.sequencerReady.pass(r.utilities)  // warning: this is used as readiness signal for the higher order builder
+    sq.utilities.prompt.log.info(`${sq.builderName || '<missing name>'} builder started`)
+    sq.ctxSignals.sequencerReady.pass(sq.utilities)  // warning: this is used as readiness signal for the higher order builder
   }
 
   async loadConfigs () {
     return loadBuilderConfigs<
       BundlerSpecificFePart,
-      BundlerLocalConfig,
-      BundlerSharedConfig
+      BundlerLocalSetup,
+      BundlerSharedSetup
     >(this)
   }
 
   async exec (): Promise<BuiqExitCode> {
 
-    const r = this
-    const {
-      catchComm: _c,
-      prompt: p,
-      color: co
-    } = r.utilities
+    const sq = this
+    const squ = sq.utilities
 
 
   try {
@@ -158,38 +156,38 @@ export class BuildSequencer <
     _fe.assertIsObject(proc)
 
     const builderConfig = await builderConfigPreps.pre({})
-    // loadConfig({...props, catchComm: _catch})
+    // loadConfig({...props, c4: _catch})
 
     if (proc.ifTscistobeRan) {
 
-      p.log.step(`tsc started`)
+      squ.log.step(`tsc started`)
       // console.warn(builderConfig)
 
-      _c.framingMessage = `Failed at tsc`
+      squ.c4.throwwith = `Failed at tsc`
       // await $`tsc -b ${buildConfig.files.tscLocalConfigJsonPath}`
 
-      p.log.step(`tsc ended`)
+      squ.log.step(`tsc ended`)
     }
 
     if (builderConfig.viteCommonConfigFn !== null) { // if not a function, that should've caused panic above
-      p.log.step(`evaluating common config`)
+      squ.log.step(`evaluating common config`)
 
-      _c.framingMessage = `Failed at vite-common-config function`
+      squ.c4.throwwith = `Failed at vite-common-config function`
       builderConfig.viteCommonConfig = props.viteCommonConfigFn // assumed to be a function if not null
         ?
           await props.viteCommonConfigFn({
             mode: 'build',
             config: builderConfig,
             resolve,
-            _prompt
+            prompt: squ.prompt
           })
         : {}
     }
 
-    _c.framingMessage =
+    squ.c4.throwwith =
       `Failed importing the local vite config ts (${builderConfig.files.viteLocalConfigTsPath})`
     if (builderConfig.files.viteLocalConfigTsPath) {
-      p.log.warn('Local vite config ts can not be determined. \n' +
+      squ.log.warn('Local vite config ts can not be determined. \n' +
         'If this is not how you intended it to be, please check the defaults and other related settings.')
     } else {
       const viteLocalConfigFn = await import(builderConfig.files.viteLocalConfigTsPath)
@@ -198,12 +196,12 @@ export class BuildSequencer <
         {message: 'Local vite config is not a function'}
       )
 
-      _c.framingMessage = `Failed at vite-local-config function`
+      squ.c4.throwwith = `Failed at vite-local-config function`
       viteConfig = await viteLocalConfigFn({
         mode: 'build',
         config: builderConfig,
         resolve,
-        _prompt
+        prompt: squ.prompt
       })
     }
 
@@ -212,15 +210,15 @@ export class BuildSequencer <
     //   configFile: false,
     // })
 
-    p.outro('Building XOX ended nicely')
+    squ.prompt.outro('Building XOX ended nicely')
     return BuiqExitCodeVariants.done
 
     } catch (err) {
-      p.log.error(`${
-        (_c.framingMessage || '') +
+      squ.log.error(`${
+        (squ.c4.throwwith || '') +
         (err?.message ? '\n' + err?.message : '')
       }`)
-      p.outro(color.bgRed(color.white(color.bold('Building XOX failed.'))))
+      squ.prompt.outro(color.bgRed(color.white(color.bold('Building XOX failed.'))))
       return BuiqExitCodeVariants.error
     }
   }

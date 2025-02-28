@@ -9,15 +9,15 @@ import { _feIsNotanEmptyObject, _feIsEmptyObject,
 } from '@mflt/_fe'
 import {
   BuildSequencer,
-  BuiqBundlerSpecificFeSlotsFather, BuiqLocalBundlerSetup, BuiqSharedBundlerSetup,
+  BuiqMinimalBundlerSpecificOwnJobTerms, BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart,
 } from './types.ts'
 // import defaultsProfiles from './defaults-profiles.ts'
 
 
 export async function loadBuilderConfigs <
-  BundlerSpecificFePart extends BuiqBundlerSpecificFeSlotsFather,
-  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>,
-  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
+  BundlerSpecificFePart extends BuiqMinimalBundlerSpecificOwnJobTerms,
+  BundlerLocalConfig extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerSharedConfig extends BuiqSharedSetupBundlerNativePart<unknown,unknown>,
   // BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,
   // BuilderExtensionProps extends FeAnyI|void = void,
 > (
@@ -30,14 +30,14 @@ export async function loadBuilderConfigs <
 
   const r = runnerCtx
   const {
-    catchComm: _c,
+    c4: _c,
     prompt: p,
     color: co
   } = r. utilities
 
   const {
     defaultsProfileName = 'base'
-  } = r.getBuilderPassthruCtl
+  } = r.getBuilderJobTerms
 
   let buildLocalConfig = {} as BuilderEffectiveLocalConfig
 
@@ -55,7 +55,7 @@ export async function loadBuilderConfigs <
   // we only check the content
   // local configs may also specify common configs
 
-  _c.framingMessage =
+  _c.throwwith =
     `Failed consuming the common (not the local one) build config (provided by the user script)`
   if (_feIsEmptyObject(props?.builderCommonConfig)) {
     p.log.warn('Common build config (not the local one) is empty (as provided by the user script)')
@@ -68,7 +68,7 @@ export async function loadBuilderConfigs <
 
 
 
-  _c.framingMessage = `Improper command line arguments`
+  _c.throwwith = `Improper command line arguments`
   const {
     values: _argsValues,
     positionals: _argsCommands
@@ -124,7 +124,7 @@ export async function loadBuilderConfigs <
   buildLocalConfig.buildCommonConfig = .buildCommonConfig
   buildLocalConfig.viteCommonConfigFn = props.viteCommonConfigFn
 
-  _c.framingMessage = `Failed loading the local/cwd package.json`
+  _c.throwwith = `Failed loading the local/cwd package.json`
   const packageJson: PackageJson =
     await Bun.file(
       './package.json',
@@ -133,7 +133,7 @@ export async function loadBuilderConfigs <
   if (!packageJson?.name || !packageJson?.version)  // The required fields
     throw new Error('Local package json is not valid \n' + warnwithDirs)
 
-  _c.framingMessage = `Failed loading the local build config`
+  _c.throwwith = `Failed loading the local build config`
   const buildLocalConfigFilePath =
     _argsValues.configFile
     || (props.buildCommonConfig as BuildCommonConfig)?.files?.buildLocalConfigFilePath
@@ -142,7 +142,7 @@ export async function loadBuilderConfigs <
     p.log.warn('Local build config path can not be determined.\n' +
       'If this is not how you intended it to be, please check the defaults and other related settings.')
   } else {
-    _c.framingMessage = `Failed loading the local build config ${buildLocalConfigFilePath}`
+    _c.throwwith = `Failed loading the local build config ${buildLocalConfigFilePath}`
     const _rawBuildLocalConfig = await Bun.file(
       buildLocalConfigFilePath,
       {type: 'application/toml'}

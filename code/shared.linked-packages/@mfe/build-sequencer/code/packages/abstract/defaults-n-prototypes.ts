@@ -1,7 +1,9 @@
-import { FeExecSignaling, $fe } from '@mflt/_fe'
+import { FeExecSignaling } from '@mflt/_fe'
 import type {
-  BuiqAbstractLocalFeSetup, BuiqAbstractSharedFeSetup, BuiqLocalBundlerSetup, BuiqBundlerSpecificFeSlotsFather
+  BuiqAbstractOwnSetup, BuiqAbstractSharedFeSetup, BuiqBundlerNativeConfigAndOptions, BuiqMinimalBundlerSpecificOwnJobTerms
 } from './types.ts'
+
+export const $builder = Symbol.for('@buiqSlot');
 
 const __BlocksKeysDonor = { // Just to have iterable keys to engage
   setup_a_local: {},
@@ -34,14 +36,14 @@ export const _BaseBuilderConfig = { // we omitted the $fe here
       buiq: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
-  } satisfies BuiqAbstractLocalFeSetup<'<someBundler>',BuiqLocalBundlerSetup<unknown,unknown>,BuiqBundlerSpecificFeSlotsFather>,
+  } satisfies BuiqAbstractOwnSetup<'<someBundler>',BuiqBundlerNativeConfigAndOptions<unknown,unknown>,BuiqMinimalBundlerSpecificOwnJobTerms>,
   shared: {
     bundlerName: '<someBundler>',
     '<someBundler>': {},
     files: {
       cwd: '..'
     }
-  } satisfies BuiqAbstractSharedFeSetup<'<someBundler>',BuiqLocalBundlerSetup<unknown,unknown>,BuiqBundlerSpecificFeSlotsFather>,
+  } satisfies BuiqAbstractSharedFeSetup<'<someBundler>',BuiqBundlerNativeConfigAndOptions<unknown,unknown>,BuiqMinimalBundlerSpecificOwnJobTerms>,
 }
 
 export const BuiqExitCodeVariants = {

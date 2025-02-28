@@ -1,9 +1,9 @@
 import type { UserConfig, InlineConfig } from 'vite'
-import type { $fe } from '@mflt/_fe'
+import type { FeTEmptyObject } from '@mflt/_fe'
 import type {
-  BuiqBuilderPassthruCtl, BuiqExitCode,
-  BuiqLocalBundlerSetup, BuiqSharedBundlerSetup, BuiqAbstractLocalFeSetup, BuiqAbstractSharedFeSetup,
-  BuiqBundlerConfigwFePayload, BuiqBuilderSlotsAndOptions
+  BuiqBuilderJobTerms, BuiqExitCode,
+  BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart, BuiqAbstractOwnSetup, BuiqAbstractSharedFeSetup,
+  BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms, BuiqBuilderInitSlotsAndOptions
 } from '../abstract/types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
@@ -14,7 +14,7 @@ export type { BuiqExitCode }
 //   defaultsProfileName?: DefaultsProfileNames,
 // }>
 
-export type VitexPassthruCtl = BuiqBuilderPassthruCtl<
+export type VitexJobTerms = BuiqBuilderJobTerms<
   VitexSpecificFeSlotsAndOptions,
   ViteLocalSetup,
   ViteSharedSetup
@@ -31,31 +31,31 @@ export type VitexSpecificFeSlotsAndOptions =
 }
 
 export type VitexLocalBuilderSlots = {
-  builderLocalConfig: VitexLocalBuilderSetup|{},
+  builderLocalSetup: VitexLocalBuilderSetup|FeTEmptyObject,
   viteLocalConfigFn: VitexLocalConfigFn|null,
 }
 
 export type VitexSharedBuilderSlots = {
-  builderSharedConfig: VitexSharedBuilderSetup|{},
+  builderSharedSetup: VitexSharedBuilderSetup|FeTEmptyObject,
   viteSharedConfigFn: VitexSharedConfigFn|null,
 }
 
-export type VitexBuilderSlotsAndOptions = BuiqBuilderSlotsAndOptions<
+export type VitexBuilderSlotsAndOptions = BuiqBuilderInitSlotsAndOptions<
   VitexSpecificFeSlotsAndOptions,
   ViteLocalSetup,
   ViteSharedSetup
 >
 
-export type ViteLocalSetup = BuiqLocalBundlerSetup<InlineConfig> // Extendable classic Vite config aka InlineConfig
-export type ViteSharedSetup = BuiqSharedBundlerSetup<UserConfig>
+export type ViteLocalSetup = BuiqBundlerNativeConfigAndOptions<InlineConfig> // Extendable classic Vite config aka InlineConfig
+export type ViteSharedSetup = BuiqSharedSetupBundlerNativePart<UserConfig>
 // export type VitexConfig = BuiqBundlerConfigPrototype<ViteLocalConfig,ViteSharedConfig>
 
 // To be used in builder config file:
-export type VitexLocalBuilderSetup = BuiqAbstractLocalFeSetup<'vite', ViteLocalSetup, VitexSpecificFeSlotsAndOptions>
+export type VitexLocalBuilderSetup = BuiqAbstractOwnSetup<'vite', ViteLocalSetup, VitexSpecificFeSlotsAndOptions>
 export type VitexSharedBuilderSetup = BuiqAbstractSharedFeSetup<'vite', ViteSharedSetup, VitexSpecificFeSlotsAndOptions>
 
-export type VitexLocalConfigwFePayload = BuiqBundlerConfigwFePayload<ViteLocalSetup,VitexSpecificFeSlotsAndOptions>
-export type VitexSharedConfigwFePayload = BuiqBundlerConfigwFePayload<ViteSharedSetup,VitexSpecificFeSlotsAndOptions>
+export type VitexLocalConfigwFePayload = BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms<ViteLocalSetup,VitexSpecificFeSlotsAndOptions>
+export type VitexSharedConfigwFePayload = BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms<ViteSharedSetup,VitexSpecificFeSlotsAndOptions>
 
 // export type FeBuilderVitexEntryCtx =
 //   & FeBuilderEntryCtx

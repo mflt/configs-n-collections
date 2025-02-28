@@ -1,7 +1,7 @@
 import type { PackageJson } from 'type-fest'
-import type { FeStringKeyedCollectionObject, FeAnyI, $fe } from '@mflt/_fe'
-import type { IFeBsqrBaseUtilities, IFeBsqrExecMods } from '@mflt/feware'
-import type { BuiqBlocksKeys, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
+import type { FeStringKeyedCollectionObject, FeTEmptyObject } from '@mflt/_fe'
+import type { IFeJbsqBaseUtilities, IFeJbsqExecMods } from '@mflt/feware'
+import type { $builder, BuiqBlocksKeys, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import type { BuildSequencer, IPrompt, IPromptColor } from './core.ts'
 export type { BuiqBlocksKeys }
 export type { BuildSequencer, IPrompt, IPromptColor }
@@ -18,16 +18,28 @@ export type { BuildSequencer, IPrompt, IPromptColor }
 // The additional block comes after the bundler run, it can be anything, and its configuration is part of
 // BuilderExtensionProps (no type prescriptions)
 
-export type BuiqBuilderPassthruCtl <
-  // the builder steps config prop and result
+// Vocabulary:
+// * Config is used for external (native) configs like InlineConfig of Vite
+// * Setup is the collection of such configs and other definition options used by builder
+// * Job terms are the complete collection of setup parts, 
+//  / this we construct during the sutup stages (blocks) 
+//  / and it travels from one building stage (block) to the next
+
+export type BuiqBuilderJobTerms <
+  // the builder steps (blocks) config/options/env/context which travels
+  //  / from one step (block) to another as one setup
+  //  / it we construct in the setup steps/blocks
   // this/descendants evaluate as we process config inputs in sequence
-  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
-  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
-  // * bundler is the external tool driven by us
-  // * it has two slots, local and shared, see below
-  // * both slots have extension subslots per stage
-  BuilderExecExtensionSlots extends FeAnyI = {},
+  BundlerSpecificOwnJobTerms extends BuiqMinimalBundlerSpecificOwnJobTerms,
+  LocalBundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>, 
+  // * local Bundler setup
+  // * should not be undefined / unknown
+  // * Bundler is the external tool driven by us
+  //  / it has two slots, local and shared, see below
+  //  / both slots have extension subslots per stage
+  SharedBundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
+  // * Bundler setup shared between modules or parts of the codebase
+  BuilderJobTermsExtensionSlots extends FeTEmptyObject = FeTEmptyObject,
   // * can not be void as it results in never when intersects
   // * this part is for the higher order builder config part
   // / logially it extends the bundler config mainly
@@ -36,27 +48,40 @@ export type BuiqBuilderPassthruCtl <
   & {
     // both Bundler_Config types are basically bundler config objects with additional config options
     // for the two stages of config computations aka loading (where shared stage comes first)
-    local: BundlerLocalConfig,
-    shared: BundlerSharedConfig,
-    [$fe]: BuiqBuilderFePayload<BundlerSpecificFeSlots>
+    local: LocalBundlerNativeConfigAndOptions,
+    shared: SharedBundlerNativeConfigAndOptions,
+    [$builder]: BuiqBuilderOwnJobTerms<BundlerSpecificOwnJobTerms>
   }
-  & BuilderExecExtensionSlots
+  & BuilderJobTermsExtensionSlots
 
 
-export type BuiqBundlerSpecificFeSlotsFather = {
+export type BuiqMinimalBundlerSpecificOwnJobTerms = {
   [TypeSignatureSlot in string as 'bundlerName']: string
 }
-type _BSFeSlF = BuiqBundlerSpecificFeSlotsFather
 
 export type BuiqExitCode = (typeof BuiqExitCodeVariants)[keyof typeof BuiqExitCodeVariants]
 
-export interface IBuiqBaseUtilities extends IFeBsqrBaseUtilities {
+export interface IBuiqBaseUtilities extends IFeJbsqBaseUtilities {
   resolve: (path: string) => any  // @TODO any?
   prompt: IPrompt
+  log: IPrompt['log']
   color: IPromptColor
 }
 
-export type BuiqConfigFilesPaths = {  // @TODO path type
+export type BuiqBaseBuilderSetup <  // includes Bundler specific slots
+  BundlerName extends string,
+  BundlerSetup extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerSpecificOwnJobTerms extends BuiqMinimalBundlerSpecificOwnJobTerms 
+    = BuiqMinimalBundlerSpecificOwnJobTerms
+> = {
+  [BaseBuilderSetupSlots in 'builderLocalSetup'|'builderSharedSetup']: 
+    | BuiqAbstractOwnSetup<BundlerName,BundlerSetup,BundlerSpecificOwnJobTerms>
+    | FeTEmptyObject
+    | (BaseBuilderSetupSlots extends 'builderSharedSetup'? undefined : never)
+}
+
+
+export type BuiqBuilderSetupFilesPaths = {  // @TODO path type
   // All relative to their cwd path, which is relative to node/bun cwd (which can be a cli arg):
   cwd?: string,  // './' aka cwd is the default in local, and '..' in shared
   buiq?: string,  // builder-sequencer config, toml
@@ -65,122 +90,118 @@ export type BuiqConfigFilesPaths = {  // @TODO path type
   additional?: string|string[],  // like tailwind or a bunch of such things
 }
 
-export type BuiqUtilityFePart = { // does not come from a config file
+export type BuiqBuilderJobTermsUtilityPart = { // does not come from a config file
   utilities: IBuiqBaseUtilities,
   meta: ImportMeta,  // _ indicates externally given, probably cwd also belongs here
   packageJson?: PackageJson,
 }
 
-export type BuiqLocalFePart = {
+export type BuiqBuilderOwnJobTermsLocalPart = {
   bundleName?: string,
-  files?: BuiqConfigFilesPaths,
+  files?: BuiqBuilderSetupFilesPaths,
 }
-export type BuiqSharedFePart = {
+export type BuiqBuilderOwnJobTermsSharedPart = {
   // builderLocalConfigFileType: 'toml'|'ts',
-  files?: BuiqConfigFilesPaths
+  files?: BuiqBuilderSetupFilesPaths
   cb?: {
     cwd: (params: ParamsArg) => string
   }
 }
-export type BuiqCommonFePayload <
-  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather = _BSFeSlF
+export type BuiqBaseOwnJobTerms <
+  BundlerSpecificOwnJobTerms extends BuiqMinimalBundlerSpecificOwnJobTerms 
+    = BuiqMinimalBundlerSpecificOwnJobTerms,
 > =
-  & BundlerSpecificFeSlots
-  & BuiqUtilityFePart
+  & BundlerSpecificOwnJobTerms
+  & BuiqBuilderJobTermsUtilityPart
 // * all partial except utility
-export type BuiqBuilderFePayload <
-  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather = _BSFeSlF
+export type BuiqBuilderOwnJobTerms <
+  BundlerSpecificOwnJobTerms extends BuiqMinimalBundlerSpecificOwnJobTerms 
+    = BuiqMinimalBundlerSpecificOwnJobTerms,
 > =
-  & BuiqLocalFePart
-  & BuiqSharedFePart
-  & BuiqCommonFePayload<BundlerSpecificFeSlots>
+  & BuiqBuilderOwnJobTermsLocalPart
+  & BuiqBuilderOwnJobTermsSharedPart
+  & BuiqBaseOwnJobTerms<BundlerSpecificOwnJobTerms>
 // * all partial except utility
 
-export type BuiqLocalBundlerSetup <
-  BundlerLocalConfig extends FeAnyI|unknown, // should not be undefined / unknown in real usecases
-  LocalExtensionSlots extends FeAnyI|unknown = {}  // subslots rather
+export type BuiqBundlerNativeConfigAndOptions <
+  BundlerNativeConfig extends FeTEmptyObject|unknown, 
+  // like InlineConfig in case of Vite; should not be undefined / unknown in real usecases
+  BundlerSetupExtensionOptions extends FeTEmptyObject|unknown = FeTEmptyObject
+  // like if we wanted to add bundler config props which don't exist in
+  //  / the native config but is to be used in the user's bundler config fn
 > =
-  // this/descendants we load
-  & BundlerLocalConfig
-  & LocalExtensionSlots
+  // this/descendants we load from our own builder config
+  & BundlerNativeConfig
+  & BundlerSetupExtensionOptions
   // @TODO Add TypeSignature slot
 
-export type BuiqSharedBundlerSetup <
-  BundlerSharedConfig extends FeAnyI|unknown,
-  SharedExtensionSlots extends FeAnyI|unknown = {}
+export type BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms <
+  // Bundler config with sugar
+  // to be used in Bundler config functions as a config prop 
+  //  / while providing Builder job terms
+  BundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerJobTermsforBundlerConfig extends BuiqMinimalBundlerSpecificOwnJobTerms 
+    = BuiqMinimalBundlerSpecificOwnJobTerms,
 > =
-  // this/descendants we load
-  & BundlerSharedConfig
-  & SharedExtensionSlots
-
-export type BuiqBundlerConfigwFePayload <
-  BundlerConfig extends BuiqSharedBundlerSetup<unknown,unknown> | BuiqLocalBundlerSetup<unknown,unknown>,
-  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather = _BSFeSlF,
-> =
-  & BundlerConfig
+  & BundlerNativeConfigAndOptions
   & {
-    [$fe]: BuiqBuilderFePayload<BundlerSpecificFeSlots>
+    [$builder]: BuiqBuilderOwnJobTerms<BundlerJobTermsforBundlerConfig>
 }
 
-export type BuiqAbstractLocalFeSetup <
+export type BuiqAbstractOwnSetup <
   // to be used in a builder config file
+  //  / while providing the Bundler native config 
   BundlerName extends string,
-  LocalBundlerConfig extends BuiqLocalBundlerSetup<unknown,unknown>,
-  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
+  BundlerSetup extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerSpecificOwnJobTerms extends BuiqMinimalBundlerSpecificOwnJobTerms 
+    = BuiqMinimalBundlerSpecificOwnJobTerms,
 > =
-  & BuiqLocalFePart
-  & BundlerSpecificFeSlots
+  & BuiqBuilderOwnJobTermsLocalPart
+  & BundlerSpecificOwnJobTerms
   & {
-    [BundlerNameKey in `${BundlerName}`]: LocalBundlerConfig
-}
-export type BuiqAbstractSharedFeSetup <
-  // to be used in a builder config file
-  BundlerName extends string,
-  SharedBundlerConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
-  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
-> =
-  & BuiqSharedFePart
-  & BundlerSpecificFeSlots
-  & {
-    [BundlerNameKey in `${BundlerName}`]: SharedBundlerConfig
+    [BundlerNameKey in `${BundlerName}`]: BundlerSetup 
+    // likely a partial of Bundler's native config, 
+    //  / like for omitting the native config file itself
+
 }
 
-export type BuiqBuilderSlotsAndOptions <
-  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
-  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
+export type BuiqBuilderInitSlotsAndOptions <  // @TODO
+  BundlerSpecificOwnJobTerms extends BuiqMinimalBundlerSpecificOwnJobTerms,
+  LocalBundlerNativeConfigAndOptions extends 
+    BuiqBundlerNativeConfigAndOptions<unknown,unknown>, 
+  SharedBundlerNativeConfigAndOptions extends 
+    BuiqBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
 > =
-  & Partial<BundlerSpecificFeSlots>
+  & Partial<BundlerSpecificOwnJobTerms>
   & {
-    execMods?: BuiqEexecMods<BundlerSpecificFeSlots,BundlerLocalConfig,BundlerSharedConfig>
+    execMods?: BuiqExecMods<
+      BundlerSpecificOwnJobTerms,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
+    >
   }
 
-export type BuiqEexecMods <
-  BundlerSpecificFeSlots extends BuiqBundlerSpecificFeSlotsFather,
-  BundlerLocalConfig extends BuiqLocalBundlerSetup<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedConfig extends BuiqSharedBundlerSetup<unknown,unknown>,
+export type BuiqExecMods <
+  BundlerSpecificOwnJobTerms extends BuiqMinimalBundlerSpecificOwnJobTerms,
+  LocalBundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>, 
+  SharedBundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
 > =
-  & IFeBsqrExecMods<
+  & IFeJbsqExecMods<
       BuiqBlocksKeys,
-      BuiqBuilderPassthruCtl<
-        BundlerSpecificFeSlots,BundlerLocalConfig,BundlerSharedConfig
-    >
+      BuiqBuilderJobTerms<
+      BundlerSpecificOwnJobTerms,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
+      >
   >
   & {
-    getBuilderPassthruCtl: ()=> BuiqBuilderPassthruCtl<BundlerSpecificFeSlots,BundlerLocalConfig,BundlerSharedConfig>
+    getBuilderJobTerms: 
+      ()=> 
+        BuiqBuilderJobTerms<
+          BundlerSpecificOwnJobTerms,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
+        >
   }
 
-type ParamsArg = FeStringKeyedCollectionObject<FeAnyI|string>  // command line params arg is a parsable obj
+type ParamsArg = FeStringKeyedCollectionObject<FeTEmptyObject|string>  // command line params arg is a parsable obj
 
 // Abstract prototypes:
 
-// type _AbstractEntryFnProps = {
-//   builderSharedConfig: BuiqAbstractSharedFeConfig<'_',{},_BSFePF>,
-//   builderLocalConfig: BuiqAbstractLocalFeConfig<'_',{},_BSFePF>,
-//   bundlerSharedConfigFn: _AbstractSharedConfigFn|null,
-//   bundlerLocalConfigFn: _AbstractLocalConfigFn|null,
-//   // initialCtx?: Partial<BuiqBuilderExecCtx<_BSFePF,{},{}>>
-// }
 type _AbstractBundlerConfigFn = (
-  props: BuiqBundlerConfigwFePayload<{}>
-) => Promise<BuiqBundlerConfigwFePayload<{}>>
+  props: BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms<FeTEmptyObject>
+) => Promise<BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms<FeTEmptyObject>>

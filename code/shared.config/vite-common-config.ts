@@ -58,7 +58,7 @@ export const viteCommonConfigFn = async (props: VitexLocalConfigwFePayload): Pro
       target: 'esnext',
       rollupOptions: {
         external: [
-          ...(Object.keys(props[$fe]?.packageJson?.peerDependencies || {}) || []),
+          ...(Object.keys(props[$fe]?.packageJson?.peerDependencies || FeTEmptyObject) || []),
           ...((props.config?.vite?.rollupOptions?.external as string[]) || []),
           // 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/react/+esm',
           // fileURLToPath(new URL(
