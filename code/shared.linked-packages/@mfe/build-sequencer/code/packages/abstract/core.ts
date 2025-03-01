@@ -8,7 +8,7 @@ import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
   BuiqBuilderJobTerms, BuiqExitCode, BuiqBlocksKeys, BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart,
-  BuiqMinimalBundlerSpecificOwnJobTerms, IBuiqBaseUtilities, BuiqExecMods,
+  _BuiqBuilderOwnJobTermsBundlerPart, IBuiqBaseUtilities, BuiqBuilderInitiatorExecMods,
 } from './types.ts'
 import { _BlocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
@@ -42,7 +42,7 @@ export const builderEntryLoaded = new FeReadinessSignaling<string>();
 })()
 
 export class BuildSequencer <
-  BundlerSpecificFePart extends BuiqMinimalBundlerSpecificOwnJobTerms,
+  BundlerSpecificFePart extends _BuiqBuilderOwnJobTermsBundlerPart,
   BundlerLocalSetup extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>, // should not be undefined / unknown
   BundlerSharedSetup extends BuiqSharedSetupBundlerNativePart<unknown,unknown>,
   // * keep in sync w/ BuiqBuilderJobTerms

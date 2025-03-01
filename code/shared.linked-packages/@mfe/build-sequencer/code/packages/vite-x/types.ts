@@ -2,8 +2,8 @@ import type { UserConfig, InlineConfig } from 'vite'
 import type { FeTEmptyObject } from '@mflt/_fe'
 import type {
   BuiqBuilderJobTerms, BuiqExitCode,
-  BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart, BuiqAbstractOwnSetup, BuiqAbstractSharedFeSetup,
-  BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms, BuiqBuilderInitSlotsAndOptions
+  BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart, BuiqBuilderOwnSetup_Abstract, BuiqAbstractSharedFeSetup,
+  BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms, BuiqBuilderInitiator
 } from '../abstract/types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
@@ -40,7 +40,7 @@ export type VitexSharedBuilderSlots = {
   viteSharedConfigFn: VitexSharedConfigFn|null,
 }
 
-export type VitexBuilderSlotsAndOptions = BuiqBuilderInitSlotsAndOptions<
+export type VitexBuilderSlotsAndOptions = BuiqBuilderInitiator<
   VitexSpecificFeSlotsAndOptions,
   ViteLocalSetup,
   ViteSharedSetup
@@ -51,11 +51,11 @@ export type ViteSharedSetup = BuiqSharedSetupBundlerNativePart<UserConfig>
 // export type VitexConfig = BuiqBundlerConfigPrototype<ViteLocalConfig,ViteSharedConfig>
 
 // To be used in builder config file:
-export type VitexLocalBuilderSetup = BuiqAbstractOwnSetup<'vite', ViteLocalSetup, VitexSpecificFeSlotsAndOptions>
+export type VitexLocalBuilderSetup = BuiqBuilderOwnSetup_Abstract<'vite', ViteLocalSetup, VitexSpecificFeSlotsAndOptions>
 export type VitexSharedBuilderSetup = BuiqAbstractSharedFeSetup<'vite', ViteSharedSetup, VitexSpecificFeSlotsAndOptions>
 
-export type VitexLocalConfigwFePayload = BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms<ViteLocalSetup,VitexSpecificFeSlotsAndOptions>
-export type VitexSharedConfigwFePayload = BuiqBundlerConfigwOptionsAndBuilderOwnJobTerms<ViteSharedSetup,VitexSpecificFeSlotsAndOptions>
+export type VitexLocalConfigwFePayload = BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms<ViteLocalSetup,VitexSpecificFeSlotsAndOptions>
+export type VitexSharedConfigwFePayload = BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms<ViteSharedSetup,VitexSpecificFeSlotsAndOptions>
 
 // export type FeBuilderVitexEntryCtx =
 //   & FeBuilderEntryCtx

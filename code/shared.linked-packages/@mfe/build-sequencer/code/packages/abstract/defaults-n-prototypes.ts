@@ -1,6 +1,6 @@
 import { FeExecSignaling } from '@mflt/_fe'
 import type {
-  BuiqAbstractOwnSetup, BuiqAbstractSharedFeSetup, BuiqBundlerNativeConfigAndOptions, BuiqMinimalBundlerSpecificOwnJobTerms
+  BuiqBuilderOwnSetup_Abstract, BuiqAbstractSharedFeSetup, BuiqBundlerNativeConfigAndOptions, _BuiqBuilderOwnJobTermsBundlerPart
 } from './types.ts'
 
 export const $builder = Symbol.for('@buiqSlot');
@@ -36,14 +36,14 @@ export const _BaseBuilderConfig = { // we omitted the $fe here
       buiq: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
-  } satisfies BuiqAbstractOwnSetup<'<someBundler>',BuiqBundlerNativeConfigAndOptions<unknown,unknown>,BuiqMinimalBundlerSpecificOwnJobTerms>,
+  } satisfies BuiqBuilderOwnSetup_Abstract<'<someBundler>',BuiqBundlerNativeConfigAndOptions<unknown,unknown>,_BuiqBuilderOwnJobTermsBundlerPart>,
   shared: {
     bundlerName: '<someBundler>',
     '<someBundler>': {},
     files: {
       cwd: '..'
     }
-  } satisfies BuiqAbstractSharedFeSetup<'<someBundler>',BuiqBundlerNativeConfigAndOptions<unknown,unknown>,BuiqMinimalBundlerSpecificOwnJobTerms>,
+  } satisfies BuiqAbstractSharedFeSetup<'<someBundler>',BuiqBundlerNativeConfigAndOptions<unknown,unknown>,_BuiqBuilderOwnJobTermsBundlerPart>,
 }
 
 export const BuiqExitCodeVariants = {
