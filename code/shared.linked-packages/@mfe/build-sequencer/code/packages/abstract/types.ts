@@ -1,9 +1,9 @@
 import type { PackageJson } from 'type-fest'
 import type { FeStringKeyedCollectionObject, FeTEmptyObject } from '@mflt/_fe'
 import type { IFeJbsqBaseUtilities,  IFeJbsqInitiatorExecMods } from '@mflt/feware'
-import type { $builder, BuiqBlocksKeys, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
+import type { $builder, BdBlocksKeys, BdExitCodeVariants } from './defaults-n-prototypes.ts'
 import type { BuildSequencer, IPrompt, IPromptColor } from './core.ts'
-export type { BuiqBlocksKeys }
+export type { BdBlocksKeys }
 export type { BuildSequencer, IPrompt, IPromptColor }
 
 // # Legend:
@@ -29,19 +29,19 @@ export type { BuildSequencer, IPrompt, IPromptColor }
 
 //  Runtime (exec time) angle:
 
-export type BuiqBuilderJobTerms <
+export type BdBuilderJobTerms <
   // the builder steps (blocks) config/options/env/context which travels
   //  / from one step (block) to another as one setup
   //  / it we construct in the setup steps/blocks
   // this/descendants evaluate as we process config inputs in sequence
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init,
-  LocalBundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>, 
+  LocalBundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>, 
   // * local Bundler setup
   // * should not be undefined / unknown
   // * Bundler is the external tool driven by us
   //  / it has two slots, local and shared, see below
   //  / both slots have extension subslots per stage
-  SharedBundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
+  SharedBundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
   // * Bundler setup shared between modules or parts of the codebase
   BuilderOwnJobTerms_ExtensionSlots extends FeTEmptyObject = FeTEmptyObject,
   // * can not be void as it results in never when intersects
@@ -54,37 +54,37 @@ export type BuiqBuilderJobTerms <
     // for the two stages of config computations aka loading (where shared stage comes first)
     local: LocalBundlerNativeConfigAndOptions,
     shared: SharedBundlerNativeConfigAndOptions,
-    [$builder]: BuiqBuilderOwnJobTerms<BuilderOwnJobTerms_BundlerPart>
+    [$builder]: BdBuilderOwnJobTerms<BuilderOwnJobTerms_BundlerPart>
   }
   & BuilderOwnJobTerms_ExtensionSlots
 
-export type BuiqBuilderOwnJobTerms <
+export type BdBuilderOwnJobTerms <
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init 
     = _BuilderSetup_BundlerPart_Init,
 > =
-  & BuiqBuilderSetup_LocalSlots
-  & BuiqBuilderSetup_SharedSlots
-  & BuiqBuilderOwnJobTerms_BasePart<BuilderOwnJobTerms_BundlerPart>
+  & BdBuilderSetup_LocalSlots
+  & BdBuilderSetup_SharedSlots
+  & BdBuilderOwnJobTerms_BasePart<BuilderOwnJobTerms_BundlerPart>
 // * all partial except utility
 
-export type BuiqBuilderOwnJobTerms_BasePart <
+export type BdBuilderOwnJobTerms_BasePart <
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init 
     = _BuilderSetup_BundlerPart_Init,
 > =
   & BuilderOwnJobTerms_BundlerPart
-  & BuiqBuilderOwnJobTerms_UtilityPart
+  & BdBuilderOwnJobTerms_UtilityPart
 // * all partial except utility
 
-export type BuiqBuilderOwnJobTerms_BundlerPart < 
+export type BdBuilderOwnJobTerms_BundlerPart < 
 // to be used in a bundler specific implementation
   BuilderOwnJobTermsBundlerSpecificPart extends FeTEmptyObject|unknown = FeTEmptyObject
 > = 
   & _BuilderSetup_BundlerPart_Init
   & BuilderOwnJobTermsBundlerSpecificPart
 
-export type BuiqExitCode = (typeof BuiqExitCodeVariants)[keyof typeof BuiqExitCodeVariants]
+export type BdExitCode = (typeof BdExitCodeVariants)[keyof typeof BdExitCodeVariants]
 
-export interface IBuiqBaseUtilities extends IFeJbsqBaseUtilities {
+export interface IBdBaseUtilities extends IFeJbsqBaseUtilities {
   // c4: FeCat4
   resolve: (path: string) => any  // @TODO any?
   prompt: IPrompt
@@ -92,41 +92,41 @@ export interface IBuiqBaseUtilities extends IFeJbsqBaseUtilities {
   color: IPromptColor
 }
 
-export type BuiqBuilderOwnJobTerms_UtilityPart = { // does not come from a config file
-  utilities: IBuiqBaseUtilities,
+export type BdBuilderOwnJobTerms_UtilityPart = { // does not come from a config file
+  utilities: IBdBaseUtilities,
   meta: ImportMeta,  // _ indicates externally given, probably cwd also belongs here
   packageJson?: PackageJson,
 }
 
-export type BuiqBuilderInitiator <  // @TODO
+export type BdBuilderInitiator <  // @TODO
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init,
   LocalBundlerNativeConfigAndOptions extends 
-    BuiqBundlerNativeConfigAndOptions<unknown,unknown>, 
+    BdBundlerNativeConfigAndOptions<unknown,unknown>, 
   SharedBundlerNativeConfigAndOptions extends 
-    BuiqBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
+    BdBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
 > =
   & Partial<BuilderOwnJobTerms_BundlerPart>
   & {
-    execMods?: BuiqBuilderInitiatorExecMods<
+    execMods?: BdBuilderInitiatorExecMods<
       BuilderOwnJobTerms_BundlerPart,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
     >
   }
 
-export type BuiqBuilderInitiatorExecMods <
+export type BdBuilderInitiatorExecMods <
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init,
-  LocalBundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>, 
-  SharedBundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
+  LocalBundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>, 
+  SharedBundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
 > =
   & IFeJbsqInitiatorExecMods<
-      BuiqBlocksKeys,
-      BuiqBuilderJobTerms<
+      BdBlocksKeys,
+      BdBuilderJobTerms<
         BuilderOwnJobTerms_BundlerPart,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
       >
   >
   & {
     getBuilderJobTerms: 
       ()=> 
-        BuiqBuilderJobTerms<
+        BdBuilderJobTerms<
           BuilderOwnJobTerms_BundlerPart,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
         >
   }
@@ -138,27 +138,27 @@ type _BuilderSetup_BundlerPart_Init = {
   [TypeSignatureSlot in string as 'bundlerName']: string
 }
 
-export type BuiqBaseBuilderSetup <  // includes Bundler specific slots
+export type BdBaseBuilderSetup <  // includes Bundler specific slots
   BundlerName extends string,
-  BundlerSetup extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerSetup extends BdBundlerNativeConfigAndOptions<unknown,unknown>,
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init 
     = _BuilderSetup_BundlerPart_Init
 > = {
   [BaseBuilderSetupSlots in 'builderLocalSetup'|'builderSharedSetup']: 
-    | BuiqBuilderOwnSetup_Abstract<BundlerName,BundlerSetup,BuilderOwnJobTerms_BundlerPart>
+    | BdBuilderOwnSetup_Abstract<BundlerName,BundlerSetup,BuilderOwnJobTerms_BundlerPart>
     | FeTEmptyObject
     | (BaseBuilderSetupSlots extends 'builderSharedSetup'? undefined : never)
 }
 
-export type BuiqBuilderOwnSetup_Abstract <
+export type BdBuilderOwnSetup_Abstract <
   // to be used in a builder config/setup file (toml friendly)
   //  / while providing the Bundler native config 
   BundlerName extends string,
-  BundlerSetup extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerSetup extends BdBundlerNativeConfigAndOptions<unknown,unknown>,
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init 
     = _BuilderSetup_BundlerPart_Init,
 > =
-  & BuiqBuilderSetup_LocalSlots
+  & BdBuilderSetup_LocalSlots
   & BuilderOwnJobTerms_BundlerPart
   & {
     [BundlerNameKey in `${BundlerName}`]: BundlerSetup 
@@ -167,24 +167,24 @@ export type BuiqBuilderOwnSetup_Abstract <
 
 }
 
-export type BuiqBuilderSetup_FilesPaths = {  // @TODO path type
+export type BdBuilderSetup_FilesPaths = {  // @TODO path type
   // All relative to their cwd path, which is relative to node/bun cwd (which can be a cli arg):
   cwd?: string,  // './' aka cwd is the default in local, and '..' in shared
-  buiq?: string,  // builder-sequencer config, toml
+  buid?: string,  // builder-sequencer config, toml
   tsc?: string, // tsconfig, json
   bundler?: string, // the user package's bundler's configuration, like vite config
   additional?: string|string[],  // like tailwind or a bunch of such things
 }
 
-export type BuiqBuilderSetup_LocalSlots = {
+export type BdBuilderSetup_LocalSlots = {
   // assumed to mostly be part of the local builder setup file
-  // bundleName?: string, //  comes from the BuiqBuilderOwnJobTermsBasePart part
-  files?: BuiqBuilderSetup_FilesPaths,
+  // bundleName?: string, //  comes from the BdBuilderOwnJobTermsBasePart part
+  files?: BdBuilderSetup_FilesPaths,
 }
-export type BuiqBuilderSetup_SharedSlots = {
+export type BdBuilderSetup_SharedSlots = {
   // assumed to reside in the shared build script
   // builderLocalConfigFileType: 'toml'|'ts',
-  files?: BuiqBuilderSetup_FilesPaths
+  files?: BdBuilderSetup_FilesPaths
   cb?: {
     cwd: (params: ParamsArg) => string
   }
@@ -192,7 +192,7 @@ export type BuiqBuilderSetup_SharedSlots = {
 
 // Config-angle (config is external Bundler specific, with a few extensions, aka options)
 
-export type BuiqBundlerNativeConfigAndOptions <
+export type BdBundlerNativeConfigAndOptions <
   BundlerNativeConfig extends FeTEmptyObject|unknown, 
   // like InlineConfig in case of Vite; should not be undefined / unknown in real usecases
   BundlerSetup_ExtensionOptions extends FeTEmptyObject|unknown = FeTEmptyObject
@@ -204,17 +204,17 @@ export type BuiqBundlerNativeConfigAndOptions <
   & BundlerSetup_ExtensionOptions
   // @TODO Add TypeSignature slot
 
-export type BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms <
+export type BdBundlerConfig_wOptionsAndBuilderOwnJobTerms <
   // Bundler config with sugar
   // to be used in Bundler config functions as a config prop 
   //  / while providing Builder job terms
-  BundlerNativeConfigAndOptions extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>,
   BundlerJobTermsforBundlerConfig extends _BuilderSetup_BundlerPart_Init 
     = _BuilderSetup_BundlerPart_Init,
 > =
   & BundlerNativeConfigAndOptions
   & {
-    [$builder]: BuiqBuilderOwnJobTerms<BundlerJobTermsforBundlerConfig>
+    [$builder]: BdBuilderOwnJobTerms<BundlerJobTermsforBundlerConfig>
 }
 
 // CLI angle:
@@ -224,5 +224,5 @@ type ParamsArg = FeStringKeyedCollectionObject<FeTEmptyObject|string>  // comman
 // Abstract prototypes:
 
 type _BundlerConfigFn_Abstract = (
-  props: BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms<FeTEmptyObject>
-) => Promise<BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms<FeTEmptyObject>>
+  props: BdBundlerConfig_wOptionsAndBuilderOwnJobTerms<FeTEmptyObject>
+) => Promise<BdBundlerConfig_wOptionsAndBuilderOwnJobTerms<FeTEmptyObject>>

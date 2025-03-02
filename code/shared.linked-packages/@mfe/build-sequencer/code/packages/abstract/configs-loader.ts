@@ -9,16 +9,16 @@ import { _feIsNotanEmptyObject, _feIsEmptyObject,
 } from '@mflt/_fe'
 import {
   BuildSequencer,
-  _BuiqBuilderOwnJobTermsBundlerPart, BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart,
+  _BdBuilderOwnJobTermsBundlerPart, BdBundlerNativeConfigAndOptions, BdSharedSetupBundlerNativePart,
 } from './types.ts'
 // import defaultsProfiles from './defaults-profiles.ts'
 
 
 export async function loadBuilderConfigs <
-  BundlerSpecificFePart extends _BuiqBuilderOwnJobTermsBundlerPart,
-  BundlerLocalConfig extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>,
-  BundlerSharedConfig extends BuiqSharedSetupBundlerNativePart<unknown,unknown>,
-  // BundlerConfig extends BuiqBundlerConfigPrototype = BuiqBundlerConfigPrototype,
+  BundlerSpecificFePart extends _BdBuilderOwnJobTermsBundlerPart,
+  BundlerLocalConfig extends BdBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerSharedConfig extends BdSharedSetupBundlerNativePart<unknown,unknown>,
+  // BundlerConfig extends BdBundlerConfigPrototype = BdBundlerConfigPrototype,
   // BuilderExtensionProps extends FeAnyI|void = void,
 > (
   runnerCtx: BuildSequencer<

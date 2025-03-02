@@ -1,20 +1,20 @@
 import type { UserConfig, InlineConfig } from 'vite'
 import type { FeTEmptyObject } from '@mflt/_fe'
 import type {
-  BuiqBuilderJobTerms, BuiqExitCode,
-  BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart, BuiqBuilderOwnSetup_Abstract, BuiqAbstractSharedFeSetup,
-  BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms, BuiqBuilderInitiator
+  BdBuilderJobTerms, BdExitCode,
+  BdBundlerNativeConfigAndOptions, BdSharedSetupBundlerNativePart, BdBuilderOwnSetup_Abstract, BdAbstractSharedFeSetup,
+  BdBundlerConfig_wOptionsAndBuilderOwnJobTerms, BdBuilderInitiator
 } from '../abstract/types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
-export type { BuiqExitCode }
+export type { BdExitCode }
 
-// export type BuiqVitexEntryProps = BuiqProps <
+// export type BdVitexEntryProps = BdProps <
 //   & Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'bundlerCommonConfigFn'|'cwd'> & {
 //   defaultsProfileName?: DefaultsProfileNames,
 // }>
 
-export type VitexJobTerms = BuiqBuilderJobTerms<
+export type VitexJobTerms = BdBuilderJobTerms<
   VitexSpecificFeSlotsAndOptions,
   ViteLocalSetup,
   ViteSharedSetup
@@ -40,39 +40,39 @@ export type VitexSharedBuilderSlots = {
   viteSharedConfigFn: VitexSharedConfigFn|null,
 }
 
-export type VitexBuilderSlotsAndOptions = BuiqBuilderInitiator<
+export type VitexBuilderSlotsAndOptions = BdBuilderInitiator<
   VitexSpecificFeSlotsAndOptions,
   ViteLocalSetup,
   ViteSharedSetup
 >
 
-export type ViteLocalSetup = BuiqBundlerNativeConfigAndOptions<InlineConfig> // Extendable classic Vite config aka InlineConfig
-export type ViteSharedSetup = BuiqSharedSetupBundlerNativePart<UserConfig>
-// export type VitexConfig = BuiqBundlerConfigPrototype<ViteLocalConfig,ViteSharedConfig>
+export type ViteLocalSetup = BdBundlerNativeConfigAndOptions<InlineConfig> // Extendable classic Vite config aka InlineConfig
+export type ViteSharedSetup = BdSharedSetupBundlerNativePart<UserConfig>
+// export type VitexConfig = BdBundlerConfigPrototype<ViteLocalConfig,ViteSharedConfig>
 
 // To be used in builder config file:
-export type VitexLocalBuilderSetup = BuiqBuilderOwnSetup_Abstract<'vite', ViteLocalSetup, VitexSpecificFeSlotsAndOptions>
-export type VitexSharedBuilderSetup = BuiqAbstractSharedFeSetup<'vite', ViteSharedSetup, VitexSpecificFeSlotsAndOptions>
+export type VitexLocalBuilderSetup = BdBuilderOwnSetup_Abstract<'vite', ViteLocalSetup, VitexSpecificFeSlotsAndOptions>
+export type VitexSharedBuilderSetup = BdAbstractSharedFeSetup<'vite', ViteSharedSetup, VitexSpecificFeSlotsAndOptions>
 
-export type VitexLocalConfigwFePayload = BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms<ViteLocalSetup,VitexSpecificFeSlotsAndOptions>
-export type VitexSharedConfigwFePayload = BuiqBundlerConfig_wOptionsAndBuilderOwnJobTerms<ViteSharedSetup,VitexSpecificFeSlotsAndOptions>
+export type VitexLocalConfigwFePayload = BdBundlerConfig_wOptionsAndBuilderOwnJobTerms<ViteLocalSetup,VitexSpecificFeSlotsAndOptions>
+export type VitexSharedConfigwFePayload = BdBundlerConfig_wOptionsAndBuilderOwnJobTerms<ViteSharedSetup,VitexSpecificFeSlotsAndOptions>
 
 // export type FeBuilderVitexEntryCtx =
 //   & FeBuilderEntryCtx
-//   & Pick<BuiqVitexExecCtx,'mode'>
+//   & Pick<BdVitexExecCtx,'mode'>
 
 
 // export type BuilderBaseConfig = {
-//   files: BuiqConfigFilesPaths,
-//   buiq: {
+//   files: BdConfigFilesPaths,
+//   buid: {
 //     addPeerDependenciestoExternals: boolean,
 //     // changetoAltCwd: boolean,
 //   }
 //   vite?: UserConfig['build'], // common and local merges, however viteLocalConfigFn may override this
 // }
 
-// export type ViteLocalConfigFnProps = Omit<BuiqVitexExecCtx['local'],typeof $fe> // ie. InlineConfig & LocalExtensionProps
-// export type ViteCommonConfigFnProps = Omit<BuiqVitexExecCtx['shared'],typeof $fe> // ie. UserConfig & SgaredExtensionProps
+// export type ViteLocalConfigFnProps = Omit<BdVitexExecCtx['local'],typeof $fe> // ie. InlineConfig & LocalExtensionProps
+// export type ViteCommonConfigFnProps = Omit<BdVitexExecCtx['shared'],typeof $fe> // ie. UserConfig & SgaredExtensionProps
 
 export type VitexLocalConfigFn = (
   props: VitexLocalConfigwFePayload

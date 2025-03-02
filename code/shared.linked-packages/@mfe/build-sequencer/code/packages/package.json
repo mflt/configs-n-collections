@@ -1,5 +1,5 @@
 {
-  "name": "buiq",
+  "name": "buid",
   "version": "0.1.0",
   "type": "module",
   "module": "./[dist]/esm/index.js",

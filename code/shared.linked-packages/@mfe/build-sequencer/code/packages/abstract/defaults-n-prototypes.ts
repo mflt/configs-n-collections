@@ -1,9 +1,9 @@
 import { FeExecSignaling } from '@mflt/_fe'
 import type {
-  BuiqBuilderOwnSetup_Abstract, BuiqAbstractSharedFeSetup, BuiqBundlerNativeConfigAndOptions, _BuiqBuilderOwnJobTermsBundlerPart
+  BdBuilderOwnSetup_Abstract, BdAbstractSharedFeSetup, BdBundlerNativeConfigAndOptions, _BdBuilderOwnJobTermsBundlerPart
 } from './types.ts'
 
-export const $builder = Symbol.for('@buiqSlot');
+export const $builder = Symbol.for('@buidSlot');
 
 const __BlocksKeysDonor = { // Just to have iterable keys to engage
   setup_a_local: {},
@@ -19,10 +19,10 @@ const __BlocksKeysDonor = { // Just to have iterable keys to engage
   post: {},
 } as const
 
-export type BuiqBlocksKeys = keyof typeof __BlocksKeysDonor  // @TODO naming
+export type BdBlocksKeys = keyof typeof __BlocksKeysDonor  // @TODO naming
 
 export const _BlocksKeysDonor = __BlocksKeysDonor as unknown as Record<
-  BuiqBlocksKeys,
+  BdBlocksKeys,
   FeExecSignaling<any>  // @TODO any?
 >
 
@@ -33,20 +33,20 @@ export const _BaseBuilderConfig = { // we omitted the $fe here
     bundleName: '',
     files: {
       cwd: './',
-      buiq: './builder-config.toml',
+      buid: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
-  } satisfies BuiqBuilderOwnSetup_Abstract<'<someBundler>',BuiqBundlerNativeConfigAndOptions<unknown,unknown>,_BuiqBuilderOwnJobTermsBundlerPart>,
+  } satisfies BdBuilderOwnSetup_Abstract<'<someBundler>',BdBundlerNativeConfigAndOptions<unknown,unknown>,_BdBuilderOwnJobTermsBundlerPart>,
   shared: {
     bundlerName: '<someBundler>',
     '<someBundler>': {},
     files: {
       cwd: '..'
     }
-  } satisfies BuiqAbstractSharedFeSetup<'<someBundler>',BuiqBundlerNativeConfigAndOptions<unknown,unknown>,_BuiqBuilderOwnJobTermsBundlerPart>,
+  } satisfies BdAbstractSharedFeSetup<'<someBundler>',BdBundlerNativeConfigAndOptions<unknown,unknown>,_BdBuilderOwnJobTermsBundlerPart>,
 }
 
-export const BuiqExitCodeVariants = {
+export const BdExitCodeVariants = {
   done: 0,
   error: 1,
 } as const

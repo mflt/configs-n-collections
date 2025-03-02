@@ -5,12 +5,12 @@ import {
   _feAssertIsObject, _feAssertIsAsyncFunction,
 } from '@mflt/_fe'
 import type {
-  VitexJobTerms, BuiqExitCode, VitexBuilderSlotsAndOptions, ViteLocalSetup,
+  VitexJobTerms, BdExitCode, VitexBuilderSlotsAndOptions, ViteLocalSetup,
   ViteSharedSetup, VitexSpecificFeSlotsAndOptions
 } from './types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 import { BuildSequencer, prompt, color, builderEntryLoaded } from '../abstract/core.ts'
-import { BuiqExitCodeVariants } from '../abstract/defaults-n-prototypes.ts'
+import { BdExitCodeVariants } from '../abstract/defaults-n-prototypes.ts'
 // import { FeBuilderRunnerCtx } from '../abstract/runner.ts'
 
 export { prompt, color, builderEntryLoaded, $fe }
@@ -33,7 +33,7 @@ builderEntryLoaded.pass('vite-x')
 
 export async function vitexBuilder (
   props: VitexBuilderSlotsAndOptions
-): Promise<BuiqExitCode> {
+): Promise<BdExitCode> {
 
   const { execMods, ...propsFeInit  } = props
   const ctx = {
@@ -52,7 +52,7 @@ export async function vitexBuilder (
     {
       ...execMods
       // blockstoExecasFunctions: {
-      //   preps: (c: BuiqVitexExecCtx)=> (0 as unknown as Promise<BuiqVitexExecCtx>)
+      //   preps: (c: BdVitexExecCtx)=> (0 as unknown as Promise<BdVitexExecCtx>)
       // }
     }
   )
@@ -71,7 +71,7 @@ export async function vitexBuilder (
     // return await sq.exec()
     return 111
   } catch(err) {
-    return BuiqExitCodeVariants.error
+    return BdExitCodeVariants.error
   }
 
     // now we parse different build and vite configs possibly coming from different sources

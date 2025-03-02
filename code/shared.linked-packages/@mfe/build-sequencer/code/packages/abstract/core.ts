@@ -7,10 +7,10 @@ import {
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BuiqBuilderJobTerms, BuiqExitCode, BuiqBlocksKeys, BuiqBundlerNativeConfigAndOptions, BuiqSharedSetupBundlerNativePart,
-  _BuiqBuilderOwnJobTermsBundlerPart, IBuiqBaseUtilities, BuiqBuilderInitiatorExecMods,
+  BdBuilderJobTerms, BdExitCode, BdBlocksKeys, BdBundlerNativeConfigAndOptions, BdSharedSetupBundlerNativePart,
+  _BdBuilderOwnJobTermsBundlerPart, IBdBaseUtilities, BdBuilderInitiatorExecMods,
 } from './types.ts'
-import { _BlocksKeysDonor, BuiqExitCodeVariants } from './defaults-n-prototypes.ts'
+import { _BlocksKeysDonor, BdExitCodeVariants } from './defaults-n-prototypes.ts'
 import { loadBuilderConfigs } from './configs-loader.ts'
 
 export { prompt, color }
@@ -42,17 +42,17 @@ export const builderEntryLoaded = new FeReadinessSignaling<string>();
 })()
 
 export class BuildSequencer <
-  BundlerSpecificFePart extends _BuiqBuilderOwnJobTermsBundlerPart,
-  BundlerLocalSetup extends BuiqBundlerNativeConfigAndOptions<unknown,unknown>, // should not be undefined / unknown
-  BundlerSharedSetup extends BuiqSharedSetupBundlerNativePart<unknown,unknown>,
-  // * keep in sync w/ BuiqBuilderJobTerms
+  BundlerSpecificFePart extends _BdBuilderOwnJobTermsBundlerPart,
+  BundlerLocalSetup extends BdBundlerNativeConfigAndOptions<unknown,unknown>, // should not be undefined / unknown
+  BundlerSharedSetup extends BdSharedSetupBundlerNativePart<unknown,unknown>,
+  // * keep in sync w/ BdBuilderJobTerms
 > extends FeJobBlocksSequencerAsyncCtx<
-    BuiqBlocksKeys,
-    BuiqBuilderJobTerms<
+    BdBlocksKeys,
+    BdBuilderJobTerms<
       BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup
       // the extension slots are not relevant in this abstract/bundler-independent context
     >,
-    IBuiqBaseUtilities  // additional utils add to BuilderExtensionProps
+    IBdBaseUtilities  // additional utils add to BuilderExtensionProps
 >
 {
   get builderName () { return this.sequencerName }
@@ -62,7 +62,7 @@ export class BuildSequencer <
   }
 
   assigntoBuilderJobTerms (
-    toMerge: Partial<BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>>,
+    toMerge: Partial<BdBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>>,
     mergicianOptions?: MergicianOptions
   ) {
     return this.assigntoJobTerms(
@@ -79,24 +79,24 @@ export class BuildSequencer <
     //     FeBuilderStepsKeys,FeBuilderCtx<BundlerConfig,BuilderExtensionProps>,IFeBuilderRunnerUtilities
     //   >
     // >[1] | '_',  // @TODO named one?
-    builderJobTerms: BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,
+    builderJobTerms: BdBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,
     initiator?: Partial<
       & Pick<
         IFeJobBlocksSequencerAsyncCtx<
-          BuiqBlocksKeys,
-          BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,
-          IBuiqBaseUtilities
+          BdBlocksKeys,
+          BdBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,
+          IBdBaseUtilities
         >,
         'utilities'|'waitingforRequestedBlocktoCompleteTimeout'
       >
       & Omit<FeJbsqCastCtxSlotstoInitiatorType<
-          BuiqBlocksKeys,BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>
+          BdBlocksKeys,BdBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>
         >,
         'jobTermsRef'  // this one comes as a direct prop
       >
       & {
         getBuilderJobTerms: FeJobBlocksSequencerAsyncCtx<
-          BuiqBlocksKeys,BuiqBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,IBuiqBaseUtilities
+          BdBlocksKeys,BdBuilderJobTerms<BundlerSpecificFePart,BundlerLocalSetup,BundlerSharedSetup>,IBdBaseUtilities
         >['getJobTerms']
       }
     >
@@ -142,7 +142,7 @@ export class BuildSequencer <
     >(this)
   }
 
-  async exec (): Promise<BuiqExitCode> {
+  async exec (): Promise<BdExitCode> {
 
     const sq = this
     const squ = sq.utilities
@@ -211,7 +211,7 @@ export class BuildSequencer <
     // })
 
     squ.prompt.outro('Building XOX ended nicely')
-    return BuiqExitCodeVariants.done
+    return BdExitCodeVariants.done
 
     } catch (err) {
       squ.log.error(`${
@@ -219,7 +219,7 @@ export class BuildSequencer <
         (err?.message ? '\n' + err?.message : '')
       }`)
       squ.prompt.outro(color.bgRed(color.white(color.bold('Building XOX failed.'))))
-      return BuiqExitCodeVariants.error
+      return BdExitCodeVariants.error
     }
   }
 }
