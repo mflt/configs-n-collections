@@ -1,6 +1,6 @@
 import { FeExecSignaling } from '@mflt/_fe'
 import type {
-  BdBuilderOwnSetup_Abstract, BdAbstractSharedFeSetup, BdBundlerNativeConfigAndOptions, _BdBuilderOwnJobTermsBundlerPart
+  BdBuilderOwnSetup_Abstract, BdAbstractSharedFeSetup, BdBundlerNativeConfigExtended, _BdBuilderOwnJobTermsBundlerPart
 } from './types.ts'
 
 export const $builder = Symbol.for('@buidSlot');
@@ -36,14 +36,14 @@ export const _BaseBuilderConfig = { // we omitted the $fe here
       buid: './builder-config.toml',
       tsc: './tsconfig.build.json',
     }
-  } satisfies BdBuilderOwnSetup_Abstract<'<someBundler>',BdBundlerNativeConfigAndOptions<unknown,unknown>,_BdBuilderOwnJobTermsBundlerPart>,
+  } satisfies BdBuilderOwnSetup_Abstract<'<someBundler>',BdBundlerNativeConfigExtended<unknown,unknown>,_BdBuilderOwnJobTermsBundlerPart>,
   shared: {
     bundlerName: '<someBundler>',
     '<someBundler>': {},
     files: {
       cwd: '..'
     }
-  } satisfies BdAbstractSharedFeSetup<'<someBundler>',BdBundlerNativeConfigAndOptions<unknown,unknown>,_BdBuilderOwnJobTermsBundlerPart>,
+  } satisfies BdAbstractSharedFeSetup<'<someBundler>',BdBundlerNativeConfigExtended<unknown,unknown>,_BdBuilderOwnJobTermsBundlerPart>,
 }
 
 export const BdExitCodeVariants = {

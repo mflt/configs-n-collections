@@ -5,8 +5,8 @@ import {
   _feAssertIsObject, _feAssertIsAsyncFunction,
 } from '@mflt/_fe'
 import type {
-  VitexJobTerms, BdExitCode, VitexBuilderSlotsAndOptions, ViteLocalSetup,
-  ViteSharedSetup, VitexSpecificFeSlotsAndOptions
+  VitexJobTerms, BdExitCode, VitexBuilderInitiator, ViteLocalConfigExtended,
+  ViteSharedConfigExtended, VitexBuilderOwnSetup
 } from './types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 import { BuildSequencer, prompt, color, builderEntryLoaded } from '../abstract/core.ts'
@@ -32,7 +32,7 @@ export { prompt, color, builderEntryLoaded, $fe }
 builderEntryLoaded.pass('vite-x')
 
 export async function vitexBuilder (
-  props: VitexBuilderSlotsAndOptions
+  props: VitexBuilderInitiator
 ): Promise<BdExitCode> {
 
   const { execMods, ...propsFeInit  } = props
@@ -42,9 +42,9 @@ export async function vitexBuilder (
   } as VitexJobTerms
 
   const r = new BuildSequencer< // 
-    VitexSpecificFeSlotsAndOptions,
-    ViteLocalSetup,
-    ViteSharedSetup
+    VitexBuilderOwnSetup,
+    ViteLocalConfigExtended,
+    ViteSharedConfigExtended
   >(
     'vite-x', // '_',
     // @TODO let there be a builder kind, like 'vite' and sub like 'vxrn'
@@ -94,7 +94,7 @@ export async function vitexBuilder (
           'If this is not how you intended it to be, please check the defaults and other related settings.')
       } else {
         const viteLocalConfigFn = await import(ctx[$fe].files?.bundler)
-        _feAssertIsAsyncFunction<InlineConfig,[ViteLocalSetup]>(
+        _feAssertIsAsyncFunction<InlineConfig,[ViteLocalConfigExtended]>(
           viteLocalConfigFn,
           {message: 'Local vite config is not a function'}
         )
@@ -116,7 +116,7 @@ export async function vitexBuilder (
         p.log.warn('Common vite config (which isn\'t the local one) ts was not provided (by the user scipt)')
       } else {
         // const viteCommonConfigFn = await import(ctx.shared.files.bundler) // @TODO implement the loading case
-        _feAssertIsAsyncFunction<UserConfig,[ViteSharedSetup]>(
+        _feAssertIsAsyncFunction<UserConfig,[ViteSharedConfigExtended]>(
           props?.viteSharedConfigFn,
           {message: 'What was proviced as a common vite config is not a function (specify as null if omitted)'}
         )

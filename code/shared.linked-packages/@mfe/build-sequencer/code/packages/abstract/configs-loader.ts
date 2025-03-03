@@ -9,14 +9,14 @@ import { _feIsNotanEmptyObject, _feIsEmptyObject,
 } from '@mflt/_fe'
 import {
   BuildSequencer,
-  _BdBuilderOwnJobTermsBundlerPart, BdBundlerNativeConfigAndOptions, BdSharedSetupBundlerNativePart,
+  _BdBuilderOwnJobTermsBundlerPart, BdBundlerNativeConfigExtended, BdSharedSetupBundlerNativePart,
 } from './types.ts'
 // import defaultsProfiles from './defaults-profiles.ts'
 
 
 export async function loadBuilderConfigs <
   BundlerSpecificFePart extends _BdBuilderOwnJobTermsBundlerPart,
-  BundlerLocalConfig extends BdBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerLocalConfig extends BdBundlerNativeConfigExtended<unknown,unknown>,
   BundlerSharedConfig extends BdSharedSetupBundlerNativePart<unknown,unknown>,
   // BundlerConfig extends BdBundlerConfigPrototype = BdBundlerConfigPrototype,
   // BuilderExtensionProps extends FeAnyI|void = void,

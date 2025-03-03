@@ -2,25 +2,30 @@ import type { UserConfig, InlineConfig } from 'vite'
 import type { FeTEmptyObject } from '@mflt/_fe'
 import type {
   BdBuilderJobTerms, BdExitCode,
-  BdBundlerNativeConfigAndOptions, BdSharedSetupBundlerNativePart, BdBuilderOwnSetup_Abstract, BdAbstractSharedFeSetup,
-  BdBundlerConfig_wOptionsAndBuilderOwnJobTerms, BdBuilderInitiator
+  BdBundlerNativeConfigExtended, BdBuilderOwnSetup_Abstract,
+  BdBundlerConfigExtended_wBuilderOwnJobTerms, BdBuilderInitiator
 } from '../abstract/types.ts'
 import { DefaultsProfileNames } from './defaults-n-profiles.ts'
 
 export type { BdExitCode }
 
-// export type BdVitexEntryProps = BdProps <
-//   & Pick<BuilderEffectiveLocalConfig, 'builderCommonConfig'|'bundlerCommonConfigFn'|'cwd'> & {
-//   defaultsProfileName?: DefaultsProfileNames,
-// }>
+//  Runtime (exec time) angle:
 
 export type VitexJobTerms = BdBuilderJobTerms<
-  VitexSpecificFeSlotsAndOptions,
-  ViteLocalSetup,
-  ViteSharedSetup
+  VitexBuilderOwnSetup,
+  ViteLocalConfigExtended,
+  ViteSharedConfigExtended
 >
 
-export type VitexSpecificFeSlotsAndOptions =
+export type VitexBuilderInitiator = BdBuilderInitiator<
+  VitexBuilderOwnSetup,
+  ViteLocalConfigExtended,
+  ViteSharedConfigExtended
+>
+
+//  Setup angle (not an input for a bundler itself):
+
+export type VitexBuilderOwnSetup =
   & VitexLocalBuilderSlots
   & VitexSharedBuilderSlots
   & {
@@ -40,43 +45,22 @@ export type VitexSharedBuilderSlots = {
   viteSharedConfigFn: VitexSharedConfigFn|null,
 }
 
-export type VitexBuilderSlotsAndOptions = BdBuilderInitiator<
-  VitexSpecificFeSlotsAndOptions,
-  ViteLocalSetup,
-  ViteSharedSetup
->
-
-export type ViteLocalSetup = BdBundlerNativeConfigAndOptions<InlineConfig> // Extendable classic Vite config aka InlineConfig
-export type ViteSharedSetup = BdSharedSetupBundlerNativePart<UserConfig>
-// export type VitexConfig = BdBundlerConfigPrototype<ViteLocalConfig,ViteSharedConfig>
-
 // To be used in builder config file:
-export type VitexLocalBuilderSetup = BdBuilderOwnSetup_Abstract<'vite', ViteLocalSetup, VitexSpecificFeSlotsAndOptions>
-export type VitexSharedBuilderSetup = BdAbstractSharedFeSetup<'vite', ViteSharedSetup, VitexSpecificFeSlotsAndOptions>
+export type VitexLocalBuilderSetup = BdBuilderOwnSetup_Abstract<'vite', ViteLocalConfigExtended, VitexBuilderOwnSetup>
+export type VitexSharedBuilderSetup = BdBuilderOwnSetup_Abstract<'vite', ViteSharedConfigExtended, VitexBuilderOwnSetup>
 
-export type VitexLocalConfigwFePayload = BdBundlerConfig_wOptionsAndBuilderOwnJobTerms<ViteLocalSetup,VitexSpecificFeSlotsAndOptions>
-export type VitexSharedConfigwFePayload = BdBundlerConfig_wOptionsAndBuilderOwnJobTerms<ViteSharedSetup,VitexSpecificFeSlotsAndOptions>
+// Config-angle (config is external Bundler specific, with a few extensions, aka options)
 
-// export type FeBuilderVitexEntryCtx =
-//   & FeBuilderEntryCtx
-//   & Pick<BdVitexExecCtx,'mode'>
+export type ViteLocalConfigExtended = BdBundlerNativeConfigExtended<InlineConfig> 
+// Extendable classic Vite config aka InlineConfig
+export type ViteSharedConfigExtended = BdBundlerNativeConfigExtended<UserConfig>
 
-
-// export type BuilderBaseConfig = {
-//   files: BdConfigFilesPaths,
-//   buid: {
-//     addPeerDependenciestoExternals: boolean,
-//     // changetoAltCwd: boolean,
-//   }
-//   vite?: UserConfig['build'], // common and local merges, however viteLocalConfigFn may override this
-// }
-
-// export type ViteLocalConfigFnProps = Omit<BdVitexExecCtx['local'],typeof $fe> // ie. InlineConfig & LocalExtensionProps
-// export type ViteCommonConfigFnProps = Omit<BdVitexExecCtx['shared'],typeof $fe> // ie. UserConfig & SgaredExtensionProps
+export type VitexLocalConfigwJobTerms = BdBundlerConfigExtended_wBuilderOwnJobTerms<ViteLocalConfigExtended,VitexBuilderOwnSetup>
+export type VitexSharedConfigwJobTerms = BdBundlerConfigExtended_wBuilderOwnJobTerms<ViteSharedConfigExtended,VitexBuilderOwnSetup>
 
 export type VitexLocalConfigFn = (
-  props: VitexLocalConfigwFePayload
-) => Promise<VitexLocalConfigwFePayload>
+  props: VitexLocalConfigwJobTerms
+) => Promise<VitexLocalConfigwJobTerms>
 export type VitexSharedConfigFn = (
-  props: VitexSharedConfigwFePayload
-) => Promise<VitexSharedConfigwFePayload>
+  props: VitexSharedConfigwJobTerms
+) => Promise<VitexSharedConfigwJobTerms>

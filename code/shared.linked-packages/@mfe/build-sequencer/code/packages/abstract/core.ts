@@ -7,7 +7,7 @@ import {
 import * as prompt from '@clack/prompts'
 import color from 'picocolors'
 import type {
-  BdBuilderJobTerms, BdExitCode, BdBlocksKeys, BdBundlerNativeConfigAndOptions, BdSharedSetupBundlerNativePart,
+  BdBuilderJobTerms, BdExitCode, BdBlocksKeys, BdBundlerNativeConfigExtended, BdSharedSetupBundlerNativePart,
   _BdBuilderOwnJobTermsBundlerPart, IBdBaseUtilities, BdBuilderInitiatorExecMods,
 } from './types.ts'
 import { _BlocksKeysDonor, BdExitCodeVariants } from './defaults-n-prototypes.ts'
@@ -43,7 +43,7 @@ export const builderEntryLoaded = new FeReadinessSignaling<string>();
 
 export class BuildSequencer <
   BundlerSpecificFePart extends _BdBuilderOwnJobTermsBundlerPart,
-  BundlerLocalSetup extends BdBundlerNativeConfigAndOptions<unknown,unknown>, // should not be undefined / unknown
+  BundlerLocalSetup extends BdBundlerNativeConfigExtended<unknown,unknown>, // should not be undefined / unknown
   BundlerSharedSetup extends BdSharedSetupBundlerNativePart<unknown,unknown>,
   // * keep in sync w/ BdBuilderJobTerms
 > extends FeJobBlocksSequencerAsyncCtx<

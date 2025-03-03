@@ -35,13 +35,13 @@ export type BdBuilderJobTerms <
   //  / it we construct in the setup steps/blocks
   // this/descendants evaluate as we process config inputs in sequence
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init,
-  LocalBundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>, 
+  LocalBundlerConfigExtended extends BdBundlerNativeConfigExtended<unknown,unknown>, 
   // * local Bundler setup
   // * should not be undefined / unknown
   // * Bundler is the external tool driven by us
   //  / it has two slots, local and shared, see below
   //  / both slots have extension subslots per stage
-  SharedBundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
+  SharedBundlerConfigExtended extends BdBundlerNativeConfigExtended<unknown,unknown>|undefined,
   // * Bundler setup shared between modules or parts of the codebase
   BuilderOwnJobTerms_ExtensionSlots extends FeTEmptyObject = FeTEmptyObject,
   // * can not be void as it results in never when intersects
@@ -52,8 +52,8 @@ export type BdBuilderJobTerms <
   & {
     // both Bundler_Config types are basically bundler config objects with additional config options
     // for the two stages of config computations aka loading (where shared stage comes first)
-    local: LocalBundlerNativeConfigAndOptions,
-    shared: SharedBundlerNativeConfigAndOptions,
+    local: LocalBundlerConfigExtended,
+    shared: SharedBundlerConfigExtended,
     [$builder]: BdBuilderOwnJobTerms<BuilderOwnJobTerms_BundlerPart>
   }
   & BuilderOwnJobTerms_ExtensionSlots
@@ -100,34 +100,34 @@ export type BdBuilderOwnJobTerms_UtilityPart = { // does not come from a config 
 
 export type BdBuilderInitiator <  // @TODO
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init,
-  LocalBundlerNativeConfigAndOptions extends 
-    BdBundlerNativeConfigAndOptions<unknown,unknown>, 
-  SharedBundlerNativeConfigAndOptions extends 
-    BdBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
+  LocalBundlerConfigExtended extends 
+    BdBundlerNativeConfigExtended<unknown,unknown>, 
+  SharedBundlerConfigExtended extends 
+    BdBundlerNativeConfigExtended<unknown,unknown>|undefined,
 > =
   & Partial<BuilderOwnJobTerms_BundlerPart>
   & {
     execMods?: BdBuilderInitiatorExecMods<
-      BuilderOwnJobTerms_BundlerPart,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
+      BuilderOwnJobTerms_BundlerPart,LocalBundlerConfigExtended,SharedBundlerConfigExtended
     >
   }
 
 export type BdBuilderInitiatorExecMods <
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init,
-  LocalBundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>, 
-  SharedBundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>|undefined,
+  LocalBundlerConfigExtended extends BdBundlerNativeConfigExtended<unknown,unknown>, 
+  SharedBundlerConfigExtended extends BdBundlerNativeConfigExtended<unknown,unknown>|undefined,
 > =
   & IFeJbsqInitiatorExecMods<
       BdBlocksKeys,
       BdBuilderJobTerms<
-        BuilderOwnJobTerms_BundlerPart,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
+        BuilderOwnJobTerms_BundlerPart,LocalBundlerConfigExtended,SharedBundlerConfigExtended
       >
   >
   & {
     getBuilderJobTerms: 
       ()=> 
         BdBuilderJobTerms<
-          BuilderOwnJobTerms_BundlerPart,LocalBundlerNativeConfigAndOptions,SharedBundlerNativeConfigAndOptions
+          BuilderOwnJobTerms_BundlerPart,LocalBundlerConfigExtended,SharedBundlerConfigExtended
         >
   }
 
@@ -140,12 +140,12 @@ type _BuilderSetup_BundlerPart_Init = {
 
 export type BdBaseBuilderSetup <  // includes Bundler specific slots
   BundlerName extends string,
-  BundlerSetup extends BdBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerConfigExtended extends BdBundlerNativeConfigExtended<unknown,unknown>,
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init 
     = _BuilderSetup_BundlerPart_Init
 > = {
   [BaseBuilderSetupSlots in 'builderLocalSetup'|'builderSharedSetup']: 
-    | BdBuilderOwnSetup_Abstract<BundlerName,BundlerSetup,BuilderOwnJobTerms_BundlerPart>
+    | BdBuilderOwnSetup_Abstract<BundlerName,BundlerConfigExtended,BuilderOwnJobTerms_BundlerPart>
     | FeTEmptyObject
     | (BaseBuilderSetupSlots extends 'builderSharedSetup'? undefined : never)
 }
@@ -154,14 +154,14 @@ export type BdBuilderOwnSetup_Abstract <
   // to be used in a builder config/setup file (toml friendly)
   //  / while providing the Bundler native config 
   BundlerName extends string,
-  BundlerSetup extends BdBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerConfigExtended extends BdBundlerNativeConfigExtended<unknown,unknown>,
   BuilderOwnJobTerms_BundlerPart extends _BuilderSetup_BundlerPart_Init 
     = _BuilderSetup_BundlerPart_Init,
 > =
   & BdBuilderSetup_LocalSlots
   & BuilderOwnJobTerms_BundlerPart
   & {
-    [BundlerNameKey in `${BundlerName}`]: BundlerSetup 
+    [BundlerNameKey in `${BundlerName}`]: BundlerConfigExtended 
     // likely a partial of Bundler's native config, 
     //  / like for omitting the native config file itself
 
@@ -192,7 +192,7 @@ export type BdBuilderSetup_SharedSlots = {
 
 // Config-angle (config is external Bundler specific, with a few extensions, aka options)
 
-export type BdBundlerNativeConfigAndOptions <
+export type BdBundlerNativeConfigExtended <
   BundlerNativeConfig extends FeTEmptyObject|unknown, 
   // like InlineConfig in case of Vite; should not be undefined / unknown in real usecases
   BundlerSetup_ExtensionOptions extends FeTEmptyObject|unknown = FeTEmptyObject
@@ -204,15 +204,15 @@ export type BdBundlerNativeConfigAndOptions <
   & BundlerSetup_ExtensionOptions
   // @TODO Add TypeSignature slot
 
-export type BdBundlerConfig_wOptionsAndBuilderOwnJobTerms <
+export type BdBundlerConfigExtended_wBuilderOwnJobTerms <
   // Bundler config with sugar
   // to be used in Bundler config functions as a config prop 
   //  / while providing Builder job terms
-  BundlerNativeConfigAndOptions extends BdBundlerNativeConfigAndOptions<unknown,unknown>,
+  BundlerConfigExtended extends BdBundlerNativeConfigExtended<unknown,unknown>,
   BundlerJobTermsforBundlerConfig extends _BuilderSetup_BundlerPart_Init 
     = _BuilderSetup_BundlerPart_Init,
 > =
-  & BundlerNativeConfigAndOptions
+  & BundlerConfigExtended
   & {
     [$builder]: BdBuilderOwnJobTerms<BundlerJobTermsforBundlerConfig>
 }
@@ -224,5 +224,5 @@ type ParamsArg = FeStringKeyedCollectionObject<FeTEmptyObject|string>  // comman
 // Abstract prototypes:
 
 type _BundlerConfigFn_Abstract = (
-  props: BdBundlerConfig_wOptionsAndBuilderOwnJobTerms<FeTEmptyObject>
-) => Promise<BdBundlerConfig_wOptionsAndBuilderOwnJobTerms<FeTEmptyObject>>
+  props: BdBundlerConfigExtended_wBuilderOwnJobTerms<FeTEmptyObject>
+) => Promise<BdBundlerConfigExtended_wBuilderOwnJobTerms<FeTEmptyObject>>
