@@ -33,7 +33,7 @@ export async function loadBuilderConfigs <
     c4: _c,
     prompt: p,
     color: co
-  } = r. utilities
+  } = r.utilities
 
   const {
     defaultsProfileName = 'base'
